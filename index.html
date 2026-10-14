@@ -81,7 +81,7 @@ svg{overflow:visible}
 .tick:after{content:"";opacity:0}
 .event.checked .tick:after{content:"✓";opacity:1}
 .category{display:inline-block;font-size:12px;border:2px solid var(--ink);border-radius:20px;padding:0 9px;background:var(--lavender);margin-bottom:8px;line-height:1.5}
-.category.parking{background:var(--blue)}.category.food{background:var(--pink)}.category.swim{background:var(--blue)}.category.task{background:var(--yellow)}.category.stay{background:var(--green)}.category.train{background:#f4c9a0}
+.category.parking{background:var(--blue)}.category.food{background:var(--pink)}.category.swim{background:var(--blue)}.category.task{background:var(--yellow)}.category.stay{background:var(--green)}.category.ice{background:var(--pink)}.category.shop{background:var(--yellow)}.category.train{background:#f4c9a0}
 .details{overflow:hidden;max-height:0;transition:max-height .3s ease}
 .event-card.open .details{max-height:420px}
 .details p{font-size:14px;line-height:1.6;color:#786f6b;margin:8px 0 0;overflow-wrap:anywhere}
@@ -223,7 +223,7 @@ svg{overflow:visible}
   <div class="heading-top"><span>OUR OCTOBER TRIP</span><svg aria-hidden="true" viewBox="0 0 90 80"><use href="#mine"/></svg></div>
   <div class="trip-name"><span class="big-word">North Wales</span><span class="night-pill">5 days</span></div>
   <p class="trip-dates">19–23 <span>OCTOBER 2026</span></p>
-  <div class="header-places"><span>Porthmadog</span><i>·</i><span>Beddgelert</span><i>·</i><span>Criccieth</span><br><span>Lake Vyrnwy</span><i>·</i><span>Bala</span><i>·</i><span>Mountain Spirit</span></div>
+  <div class="header-places"><span>Criccieth</span><i>·</i><span>Porthmadog</span><i>·</i><span>Bala</span><br><span>Lake Vyrnwy</span><i>·</i><span>Beddgelert</span><i>·</i><span>Mountain Spirit</span></div>
   <div class="countdown" id="countdown" hidden></div>
 </header>
 
@@ -263,7 +263,7 @@ svg{overflow:visible}
   <ul class="todo" id="todo"></ul>
   <div class="card" style="margin-top:20px"><h3>🎒 What to bring</h3><p class="lead" style="margin:0 0 12px">Suggestions based on this trip — tap to tick as packed, or add your own.</p><div id="pack"></div><div class="add-row"><input id="pack-in" placeholder="Add your own item" maxlength="60" aria-label="Add your own packing item"><button type="button" class="pill-btn" id="pack-add">Add</button></div></div>
   <div class="card" style="margin-top:20px"><h3>Backup options</h3>
-    <div class="backup-item"><span><b>Portmeirion</b><br><small>Fallback if a day changes</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portmeirion">📍 Map</a></div>
+    <div class="backup-item"><span><b>Portmeirion</b><br><small>Portmeirion Shops Office, Penrhyndeudraeth LL48 6ET</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portmeirion+Shops+Office+LL48+6ET">📍 Map</a></div><div class="backup-item"><span><b>Pwllheli Beach</b><br><small>6 Min y Traeth, Pwllheli LL53 5AJ</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pwllheli+Beach+6+Min+y+Traeth+LL53+5AJ">📍 Map</a></div>
     <div class="backup-item"><span><b>Saved Google Maps place</b><br><small>Check the place at the link</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18">🔗 Open</a></div>
   </div>
   <div class="card"><h3>Where we’re staying</h3><b>Haven Hafan y Môr Holiday Park</b><div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Haven+Hafan+y+Mor+Holiday+Park">📍 Map</a></div></div>
@@ -276,35 +276,46 @@ svg{overflow:visible}
 const T=['Mon','Tue','Wed','Thu','Fri'];
 const map=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const days=[
-{date:'19/10',wd:'Mon',title:'Arrival, supplies & railway ticket',icon:'car',summary:'Drive in with one stop on the way, shop at Tesco in Porthmadog, and buy the railway ticket.',tip:'Calendar shows no train service on Mon 19 — check the ticket office hours before relying on buying it in person.',ev:[
+{date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way. Calendar shows no train service on Mon 19, so check ticket office hours.',ev:[
  {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele'],suggest:{
   Shrewsbury:{tag:'Best for a proper break',pts:['Historic market town — plenty of cafés and lunch choices','Riverside / Quarry Park walk to stretch your legs','Good place to rest before the winding Welsh roads'],q:'Shrewsbury town centre'},
   Abergele:{tag:'Best for saving time',pts:['Sits right on the A55 coast road — little or no detour','Quick food stop, with the beach at Pensarn close by','Leaves more daylight for Tesco and the railway ticket'],q:'Abergele'}},
   advice:'Suggestion: pick Shrewsbury if you want a relaxed lunch and a walk; pick Abergele if you would rather keep the day short. Check the live route and traffic on the day.'},
- {id:'d1b',cat:'food',title:'Tesco Superstore',note:'Stop: Porthmadog',addr:'Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU',q:'Tesco Superstore Stryd Fawr Porthmadog LL49 9NU'},
- {id:'d1c',cat:'task',title:'Buy railway ticket',note:'Potential trip: Welsh Highland Heritage Railway',addr:'Porthmadog LL49 9DY',q:'Welsh Highland Heritage Railway Porthmadog LL49 9DY',link:['railway','See train times →']},
- {id:'d1d',cat:'stay',title:'Haven Hafan y Môr Holiday Park',note:'Our living place for the week',q:'Haven Hafan y Môr Holiday Park'}]},
-{date:'20/10',wd:'Tue',title:'Beddgelert & Criccieth',icon:'mine',summary:'Morning swim, Sygun Copper Mine, Beddgelert village, then Criccieth and the Lloyd George Museum.',tip:'Calendar shows the diesel service (5 trains) running today if you fancy a change of plan.',ev:[
+ {id:'d1b',time:'15:30',cat:'stay',title:'Meet at Haven Hafan y Môr Holiday Park',note:'Meeting 15:30–15:45 · then check in',q:'Haven Hafan y Môr Holiday Park'},
+ {id:'d1c',cat:'transport',title:'After check-in → Porthmadog'},
+ {id:'d1d',cat:'food',title:'Tesco Superstore',note:'Stop: Porthmadog',addr:'Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU',q:'Tesco Superstore Stryd Fawr Porthmadog LL49 9NU'},
+ {id:'d1e',cat:'task',title:'Buy railway ticket',note:'Potential trip: Welsh Highland Heritage Railway',addr:'Porthmadog LL49 9DY',q:'Welsh Highland Heritage Railway Porthmadog LL49 9DY',link:['railway','See train times →']}]},
+{date:'20/10',wd:'Tue',title:'Criccieth & Porthmadog',icon:'bala',summary:'Morning swim, Criccieth seafront and the Lloyd George Museum, then Porthmadog harbour, High Street and ice cream.',tip:'Unconfirmed: Blas y Môr (seafood) came from an undated directory — check it is still open. Two Cadwaladers ice cream shops (Criccieth and Porthmadog) — pick one or try both!',ev:[
  {id:'d2a',time:'09:30',cat:'swim',title:'Swimming'},
- {id:'d2b',cat:'transport',title:'Head to Beddgelert'},
- {id:'d2c',cat:'place',title:'Sygun Copper Mine',note:'Beddgelert',q:'Sygun Copper Mine Beddgelert'},
- {id:'d2d',cat:'place',title:'Beddgelert',q:'Beddgelert'},
- {id:'d2e',cat:'transport',title:'On to Criccieth'},
- {id:'d2f',cat:'place',title:'Criccieth',q:'Criccieth'},
- {id:'d2g',cat:'place',title:'Amgueddfa Lloyd George Museum',addr:'Llanystumdwy, Criccieth LL52 0SH',q:'Lloyd George Museum Llanystumdwy Criccieth LL52 0SH'}]},
-{date:'21/10',wd:'Wed',title:'Lake Vyrnwy Dam',icon:'lake',summary:'Swim first, then a lakeside day at the Vyrnwy dam.',tip:'Park at the Hafren Dyfrdwy car park, then walk to the dam.',ev:[
+ {id:'d2b',cat:'transport',title:'Drive to Criccieth'},
+ {id:'d2c',cat:'parking',title:'Criccieth Beach Car Park',addr:'Esplanade, Criccieth LL52 0HZ',q:'Criccieth Beach Car Park Esplanade LL52 0HZ'},
+ {id:'d2d',cat:'food',title:'Dylan’s Criccieth',note:'Lunch? · seafront restaurant',addr:'Maes y Môr, Esplanade, Criccieth LL52 0HU',q:'Dylan\'s Criccieth Maes y Mor Esplanade LL52 0HU'},
+ {id:'d2e',cat:'ice',title:'Cadwaladers (ice cream)',addr:'The Iris, Castle St, Criccieth LL52 0DP',q:'Cadwaladers Criccieth Castle St LL52 0DP'},
+ {id:'d2f',cat:'place',title:'Amgueddfa Lloyd George Museum',addr:'Llanystumdwy, Criccieth LL52 0SH',q:'Lloyd George Museum Llanystumdwy Criccieth LL52 0SH'},
+ {id:'d2g',cat:'transport',title:'On to Porthmadog'},
+ {id:'d2h',cat:'parking',title:'Llyn Bach Pay & Display Car Park',addr:'Llyn Bach, Porthmadog LL49 9DD',q:'Llyn Bach Car Park Porthmadog LL49 9DD'},
+ {id:'d2i',cat:'food',title:'Blas y Môr / Taste of the Sea',note:'Seafood · unconfirmed — check it is open',addr:'82 High St, Porthmadog LL49 9NW',q:'Blas y Môr Taste of the Sea 82 High St Porthmadog LL49 9NW'},
+ {id:'d2j',cat:'ice',title:'Cadwaladers (ice cream)',addr:'43–47 High St, Porthmadog LL49 9LR',q:'Cadwaladers 43-47 High St Porthmadog LL49 9LR'},
+ {id:'d2k',cat:'ice',title:'Cariad Gelato Kiosk (ice cream)',addr:'The kiosk, High St, Porthmadog LL49 9LP',q:'Cariad Gelato Kiosk High St Porthmadog LL49 9LP'},
+ {id:'d2l',cat:'shop',title:'Browsers Bookshop',addr:'73 High St, Porthmadog LL49 9EU',q:'Browsers Bookshop 73 High St Porthmadog LL49 9EU'},
+ {id:'d2m',cat:'place',title:'Maritime Museum',addr:'The Harbour, Porthmadog LL49 9LU',q:'Porthmadog Maritime Museum The Harbour LL49 9LU'}]},
+{date:'21/10',wd:'Wed',title:'Bala & Lake Vyrnwy',icon:'lake',summary:'Swim first, then Bala and its mound, and the Lake Vyrnwy dam.',tip:'Bala and Vyrnwy are a drive apart — start Bala early. Parking at The Green is council pay-and-display; check the tariff board. Lake Vyrnwy can have patchy phone signal.',ev:[
  {id:'d3a',time:'09:30',cat:'swim',title:'Swimming'},
- {id:'d3b',cat:'transport',title:'Drive to Lake Vyrnwy'},
- {id:'d3c',cat:'parking',title:'Hafren Dyfrdwy – Lake Vyrnwy Car Park',addr:'2 Grwn Oer Cottages, Oswestry SY10 0LZ',q:'Hafren Dyfrdwy Lake Vyrnwy Car Park SY10 0LZ'},
- {id:'d3d',cat:'place',title:'Lake Vyrnwy Dam',addr:'15 Abertridwr, Llanwddyn, Oswestry SY10 0LR',q:'15 Abertridwr Llanwddyn Oswestry SY10 0LR'}]},
-{date:'22/10',wd:'Thu',title:'Bala',icon:'bala',summary:'A swim, then a relaxed day at Bala.',tip:'Portmeirion is the backup if the weather turns — see the Prep tab.',ev:[
+ {id:'d3b',cat:'transport',title:'Drive to Bala'},
+ {id:'d3c',cat:'parking',title:'The Green (parking)',addr:'Station Rd, Bala, Gwynedd LL23',q:'The Green car park Bala LL23 7NG'},
+ {id:'d3d',cat:'place',title:'Tomen y Bala',note:'Medieval castle mound',addr:'Bala LL23 7RS',q:'Tomen y Bala LL23 7RS'},
+ {id:'d3e',cat:'transport',title:'Drive to Lake Vyrnwy'},
+ {id:'d3f',cat:'parking',title:'Hafren Dyfrdwy – Lake Vyrnwy Car Park',addr:'2 Grwn Oer Cottages, Oswestry SY10 0LZ',q:'Hafren Dyfrdwy Lake Vyrnwy Car Park SY10 0LZ'},
+ {id:'d3g',cat:'place',title:'Lake Vyrnwy Dam',addr:'15 Abertridwr, Llanwddyn, Oswestry SY10 0LR',q:'15 Abertridwr Llanwddyn Oswestry SY10 0LR'}]},
+{date:'22/10',wd:'Thu',title:'Sygun Copper Mine',icon:'mine',summary:'Swim, then Sygun Copper Mine at Beddgelert, parking at Colwyn Banc.',tip:'Colwyn Banc is council pay-and-display (about £4.60 for up to 6 hours in the 2026 summer band) — check the board. Portmeirion is the backup if the weather turns.',ev:[
  {id:'d4a',time:'09:30',cat:'swim',title:'Swimming'},
- {id:'d4b',cat:'transport',title:'Drive to Bala'},
- {id:'d4c',cat:'place',title:'Bala',q:'Bala Wales'}]},
+ {id:'d4b',cat:'transport',title:'Drive to Beddgelert'},
+ {id:'d4c',cat:'parking',title:'Colwyn Banc Car Park',addr:'A4085, Beddgelert, Penrhyndeudraeth LL55 4UY',q:'Colwyn Banc Car Park Beddgelert LL55 4UY'},
+ {id:'d4d',cat:'place',title:'Sygun Copper Mine',note:'Beddgelert',q:'Sygun Copper Mine Beddgelert'}]},
 {date:'23/10',wd:'Fri',title:'Mountain Spirit',icon:'train',summary:'Ysbryd y Mynydd — a 3-hour, 27-mile return journey on the Ffestiniog & Welsh Highland Railways.',tip:'Prices exclude the 6% online booking fee. Booking online guarantees your seats.',ev:[
  {id:'d5a',cat:'train',title:'Mountain Spirit / Ysbryd y Mynydd',note:'Approx 3 hours · 27 mile return journey',spirit:true,url:'https://www.festrail.co.uk/mountain-spirit/'}]}
 ];
-const catLabel={food:'🛒 Food',parking:'🅿 Car park',swim:'🏊 Swim',task:'📝 Task',stay:'🏡 Stay',place:'📍 Stop',train:'🚂 Train'};
+const catLabel={food:'🍽 Food',ice:'🍦 Ice cream',shop:'📚 Shop',parking:'🅿 Car park',swim:'🏊 Swim',task:'📝 Task',stay:'🏡 Stay',place:'📍 Stop',train:'🚂 Train'};
 const PRICE={adult:49.75,child:5.00,fee:.06};
 
 /* storage (safe) */
