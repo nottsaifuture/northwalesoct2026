@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North Wales Trip - October 2026</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0284c7;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            /* Railway Calendar & Timetable Colors */
+            --steam-orange: #f47b00;
+            --diesel5-blue: #005596;
+            --diesel4-teal: #4dc0c5;
+            --special-red: #b80f0a;
+            --tuition-purple: #6e0dd0;
+            --maroon: #8c1d24;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2.5rem 1.25rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .day-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .day-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .day-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .section-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .section-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .tag-swim { background: #e0f2fe; color: #0369a1; }
+        .tag-food { background: #fef3c7; color: #b45309; }
+        .tag-task { background: #fce7f3; color: #be185d; }
+        .tag-stop { background: #f1f5f9; color: #334155; }
+        .tag-train { background: #ede9fe; color: #6d28d9; }
+
+        .address {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .map-link {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .map-link:hover {
+            text-decoration: underline;
+        }
+
+        ul.places-list {
+            list-style-position: inside;
+            margin-top: 0.5rem;
+        }
+
+        ul.places-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Reconstructed Timetable & Calendar Styles */
+        .railway-widgets {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 680px) {
+            .railway-widgets {
+                grid-template-columns: 1.5fr 1fr;
+                align-items: start;
+            }
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: center;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .timetable td {
+            padding: 0.5rem 0.35rem;
+            font-weight: 700;
+        }
+
+        .row-steam { background: var(--steam-orange); color: #000; }
+        .row-diesel5 { background: var(--diesel5-blue); color: #fff; }
+        .row-diesel4 { background: var(--diesel4-teal); color: #000; font-weight: 500; }
+        .row-special { background: var(--special-red); color: #fff; }
+        .row-tuition { background: var(--tuition-purple); color: #fff; }
+
+        .timetable-note {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.4rem;
+            font-style: italic;
+        }
+
+        .cal-table {
+            width: 100%;
+            max-width: 260px;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        .cal-header {
+            background: #8b0000;
+            color: white;
+            font-weight: 700;
+            padding: 0.35rem;
+        }
+
+        .cal-days th {
+            background: #bdbdbd;
+            color: #000;
+            padding: 0.25rem;
+            font-weight: 700;
+        }
+
+        .cal-table td {
+            padding: 0.3rem;
+            font-weight: 700;
+        }
+
+        .c-blue { background: var(--diesel5-blue); color: white; }
+        .c-orange { background: #f58a33; color: black; }
+        .c-purple { background: var(--tuition-purple); color: white; }
+        .c-teal { background: var(--diesel4-teal); color: black; font-weight: 500; }
+        .c-empty { background: white; color: #757575; font-weight: 400; }
+        .c-highlight { outline: 2px solid #000; position: relative; }
+
+        /* Mountain Spirit Info Box */
+        .ms-card {
+            background: #fffafa;
+            border: 1px solid #f5d0d3;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 0.75rem;
+        }
+
+        .ms-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ms-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .ms-icon {
+            background: var(--maroon);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .ms-text {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .btn-link {
+            display: inline-block;
+            background: var(--maroon);
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-link:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>North Wales Trip Itinerary</h1>
+    <p>19 – 23 October 2026 | Living Place: Haven Hafan y Môr Holiday Park</p>
+</header>
+
+<div class="container">
+
+    <!-- 19/10 -->
+    <div class="day-card">
+        <div class="day-header">
+            <span class="day-badge">19 Oct (Mon)</span>
+            <span class="day-title">Arrival, Supplies & Railway Prep</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">Living Place</span>
+            <p><strong>Haven Hafan y Môr Holiday Park</strong></p>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">En-Route Stopping Options</span>
+            <ul class="places-list">
+                <li><strong>Option 1:</strong> Shrewsbury</li>
+                <li><strong>Option 2:</strong> Abergele</li>
+            </ul>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">Stop: Porthmadog</span><br>
+            <span class="tag tag-food" style="margin-top:0.4rem;">Food</span>
+            <p><strong>Tesco Superstore</strong></p>
+            <div class="address">
+                <span>Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU</span>
+                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Tesco+Superstore+Stryd+Fawr+Porthmadog+LL49+9NU" target="_blank">📍 Google Maps</a>
+            </div>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-task">Task: Buy Railway Ticket</span>
+            <span class="tag tag-train">Potential Trip</span>
+            <p><strong>Welsh Highland Heritage Railway</strong></p>
+            <div class="address">
+                <span>Porthmadog LL49 9DY</span>
+                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Welsh+Highland+Heritage+Railway+Porthmadog+LL49+9DY" target="_blank">📍 Google Maps</a>
+            </div>
+
+            <!-- Reconstructed Timetable & Calendar from your screenshots -->
+            <div class="railway-widgets">
+                <div>
+                    <table class="timetable">
+                        <tr class="row-steam">
+                            <td>Steam Service</td><td>–</td><td>10:15</td><td>11:30</td><td>13:30</td><td>14:45</td><td>16:00</td>
+                        </tr>
+                        <tr class="row-diesel5">
+                            <td>Diesel Service (five trains)</td><td>–</td><td>10:15</td><td>11:30</td><td>13:30</td><td>14:45</td><td>16:00</td>
+                        </tr>
+                        <tr class="row-diesel4">
+                            <td>Diesel Service (four trains)</td><td>–</td><td>10:15</td><td>11:30</td><td>13:30</td><td>14:45</td><td></td>
+                        </tr>
+                        <tr class="row-special">
+                            <td>Special Event</td><td>–</td><td colspan="5">see below</td>
+                        </tr>
+                        <tr class="row-tuition">
+                            <td>Tuition</td><td>–</td><td colspan="5"><span style="font-weight:400;">training and</span> driver experience</td>
+                        </tr>
+                    </table>
+                    <p class="timetable-note">Please note: depending on staff availability, steam or diesel locomotives may be substituted at short notice.</p>
+                </div>
+
+                <div>
+                    <table class="cal-table">
+                        <tr><td colspan="7" class="cal-header">October 2026</td></tr>
+                        <tr class="cal-days">
+                            <th>Sa</th><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="c-empty"></td>
+                            <td class="c-blue">1</td>
+                            <td class="c-blue">2</td>
+                        </tr>
+                        <tr>
+                            <td class="c-blue">3</td>
+                            <td class="c-orange">4</td>
+                            <td class="c-empty">5</td>
+                            <td class="c-empty">6</td>
+                            <td class="c-blue">7</td>
+                            <td class="c-blue">8</td>
+                            <td class="c-empty">9</td>
+                        </tr>
+                        <tr>
+                            <td class="c-blue">10</td>
+                            <td class="c-blue">11</td>
+                            <td class="c-empty">12</td>
+                            <td class="c-empty">13</td>
+                            <td class="c-blue">14</td>
+                            <td class="c-blue">15</td>
+                            <td class="c-empty">16</td>
+                        </tr>
+                        <tr>
+                            <td class="c-purple">17</td>
+                            <td class="c-blue">18</td>
+                            <td class="c-empty">19</td>
+                            <td class="c-blue">20</td>
+                            <td class="c-blue">21</td>
+                            <td class="c-blue">22</td>
+                            <td class="c-blue">23</td>
+                        </tr>
+                        <tr>
+                            <td class="c-blue">24</td>
+                            <td class="c-teal">25</td>
+                            <td class="c-teal">26</td>
+                            <td class="c-teal">27</td>
+                            <td class="c-orange">28</td>
+                            <td class="c-orange">29</td>
+                            <td class="c-teal">30</td>
+                        </tr>
+                        <tr>
+                            <td class="c-teal">31</td>
+                            <td colspan="6" class="c-empty"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 20/10 -->
+    <div class="day-card">
+        <div class="day-header">
+            <span class="day-badge">20 Oct (Tue)</span>
+            <span class="day-title">Beddgelert & Criccieth</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-swim">Swimming: 09:30</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">Itinerary Stops</span>
+            <ul class="places-list">
+                <li>
+                    <strong>Sygun Copper Mine</strong> (Beddgelert)
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Sygun+Copper+Mine+Beddgelert" target="_blank">📍 Map</a>
+                </li>
+                <li>
+                    <strong>Beddgelert</strong>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Beddgelert" target="_blank">📍 Map</a>
+                </li>
+                <li>
+                    <strong>Criccieth</strong>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Criccieth" target="_blank">📍 Map</a>
+                </li>
+                <li>
+                    <strong>Amgueddfa Lloyd George Museum</strong>
+                    <div class="address">
+                        <span>Llanystumdwy, Criccieth LL52 0SH</span>
+                        <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Lloyd+George+Museum+Llanystumdwy+Criccieth+LL52+0SH" target="_blank">📍 Google Maps</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 21/10 -->
+    <div class="day-card">
+        <div class="day-header">
+            <span class="day-badge">21 Oct (Wed)</span>
+            <span class="day-title">Lake Vyrnwy Dam</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-swim">Swimming: 09:30</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">Destination</span>
+            <p><strong>Lake Vyrnwy Dam</strong></p>
+            <div class="address">
+                <span>15 Abertridwr, Llanwddyn, Oswestry SY10 0LR</span>
+                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=15+Abertridwr+Llanwddyn+Oswestry+SY10+0LR" target="_blank">📍 Google Maps</a>
+            </div>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">Car Park</span>
+            <p><strong>Hafren Dyfrdwy – Lake Vyrnwy Car Park</strong></p>
+            <div class="address">
+                <span>2 Grwn Oer Cottages, Oswestry SY10 0LZ</span>
+                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Hafren+Dyfrdwy+Lake+Vyrnwy+Car+Park+SY10+0LZ" target="_blank">📍 Google Maps</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 22/10 -->
+    <div class="day-card">
+        <div class="day-header">
+            <span class="day-badge">22 Oct (Thu)</span>
+            <span class="day-title">Bala</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-swim">Swimming: 09:30</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-stop">Destination</span>
+            <p><strong>Bala</strong></p>
+            <div class="address">
+                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Bala+Wales" target="_blank">📍 Google Maps</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 23/10 -->
+    <div class="day-card">
+        <div class="day-header">
+            <span class="day-badge">23 Oct (Fri)</span>
+            <span class="day-title">Mountain Spirit / Ysbryd y Mynydd</span>
+        </div>
+
+        <div class="section-item">
+            <span class="tag tag-train">Ffestiniog & Welsh Highland Railways</span>
+            <p><strong>MOUNTAIN SPIRIT / YSBRYD Y MYNYDD</strong></p>
+            <a class="btn-link" href="https://www.festrail.co.uk/mountain-spirit/" target="_blank">🔗 Official Website</a>
+
+            <div class="ms-card">
+                <div class="ms-row">
+                    <div class="ms-icon">🕒</div>
+                    <div class="ms-text">Approx 3 hours</div>
+                </div>
+                <div class="ms-row">
+                    <div class="ms-icon">🚩</div>
+                    <div class="ms-text">27 Mile Return Journey</div>
+                </div>
+                <div class="ms-row">
+                    <div class="ms-icon">☕</div>
+                    <div class="ms-text">Standard: No On-Train Catering Service / Gold: At-Seat Service & Welsh Tea option</div>
+                </div>
+                <div class="ms-row">
+                    <div class="ms-icon">£</div>
+                    <div class="ms-text">
+                        Adults: £49.75 per person / Children (Age 3 – 15): £5.00 - (Please note, these prices do not include the 6% online booking fee of total amount. Booking online guarantees your seat/s for the journey)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup -->
+    <div class="day-card" style="border-left: 5px solid var(--secondary);">
+        <div class="day-header" style="border-bottom: none; margin-bottom: 0.5rem; padding-bottom: 0;">
+            <span class="day-title">Backup Options</span>
+        </div>
+        <div class="section-item">
+            <ul class="places-list">
+                <li>
+                    <strong>Portmeirion</strong>
+                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Portmeirion" target="_blank">📍 Google Maps</a>
+                </li>
+                <li>
+                    <strong>Saved Google Maps Place:</strong>
+                    <a class="map-link" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18" target="_blank">🔗 Open Link (maps.app.goo.gl/iq1cAc1qWLmU3fL18)</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
