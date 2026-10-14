@@ -103,6 +103,32 @@ svg{overflow:visible}
 .choice button{border:3px solid var(--ink);border-radius:20px;background:#fff;padding:3px 14px;font-weight:600;transition:.15s}
 .choice button[aria-pressed="true"]{background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
 
+/* stop suggestions */
+.suggest{display:grid;gap:10px;margin-top:12px;width:100%}
+.sg{border:3px solid var(--ink);border-radius:20px;background:#fffdff;padding:11px 14px;transition:.15s}
+.sg.on{background:#fbf3d6;box-shadow:3px 3px 0 var(--ink)}
+.sg h4{margin:0 0 4px;font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.sg h4 em{font-style:normal;font-size:11px;font-weight:700;border:2px solid var(--ink);border-radius:14px;padding:0 8px;background:var(--green)}
+.sg ul{margin:4px 0 8px;padding-left:18px;font-size:13px;color:#6f6660}
+.sg li{margin:2px 0}
+.sg-note{font-size:12px;color:#7a726c;font-style:italic;margin:0}
+/* packing + notes */
+.pack-group{margin-bottom:14px}
+.pack-group h4{margin:0 0 6px;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--ink);border-radius:20px;background:#fff;padding:3px 12px;font-size:14px;transition:.15s}
+.chip[aria-pressed="true"]{background:var(--green);text-decoration:line-through;text-decoration-thickness:2px}
+.add-row{display:flex;gap:8px;margin-top:6px}
+.add-row input,.msg textarea{flex:1;min-width:0;border:3px solid var(--ink);border-radius:16px;padding:8px 12px;background:#fff}
+.msg textarea{width:100%;min-height:90px;resize:vertical;display:block}
+.msg-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.msg-actions .pill-btn,.add-row .pill-btn{font-weight:700;padding:6px 16px;cursor:pointer}
+.msg-actions .main{background:var(--pink)}
+.note-list{list-style:none;padding:0;margin:14px 0 0}
+.note-list li{border:2px solid var(--ink);border-radius:16px;background:#fff;padding:8px 12px;margin-bottom:8px;font-size:14px;display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.note-list small{display:block;color:#8a817c;font-size:11px}
+.note-list button{border:0;background:none;font-size:16px;padding:0 4px}
+.msg-wrap{margin:26px 22px 0}
 /* tips + footer */
 .optional{background:#f4efd9;border:1px solid #d8ccb0;border-radius:14px;padding:12px 14px;margin:6px 22px 18px;font-size:14px}
 .optional strong{display:block;margin-bottom:3px}.optional p{margin:0;color:#71685b}
@@ -235,6 +261,7 @@ svg{overflow:visible}
   <h1>Before we go</h1>
   <p class="lead">Your ticks are saved on this device.</p>
   <ul class="todo" id="todo"></ul>
+  <div class="card" style="margin-top:20px"><h3>🎒 What to bring</h3><p class="lead" style="margin:0 0 12px">Suggestions based on this trip — tap to tick as packed, or add your own.</p><div id="pack"></div><div class="add-row"><input id="pack-in" placeholder="Add your own item" maxlength="60" aria-label="Add your own packing item"><button type="button" class="pill-btn" id="pack-add">Add</button></div></div>
   <div class="card" style="margin-top:20px"><h3>Backup options</h3>
     <div class="backup-item"><span><b>Portmeirion</b><br><small>Fallback if a day changes</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portmeirion">📍 Map</a></div>
     <div class="backup-item"><span><b>Saved Google Maps place</b><br><small>Check the place at the link</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18">🔗 Open</a></div>
@@ -242,6 +269,7 @@ svg{overflow:visible}
   <div class="card"><h3>Where we’re staying</h3><b>Haven Hafan y Môr Holiday Park</b><div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Haven+Hafan+y+Mor+Holiday+Park">📍 Map</a></div></div>
 </section>
 </main>
+<section class="msg-wrap" id="msg"><div class="card msg"><h3>💬 Comments &amp; suggestions</h3><p class="lead" style="margin:0 0 10px">Got a question, idea or change for the trip? Write it here.</p><textarea id="msg-text" maxlength="600" placeholder="e.g. Can we add a café stop in Beddgelert?" aria-label="Your comment or suggestion"></textarea><div class="msg-actions"><button type="button" class="pill-btn main" id="msg-save">Save note</button><button type="button" class="pill-btn" id="msg-share">Share / send</button></div><ul class="note-list" id="notes"></ul></div></section>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -249,7 +277,10 @@ const T=['Mon','Tue','Wed','Thu','Fri'];
 const map=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const days=[
 {date:'19/10',wd:'Mon',title:'Arrival, supplies & railway ticket',icon:'car',summary:'Drive in with one stop on the way, shop at Tesco in Porthmadog, and buy the railway ticket.',tip:'Calendar shows no train service on Mon 19 — check the ticket office hours before relying on buying it in person.',ev:[
- {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele']},
+ {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele'],suggest:{
+  Shrewsbury:{tag:'Best for a proper break',pts:['Historic market town — plenty of cafés and lunch choices','Riverside / Quarry Park walk to stretch your legs','Good place to rest before the winding Welsh roads'],q:'Shrewsbury town centre'},
+  Abergele:{tag:'Best for saving time',pts:['Sits right on the A55 coast road — little or no detour','Quick food stop, with the beach at Pensarn close by','Leaves more daylight for Tesco and the railway ticket'],q:'Abergele'}},
+  advice:'Suggestion: pick Shrewsbury if you want a relaxed lunch and a walk; pick Abergele if you would rather keep the day short. Check the live route and traffic on the day.'},
  {id:'d1b',cat:'food',title:'Tesco Superstore',note:'Stop: Porthmadog',addr:'Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU',q:'Tesco Superstore Stryd Fawr Porthmadog LL49 9NU'},
  {id:'d1c',cat:'task',title:'Buy railway ticket',note:'Potential trip: Welsh Highland Heritage Railway',addr:'Porthmadog LL49 9DY',q:'Welsh Highland Heritage Railway Porthmadog LL49 9DY',link:['railway','See train times →']},
  {id:'d1d',cat:'stay',title:'Haven Hafan y Môr Holiday Park',note:'Our living place for the week',q:'Haven Hafan y Môr Holiday Park'}]},
@@ -277,7 +308,7 @@ const catLabel={food:'🛒 Food',parking:'🅿 Car park',swim:'🏊 Swim',task:'
 const PRICE={adult:49.75,child:5.00,fee:.06};
 
 /* storage (safe) */
-let state={checks:{},stop:'Shrewsbury',todo:{},adults:2,kids:0};
+let state={checks:{},stop:'Shrewsbury',todo:{},adults:2,kids:0,pack:{},custom:[],notes:[]};
 try{Object.assign(state,JSON.parse(localStorage.getItem('nw2026')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('nw2026',JSON.stringify(state))}catch(e){}};
 
@@ -320,7 +351,9 @@ function render(i){
    const desc=el('div','transport-desc',e.title);
    let note=e.note;if(e.choice)note='Stop on the way: '+state.stop;if(note)desc.append(el('small',null,note));
    c.append(desc);
-   if(e.choice){const ch=el('div','choice');ch.style.width='100%';e.options.forEach(o=>{const b=el('button',null,o);b.type='button';b.setAttribute('aria-pressed',String(state.stop===o));b.addEventListener('click',()=>{state.stop=o;save();toast('Stop: '+o);render(sel)});ch.append(b)});c.append(ch)}
+   if(e.choice){const ch=el('div','choice');ch.style.width='100%';e.options.forEach(o=>{const b=el('button',null,o);b.type='button';b.setAttribute('aria-pressed',String(state.stop===o));b.addEventListener('click',()=>{state.stop=o;save();toast('Stop: '+o);render(sel)});ch.append(b)});c.append(ch)
+    const sg=el('div','suggest');e.options.forEach(o=>{const x=e.suggest[o];const card=el('div','sg'+(state.stop===o?' on':''));const h=el('h4',null,o);h.append(el('em',null,x.tag));card.append(h);const ul=el('ul');x.pts.forEach(t=>ul.append(el('li',null,t)));card.append(ul);const acts=el('div','actions');acts.style.marginTop='4px';const a=el('a','pill-btn','📍 Map');a.href=map(x.q);a.target='_blank';a.rel='noopener';const pick=el('button','pill-btn'+(state.stop===o?' on':''),state.stop===o?'✓ Chosen':'Choose this');pick.type='button';pick.addEventListener('click',()=>{state.stop=o;save();toast('Stop: '+o);render(sel)});acts.append(a,pick);card.append(acts);sg.append(card)});
+    sg.append(el('p','sg-note',e.advice));c.append(sg)}
    row.append(c);
   }else{
    const card=el('div','event-card');
@@ -408,15 +441,36 @@ function buildStatic(){
  const a2=el('a','pill-btn','🔗 Official site');a2.href='https://www.festrail.co.uk/mountain-spirit/';a2.target='_blank';a2.rel='noopener';a2.style.marginTop='12px';card.append(a2);
 }
 
+/* packing */
+const PACK=[['🏊 Swimming (09:30 swims on 20, 21, 22)',['Swimsuit x3','Towel','Goggles','Flip-flops','Bag for wet kit']],
+['🌧 Weather & walking',['Waterproof jacket','Warm layers','Hat & gloves','Sturdy walking shoes','Spare dry socks']],
+['🚂 Mountain Spirit (Fri 23)',['Booking confirmation','Warm top for the train','Camera / phone','Snacks & drinks (no catering on Standard)']],
+['🧾 Practical',['Railway ticket / booking ref','Power bank & charger','Offline maps (Lake Vyrnwy)','Coins / card for car parks','Reusable bag for Tesco','Medicines & basics']]];
+function buildPack(){const w=$('#pack');w.replaceChildren();
+ const groups=PACK.slice();if(state.custom.length)groups.push(['✏️ Your own',state.custom]);
+ groups.forEach(([g,items])=>{const d=el('div','pack-group');d.append(el('h4',null,g));const c=el('div','chips');
+  items.forEach(it=>{const b=el('button','chip',it);b.type='button';b.setAttribute('aria-pressed',String(!!state.pack[it]));b.addEventListener('click',()=>{state.pack[it]=!state.pack[it];save();b.setAttribute('aria-pressed',String(!!state.pack[it]))});c.append(b)});
+  d.append(c);w.append(d)})}
+function addPack(){const i=$('#pack-in'),v=i.value.trim();if(!v)return;if(!state.custom.includes(v))state.custom.push(v);i.value='';save();buildPack()}
+$('#pack-add').addEventListener('click',addPack);$('#pack-in').addEventListener('keydown',e=>{if(e.key==='Enter')addPack()});
+
+/* notes */
+function buildNotes(){const u=$('#notes');u.replaceChildren();state.notes.forEach((n,i)=>{const li=el('li');const d=el('div');d.append(el('span',null,n.t),el('small',null,n.d));const x=el('button',null,'✕');x.type='button';x.setAttribute('aria-label','Delete note');x.addEventListener('click',()=>{state.notes.splice(i,1);save();buildNotes()});li.append(d,x);u.append(li)})}
+$('#msg-save').addEventListener('click',()=>{const t=$('#msg-text'),v=t.value.trim();if(!v){toast('Write something first');return}state.notes.unshift({t:v,d:new Date().toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})});t.value='';save();buildNotes();toast('Note saved')});
+$('#msg-share').addEventListener('click',()=>{const v=$('#msg-text').value.trim()||state.notes.map(n=>'• '+n.t).join('\n');if(!v){toast('Write something first');return}
+ const text='North Wales trip 19–23 Oct — comment:\n'+v;
+ if(navigator.share){navigator.share({title:'North Wales trip',text}).catch(()=>{})}
+ else{(navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(()=>toast('Copied — paste it into a message'),()=>{location.href='mailto:?subject='+encodeURIComponent('North Wales trip')+'&body='+encodeURIComponent(text)})}});
+
 /* prepare */
-const TODO=[['t1','Choose the stop on Mon 19','Shrewsbury or Abergele — set it in the Plan tab'],['t2','Buy the railway ticket','Welsh Highland Heritage Railway, Porthmadog'],['t3','Book Mountain Spirit online','Fri 23 Oct · booking online guarantees seats'],['t4','Swimming at 09:30','Tue 20 · Wed 21 · Thu 22'],['t5','Pack for Wales weather','Layers, waterproofs, swimwear'],['t6','Save offline maps','Lake Vyrnwy has patchy signal']];
+const TODO=[['t1','Choose the stop on Mon 19','Shrewsbury or Abergele — set it in the Plan tab'],['t2','Buy the railway ticket','Welsh Highland Heritage Railway, Porthmadog'],['t3','Book Mountain Spirit online','Fri 23 Oct · booking online guarantees seats'],['t4','Swimming at 09:30','Tue 20 · Wed 21 · Thu 22'],['t5','Pack your bag','See the “What to bring” list below'],['t6','Save offline maps','Lake Vyrnwy has patchy signal']];
 function buildTodo(){const u=$('#todo');u.replaceChildren();TODO.forEach(([id,t,s])=>{const li=el('li',state.todo[id]?'has-done':'');const l=el('label');const i=el('input');i.type='checkbox';i.checked=!!state.todo[id];i.addEventListener('change',()=>{state.todo[id]=i.checked;save();li.classList.toggle('has-done',i.checked)});const sp=el('span');sp.append(el('b',null,t),el('small',null,s));
  sp.firstChild.style.display='block';const wrap=el('span');wrap.append(...sp.childNodes);const txt=el('span');txt.append(wrap);l.append(i,txt);li.append(l);u.append(li)})}
 // styles for strike apply on span after input: ensure structure
 function panel(name){document.querySelectorAll('[data-panel]').forEach(b=>{const a=b.dataset.panel===name;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a))});['itinerary','railway','prepare'].forEach(id=>$('#'+id+'-panel').hidden=id!==name);window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>panel(b.dataset.panel)));
 
-buildStatic();buildCal();showService();buildTodo();render(sel);
+buildStatic();buildCal();showService();buildTodo();buildPack();buildNotes();render(sel);
 </script>
 </body>
 </html>
