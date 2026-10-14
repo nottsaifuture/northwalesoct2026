@@ -1,559 +1,422 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>North Wales Trip - October 2026</title>
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #0284c7;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            /* Railway Calendar & Timetable Colors */
-            --steam-orange: #f47b00;
-            --diesel5-blue: #005596;
-            --diesel4-teal: #4dc0c5;
-            --special-red: #b80f0a;
-            --tuition-purple: #6e0dd0;
-            --maroon: #8c1d24;
-        }
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#faf9ef">
+<title>North Wales 5 Days | 19–23 October 2026</title>
+<style>
+:root{--ivory:#faf9ef;--ink:#393533;--pink:#eea096;--lavender:#eee3ee;--yellow:#f2d078;--blue:#abd2e1;--green:#cfe0bd;--purple:#dfd0e9;--line:3px solid var(--ink);--steam:#f47b00;--d5:#005596;--d4:#4dc0c5;--tuition:#6a1fa3}
+*{box-sizing:border-box}
+body{margin:0;background:#e7e4dd;color:var(--ink);font-family:ui-rounded,"Avenir Next","Trebuchet MS",system-ui,sans-serif;line-height:1.55}
+button,a,input{font:inherit}button{color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #9069b2;outline-offset:4px}
+.sheet{max-width:560px;min-height:100vh;margin:0 auto;background:var(--ivory);box-shadow:0 8px 35px #39353315;padding-bottom:30px}
+[hidden]{display:none!important}
+svg{overflow:visible}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+/* header */
+.trip-header{padding:24px 27px 22px;border-bottom:var(--line)}
+.heading-top{display:flex;align-items:center;justify-content:space-between}
+.heading-top>span{font-size:12px;font-weight:700;letter-spacing:.16em;color:#776466}
+.heading-top svg{width:44px;height:40px}
+.trip-name{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:8px 0 10px;line-height:1.05}
+.big-word{font-size:56px;font-weight:900;letter-spacing:-.055em}
+.night-pill{border:var(--line);border-radius:35px;background:var(--pink);padding:9px 16px;font-size:19px;font-weight:700;transform:rotate(-4deg);box-shadow:3px 3px 0 var(--ink)}
+.trip-dates{font-size:22px;margin:0;font-weight:650}
+.trip-dates span{font-size:13px;letter-spacing:.08em;margin-left:5px}
+.header-places{font-size:14px;line-height:1.9;color:#756c69;margin-top:12px;border-top:1px dashed #cdbdb6;padding-top:10px;font-weight:500}
+.header-places i{font-style:normal;margin:0 8px;color:#a06c66}
+.countdown{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:4px 14px;border:var(--line);border-radius:30px;background:var(--yellow);font-weight:700;font-size:14px}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            padding-bottom: 3rem;
-        }
+/* primary nav */
+.primary-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:var(--line);gap:12px}
+.brand-icon{width:40px;height:44px;flex-shrink:0}
+.nav-items{display:flex;gap:6px;align-items:center}
+.nav-items button{border:3px solid transparent;background:none;padding:8px 14px;font-size:18px;border-radius:40px;white-space:nowrap}
+.nav-items .active{border-color:var(--ink);background:var(--pink)}
 
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 2.5rem 1.25rem;
-            text-align: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
+/* date nav */
+.date-nav{display:flex;margin:28px 14px 26px;position:relative;padding-top:3px}
+.date-nav:before{content:"";height:3px;background:var(--ink);position:absolute;top:11px;left:10%;right:10%}
+.date-choice{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;padding:0;position:relative;min-width:0}
+.node{width:20px;height:20px;border:3px solid var(--ink);background:var(--ivory);border-radius:50%;z-index:1;transition:.2s}
+.date-choice.done .node{background:var(--green)}
+.date-icon{height:44px;display:grid;place-items:center;margin:3px 0 4px}
+.date-icon svg{width:36px;height:38px;visibility:hidden;transform:scale(.4);transition:.25s}
+.date-choice[aria-pressed="true"] .date-icon svg{visibility:visible;transform:scale(1)}
+.date-value{font-size:19px;line-height:1.25;padding:1px 9px;border-radius:30px}
+.date-choice[aria-pressed="true"] .date-value{background:var(--pink)}
+.weekday{font-size:14px;color:#827b75}
+.today-dot{font-size:10px;font-weight:800;color:#a06c66;height:12px}
 
-        header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
+/* day title */
+.day-title{display:flex;align-items:center;gap:16px;margin:0 22px 14px;padding:16px;border:var(--line);border-radius:28px;background:var(--lavender)}
+.theme-icon{width:88px;height:76px;display:grid;place-items:center;border:var(--line);border-radius:22px;background:#fffdff;flex-shrink:0}
+.theme-icon svg{width:62px;height:56px}
+.day-title p{font-size:17px;color:#8a7d87;margin:0}
+.day-title h1{font-size:22px;line-height:1.3;font-weight:700;margin:0;overflow-wrap:anywhere}
+.day-summary{font-size:14px!important;line-height:1.55;color:#665a67!important;margin-top:6px!important}
+.progress{margin:0 22px 22px;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700}
+.bar{flex:1;height:14px;border:2px solid var(--ink);border-radius:10px;background:#fffdff;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);width:0;transition:width .35s}
 
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-        }
+/* timeline */
+.timeline{position:relative;margin:0 22px 0 10px}
+.timeline:before{content:"";position:absolute;left:78px;top:15px;bottom:30px;border-left:3px dotted var(--ink)}
+.event{display:grid;grid-template-columns:66px 26px minmax(0,1fr);align-items:start;margin:0 0 22px;animation:rise .35s both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.time{font-size:13px;text-align:right;padding:16px 8px 0 0;white-space:nowrap;color:#827b75}
+.time.known{font-size:18px;color:var(--ink);font-weight:700}
+.marker{width:19px;height:19px;border:3px solid var(--ink);border-radius:50%;background:var(--ivory);margin-top:17px;position:relative;left:6px;transition:.2s}
+.event.checked .marker{background:var(--green)}
+.event-card{border:var(--line);border-radius:25px;background:#fffdff;padding:14px 16px 14px 18px;min-height:64px;transition:.2s}
+.event.checked .event-card{background:#f2f7ec}
+.event.checked h2{text-decoration:line-through;text-decoration-thickness:2px;color:#7a746f}
+.card-top{display:flex;align-items:flex-start;gap:10px}
+.card-main{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0}
+.event-card h2{font-size:20px;line-height:1.35;font-weight:600;margin:0;overflow-wrap:anywhere}
+.tick{width:32px;height:32px;border:3px solid var(--ink);border-radius:50%;background:#fff;flex-shrink:0;display:grid;place-items:center;font-size:16px;line-height:1;padding:0;transition:.2s}
+.event.checked .tick{background:var(--green)}
+.tick:after{content:"";opacity:0}
+.event.checked .tick:after{content:"✓";opacity:1}
+.category{display:inline-block;font-size:12px;border:2px solid var(--ink);border-radius:20px;padding:0 9px;background:var(--lavender);margin-bottom:8px;line-height:1.5}
+.category.parking{background:var(--blue)}.category.food{background:var(--pink)}.category.swim{background:var(--blue)}.category.task{background:var(--yellow)}.category.stay{background:var(--green)}.category.train{background:#f4c9a0}
+.details{overflow:hidden;max-height:0;transition:max-height .3s ease}
+.event-card.open .details{max-height:420px}
+.details p{font-size:14px;line-height:1.6;color:#786f6b;margin:8px 0 0;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pill-btn{display:inline-block;border:2px solid var(--ink);border-radius:20px;background:#fff;padding:2px 12px;font-size:13px;text-decoration:none;color:var(--ink)}
+.pill-btn:hover,.pill-btn.on{background:var(--yellow)}
+.chev{font-size:12px;color:#a09890;margin-top:4px;display:block}
+.event-card.open .chev{transform:rotate(180deg)}
 
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+/* transport */
+.transport .time{padding-top:5px}.transport .marker{margin-top:8px;width:15px;height:15px;left:8px}
+.transport-content{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding-top:2px}
+.badge{display:inline-flex;gap:4px;align-items:center;background:var(--yellow);border:2px solid var(--ink);border-radius:22px;padding:2px 10px;font-size:14px;white-space:nowrap}
+.transport-desc{font-size:15px;flex:1;min-width:130px}
+.transport-desc small{display:block;font-size:12px;color:#817971}
 
-        .day-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-        }
+/* choice chips */
+.choice{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.choice button{border:3px solid var(--ink);border-radius:20px;background:#fff;padding:3px 14px;font-weight:600;transition:.15s}
+.choice button[aria-pressed="true"]{background:var(--yellow);box-shadow:2px 2px 0 var(--ink)}
 
-        .day-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--bg);
-            padding-bottom: 0.75rem;
-            margin-bottom: 1.25rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
+/* tips + footer */
+.optional{background:#f4efd9;border:1px solid #d8ccb0;border-radius:14px;padding:12px 14px;margin:6px 22px 18px;font-size:14px}
+.optional strong{display:block;margin-bottom:3px}.optional p{margin:0;color:#71685b}
+.day-footer{margin:4px 24px;border-top:1px dashed #bbb2a9;padding:14px 0 0;color:#7a736d;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.day-footer button{border:1px solid #8c8173;border-radius:20px;background:#faf9ef;padding:4px 14px;font-size:12px}
+.day-pager{display:flex;justify-content:space-between;margin:14px 22px 0;gap:10px}
+.day-pager button{border:var(--line);border-radius:25px;background:var(--pink);padding:8px 18px;font-weight:700}
+.day-pager button:disabled{opacity:.35;cursor:default}
 
-        .day-badge {
-            background: var(--primary);
-            color: white;
-            padding: 0.35rem 0.85rem;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
+/* panels */
+.panel{margin:26px 22px 0}
+.panel h1{font-size:24px;margin:0 0 6px}
+.panel .lead{font-size:14px;color:#7a726c;margin:0 0 16px}
+.card{border:var(--line);border-radius:25px;background:#fffdff;padding:18px;margin-bottom:18px}
+.card h3{font-size:17px;margin:0 0 10px}
 
-        .day-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-title{grid-column:1/-1;background:#8b0000;color:#fff;text-align:center;font-weight:800;padding:6px;border-radius:12px;letter-spacing:.03em}
+.cal-dow{text-align:center;font-weight:800;font-size:13px;color:#6f6a66;padding:2px 0}
+.cal-day{aspect-ratio:1;border:2px solid transparent;border-radius:12px;font-weight:800;font-size:16px;display:grid;place-items:center;padding:0;position:relative;transition:.15s}
+.cal-day.none{background:#fff;color:#8b8581;font-weight:500;border-color:#e4ded4}
+.cal-day.steam{background:var(--steam);color:#000}.cal-day.d5{background:var(--d5);color:#fff}.cal-day.d4{background:var(--d4);color:#000}.cal-day.tuition{background:var(--tuition);color:#fff}
+.cal-day.blank{visibility:hidden}
+.cal-day.trip:after{content:"";position:absolute;inset:-5px;border:3px solid var(--ink);border-radius:15px;pointer-events:none}
+.cal-day.sel{transform:scale(1.12);box-shadow:3px 3px 0 var(--ink);z-index:2}
+.legend{display:flex;gap:8px 14px;flex-wrap:wrap;margin-top:14px;font-size:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:14px;border-radius:5px;display:inline-block;border:1px solid #0003}
+.service-card{background:var(--lavender)}
+.service-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.service-head b{font-size:19px;display:block;line-height:1.3}.service-head small{color:#6f6670}
+.sw{width:44px;height:44px;border-radius:14px;border:var(--line);flex-shrink:0}
+.trains{display:flex;gap:8px;flex-wrap:wrap}
+.train{border:3px solid var(--ink);border-radius:18px;padding:3px 13px;font-weight:800;font-size:18px;background:#fff;display:inline-flex;align-items:center;gap:6px}
+.train.mine{background:var(--yellow)}
+.train small{font-size:11px;font-weight:600}
+.note{font-size:12px;color:#7a726c;margin:10px 0 0;font-style:italic}
 
-        .section-item {
-            margin-bottom: 1.25rem;
-        }
+/* timetable */
+.tt{width:100%;border-collapse:separate;border-spacing:0 5px;font-size:13px;text-align:center}
+.tt td{padding:7px 4px;font-weight:700}
+.tt td:first-child{border-radius:12px 0 0 12px;text-align:left;padding-left:10px}
+.tt td:last-child{border-radius:0 12px 12px 0}
+.tt tr{transition:.2s}
+.tt tr.dim{opacity:.3}
+.r-steam td{background:var(--steam);color:#000}.r-d5 td{background:var(--d5);color:#fff}.r-d4 td{background:var(--d4);color:#000;font-weight:500}.r-sp td{background:#a51c1c;color:#fff}.r-tu td{background:var(--tuition);color:#fff}
 
-        .section-item:last-child {
-            margin-bottom: 0;
-        }
+/* mountain spirit */
+.facts{display:grid;gap:10px;margin:12px 0}
+.fact{display:flex;gap:12px;align-items:center;font-size:14px;font-weight:600}
+.fact b{width:36px;height:36px;border-radius:50%;background:#8b1d2c;color:#fff;display:grid;place-items:center;flex-shrink:0;font-size:16px}
+.calc{background:#f4efd9;border:2px dashed #cdbb85;border-radius:18px;padding:12px 14px;margin-top:12px}
+.calc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0;font-size:14px}
+.stepper{display:inline-flex;align-items:center;gap:8px}
+.stepper button{width:30px;height:30px;border:2px solid var(--ink);border-radius:50%;background:#fff;font-weight:800;line-height:1;padding:0}
+.stepper output{min-width:20px;text-align:center;font-weight:800}
+.total{border-top:2px solid var(--ink);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:800;font-size:17px}
+.calc small{display:block;color:#7a6e4a;font-size:12px;margin-top:4px}
 
-        .tag {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 0.35rem;
-        }
+/* prepare */
+.todo{list-style:none;padding:0;margin:0}
+.todo li{margin:0 0 10px}
+.todo label{display:flex;gap:12px;align-items:flex-start;border:var(--line);border-radius:20px;background:#fffdff;padding:11px 14px;cursor:pointer;transition:.2s}
+.todo input{width:22px;height:22px;accent-color:#7ba35a;margin-top:2px;flex-shrink:0}
+.todo input:checked+span{text-decoration:line-through;color:#8a847e}
+.todo li.has-done label{background:#f2f7ec}
+.todo small{display:block;color:#7a726c;font-size:12px}
+.backup-item{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:1px dashed #cdbdb6}
+.backup-item:last-child{border:0}
 
-        .tag-swim { background: #e0f2fe; color: #0369a1; }
-        .tag-food { background: #fef3c7; color: #b45309; }
-        .tag-task { background: #fce7f3; color: #be185d; }
-        .tag-stop { background: #f1f5f9; color: #334155; }
-        .tag-train { background: #ede9fe; color: #6d28d9; }
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,40px);background:var(--ink);color:#fff;padding:8px 18px;border-radius:25px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 
-        .address {
-            font-size: 0.9rem;
-            color: var(--muted);
-            margin-top: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .map-link {
-            color: var(--secondary);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .map-link:hover {
-            text-decoration: underline;
-        }
-
-        ul.places-list {
-            list-style-position: inside;
-            margin-top: 0.5rem;
-        }
-
-        ul.places-list li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Reconstructed Timetable & Calendar Styles */
-        .railway-widgets {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        @media (min-width: 680px) {
-            .railway-widgets {
-                grid-template-columns: 1.5fr 1fr;
-                align-items: start;
-            }
-        }
-
-        .timetable {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: center;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .timetable td {
-            padding: 0.5rem 0.35rem;
-            font-weight: 700;
-        }
-
-        .row-steam { background: var(--steam-orange); color: #000; }
-        .row-diesel5 { background: var(--diesel5-blue); color: #fff; }
-        .row-diesel4 { background: var(--diesel4-teal); color: #000; font-weight: 500; }
-        .row-special { background: var(--special-red); color: #fff; }
-        .row-tuition { background: var(--tuition-purple); color: #fff; }
-
-        .timetable-note {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 0.4rem;
-            font-style: italic;
-        }
-
-        .cal-table {
-            width: 100%;
-            max-width: 260px;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: center;
-            border: 1px solid #ccc;
-        }
-
-        .cal-header {
-            background: #8b0000;
-            color: white;
-            font-weight: 700;
-            padding: 0.35rem;
-        }
-
-        .cal-days th {
-            background: #bdbdbd;
-            color: #000;
-            padding: 0.25rem;
-            font-weight: 700;
-        }
-
-        .cal-table td {
-            padding: 0.3rem;
-            font-weight: 700;
-        }
-
-        .c-blue { background: var(--diesel5-blue); color: white; }
-        .c-orange { background: #f58a33; color: black; }
-        .c-purple { background: var(--tuition-purple); color: white; }
-        .c-teal { background: var(--diesel4-teal); color: black; font-weight: 500; }
-        .c-empty { background: white; color: #757575; font-weight: 400; }
-        .c-highlight { outline: 2px solid #000; position: relative; }
-
-        /* Mountain Spirit Info Box */
-        .ms-card {
-            background: #fffafa;
-            border: 1px solid #f5d0d3;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-top: 0.75rem;
-        }
-
-        .ms-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .ms-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .ms-icon {
-            background: var(--maroon);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            flex-shrink: 0;
-            font-size: 1.1rem;
-        }
-
-        .ms-text {
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95rem;
-        }
-
-        .btn-link {
-            display: inline-block;
-            background: var(--maroon);
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .btn-link:hover {
-            opacity: 0.9;
-        }
-    </style>
+@media(max-width:400px){.big-word{font-size:46px}.day-title{margin-left:16px;margin-right:16px;padding:13px;gap:12px}.theme-icon{width:72px;height:68px}.day-title h1{font-size:19px}.timeline{margin-right:14px;margin-left:4px}.event{grid-template-columns:58px 24px minmax(0,1fr)}.timeline:before{left:68px}.time{font-size:12px}.time.known{font-size:15px}.event-card h2{font-size:18px}.nav-items button{padding:7px 10px;font-size:16px}.date-value{font-size:16px;padding:1px 6px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{body{background:#fff}.primary-nav,.day-pager,.tick,.chev,.day-footer button,.toast{display:none}.sheet{box-shadow:none}.event{break-inside:avoid}.details{max-height:none!important}#prepare-panel,#railway-panel{display:block!important}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
 </head>
 <body>
+<svg aria-hidden="true" width="0" height="0" style="position:absolute"><defs>
+<symbol id="suitcase" viewBox="0 0 70 76"><g stroke="#393533" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"><path d="M28 16V7h18v9" fill="none"/><rect x="9" y="17" width="53" height="49" rx="15" fill="#eea096"/><rect x="18" y="29" width="13" height="13" rx="4" fill="#f2d078"/><rect x="41" y="29" width="13" height="13" rx="4" fill="#f2d078"/><path d="M23 67v3m27-3v3"/></g></symbol>
+<symbol id="car" viewBox="0 0 90 80"><g stroke="#393533" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><circle cx="74" cy="14" r="10" fill="#f2d078"/><path d="M12 52l8-20q2-5 8-5h30q6 0 9 5l9 15q5 1 5 7v6H8v-6q0-2 4-2z" fill="#eea096"/><path d="M26 32h16v13H22zM48 32h12l7 13H48z" fill="#fff"/><circle cx="25" cy="64" r="8" fill="#393533"/><circle cx="64" cy="64" r="8" fill="#393533"/></g></symbol>
+<symbol id="mine" viewBox="0 0 90 80"><g stroke="#393533" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M4 74L34 20l18 30 12-16 24 40z" fill="#cfe0bd"/><path d="M34 20l-7 12 7-3 5 8 6-9z" fill="#fff"/><path d="M30 74v-14q0-10 10-10t10 10v14" fill="#393533"/><circle cx="74" cy="14" r="9" fill="#f2d078"/></g></symbol>
+<symbol id="lake" viewBox="0 0 90 80"><g stroke="#393533" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 44q18-24 37-8q18-18 37 8z" fill="#cfe0bd"/><path d="M6 52h78v10q-6 8-12 0q-6 8-13 0t-13 0q-6 8-13 0t-13 0q-6 8-12 0z" fill="#abd2e1"/><path d="M12 72q6-5 12 0t12 0t12 0t12 0t12 0" fill="none" stroke="#7fb3c9"/><circle cx="72" cy="16" r="9" fill="#f2d078"/></g></symbol>
+<symbol id="bala" viewBox="0 0 90 80"><g stroke="#393533" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M6 54h78q-2 18-39 18T6 54z" fill="#abd2e1"/><path d="M44 8v38M44 10l22 30H44z" fill="#eea096"/><path d="M44 18L26 42h18" fill="#f2d078"/><path d="M14 58q8-5 16 0t16 0t16 0" fill="none" stroke="#fff"/></g></symbol>
+<symbol id="train" viewBox="0 0 90 80"><g stroke="#393533" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M20 10h22v14" fill="#dfd0e9"/><rect x="12" y="22" width="62" height="38" rx="9" fill="#eea096"/><rect x="20" y="30" width="18" height="14" rx="3" fill="#fff"/><rect x="46" y="30" width="18" height="14" rx="3" fill="#fff"/><circle cx="26" cy="66" r="7" fill="#f2d078"/><circle cx="58" cy="66" r="7" fill="#f2d078"/><path d="M4 76h82" fill="none"/><path d="M48 6q4-6 10 0t10-2" fill="none" stroke="#b6aeb3"/></g></symbol>
+</defs></svg>
 
-<header>
-    <h1>North Wales Trip Itinerary</h1>
-    <p>19 – 23 October 2026 | Living Place: Haven Hafan y Môr Holiday Park</p>
+<main class="sheet" id="sheet">
+<header class="trip-header">
+  <div class="heading-top"><span>OUR OCTOBER TRIP</span><svg aria-hidden="true" viewBox="0 0 90 80"><use href="#mine"/></svg></div>
+  <div class="trip-name"><span class="big-word">North Wales</span><span class="night-pill">5 days</span></div>
+  <p class="trip-dates">19–23 <span>OCTOBER 2026</span></p>
+  <div class="header-places"><span>Porthmadog</span><i>·</i><span>Beddgelert</span><i>·</i><span>Criccieth</span><br><span>Lake Vyrnwy</span><i>·</i><span>Bala</span><i>·</i><span>Mountain Spirit</span></div>
+  <div class="countdown" id="countdown" hidden></div>
 </header>
 
-<div class="container">
+<nav class="primary-nav" aria-label="Sections"><svg class="brand-icon" aria-hidden="true" viewBox="0 0 70 76"><use href="#suitcase"/></svg>
+  <div class="nav-items">
+    <button type="button" data-panel="itinerary" class="active" aria-pressed="true">Plan</button>
+    <button type="button" data-panel="railway" aria-pressed="false">Trains</button>
+    <button type="button" data-panel="prepare" aria-pressed="false">Prep</button>
+  </div>
+</nav>
 
-    <!-- 19/10 -->
-    <div class="day-card">
-        <div class="day-header">
-            <span class="day-badge">19 Oct (Mon)</span>
-            <span class="day-title">Arrival, Supplies & Railway Prep</span>
-        </div>
+<section id="itinerary-panel">
+  <nav class="date-nav" id="date-nav" aria-label="Choose a day"></nav>
+  <section class="day-title" aria-labelledby="daily-title">
+    <div class="theme-icon"><svg aria-hidden="true" viewBox="0 0 90 80" id="theme"><use href="#car"/></svg></div>
+    <div><p id="day-number">Day 1</p><h1 id="daily-title"></h1><p id="day-summary" class="day-summary"></p></div>
+  </section>
+  <div class="progress"><span id="progress-text">0 / 0 done</span><div class="bar"><i id="bar"></i></div></div>
+  <div class="timeline" id="timeline"></div>
+  <aside class="optional"><strong>Good to know</strong><p id="optional-note"></p></aside>
+  <div class="day-pager"><button type="button" id="prev">← Previous</button><button type="button" id="next">Next →</button></div>
+  <footer class="day-footer"><span>“TBC” = time not set yet. Tap a card for address &amp; map. Tap ○ to tick off.</span><button type="button" id="reset">Reset ticks</button></footer>
+</section>
 
-        <div class="section-item">
-            <span class="tag tag-stop">Living Place</span>
-            <p><strong>Haven Hafan y Môr Holiday Park</strong></p>
-        </div>
+<section class="panel" id="railway-panel" hidden>
+  <h1>Welsh Highland Heritage Railway</h1>
+  <p class="lead">Porthmadog LL49 9DY · tap a date to see that day’s trains (read from your timetable &amp; calendar screenshots).</p>
+  <div class="card"><div class="cal" id="cal"></div><div class="legend" id="legend"></div></div>
+  <div class="card service-card" id="service"></div>
+  <div class="card"><h3>Timetable</h3><table class="tt" id="tt"></table><p class="note">Please note: depending on staff availability, steam or diesel locomotives may be substituted at short notice.</p></div>
+  <div class="card" id="spirit-card"></div>
+</section>
 
-        <div class="section-item">
-            <span class="tag tag-stop">En-Route Stopping Options</span>
-            <ul class="places-list">
-                <li><strong>Option 1:</strong> Shrewsbury</li>
-                <li><strong>Option 2:</strong> Abergele</li>
-            </ul>
-        </div>
+<section class="panel" id="prepare-panel" hidden>
+  <h1>Before we go</h1>
+  <p class="lead">Your ticks are saved on this device.</p>
+  <ul class="todo" id="todo"></ul>
+  <div class="card" style="margin-top:20px"><h3>Backup options</h3>
+    <div class="backup-item"><span><b>Portmeirion</b><br><small>Fallback if a day changes</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portmeirion">📍 Map</a></div>
+    <div class="backup-item"><span><b>Saved Google Maps place</b><br><small>Check the place at the link</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18">🔗 Open</a></div>
+  </div>
+  <div class="card"><h3>Where we’re staying</h3><b>Haven Hafan y Môr Holiday Park</b><div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Haven+Hafan+y+Mor+Holiday+Park">📍 Map</a></div></div>
+</section>
+</main>
+<div class="toast" id="toast" role="status"></div>
 
-        <div class="section-item">
-            <span class="tag tag-stop">Stop: Porthmadog</span><br>
-            <span class="tag tag-food" style="margin-top:0.4rem;">Food</span>
-            <p><strong>Tesco Superstore</strong></p>
-            <div class="address">
-                <span>Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU</span>
-                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Tesco+Superstore+Stryd+Fawr+Porthmadog+LL49+9NU" target="_blank">📍 Google Maps</a>
-            </div>
-        </div>
+<script>
+const T=['Mon','Tue','Wed','Thu','Fri'];
+const map=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const days=[
+{date:'19/10',wd:'Mon',title:'Arrival, supplies & railway ticket',icon:'car',summary:'Drive in with one stop on the way, shop at Tesco in Porthmadog, and buy the railway ticket.',tip:'Calendar shows no train service on Mon 19 — check the ticket office hours before relying on buying it in person.',ev:[
+ {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele']},
+ {id:'d1b',cat:'food',title:'Tesco Superstore',note:'Stop: Porthmadog',addr:'Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU',q:'Tesco Superstore Stryd Fawr Porthmadog LL49 9NU'},
+ {id:'d1c',cat:'task',title:'Buy railway ticket',note:'Potential trip: Welsh Highland Heritage Railway',addr:'Porthmadog LL49 9DY',q:'Welsh Highland Heritage Railway Porthmadog LL49 9DY',link:['railway','See train times →']},
+ {id:'d1d',cat:'stay',title:'Haven Hafan y Môr Holiday Park',note:'Our living place for the week',q:'Haven Hafan y Môr Holiday Park'}]},
+{date:'20/10',wd:'Tue',title:'Beddgelert & Criccieth',icon:'mine',summary:'Morning swim, Sygun Copper Mine, Beddgelert village, then Criccieth and the Lloyd George Museum.',tip:'Calendar shows the diesel service (5 trains) running today if you fancy a change of plan.',ev:[
+ {id:'d2a',time:'09:30',cat:'swim',title:'Swimming'},
+ {id:'d2b',cat:'transport',title:'Head to Beddgelert'},
+ {id:'d2c',cat:'place',title:'Sygun Copper Mine',note:'Beddgelert',q:'Sygun Copper Mine Beddgelert'},
+ {id:'d2d',cat:'place',title:'Beddgelert',q:'Beddgelert'},
+ {id:'d2e',cat:'transport',title:'On to Criccieth'},
+ {id:'d2f',cat:'place',title:'Criccieth',q:'Criccieth'},
+ {id:'d2g',cat:'place',title:'Amgueddfa Lloyd George Museum',addr:'Llanystumdwy, Criccieth LL52 0SH',q:'Lloyd George Museum Llanystumdwy Criccieth LL52 0SH'}]},
+{date:'21/10',wd:'Wed',title:'Lake Vyrnwy Dam',icon:'lake',summary:'Swim first, then a lakeside day at the Vyrnwy dam.',tip:'Park at the Hafren Dyfrdwy car park, then walk to the dam.',ev:[
+ {id:'d3a',time:'09:30',cat:'swim',title:'Swimming'},
+ {id:'d3b',cat:'transport',title:'Drive to Lake Vyrnwy'},
+ {id:'d3c',cat:'parking',title:'Hafren Dyfrdwy – Lake Vyrnwy Car Park',addr:'2 Grwn Oer Cottages, Oswestry SY10 0LZ',q:'Hafren Dyfrdwy Lake Vyrnwy Car Park SY10 0LZ'},
+ {id:'d3d',cat:'place',title:'Lake Vyrnwy Dam',addr:'15 Abertridwr, Llanwddyn, Oswestry SY10 0LR',q:'15 Abertridwr Llanwddyn Oswestry SY10 0LR'}]},
+{date:'22/10',wd:'Thu',title:'Bala',icon:'bala',summary:'A swim, then a relaxed day at Bala.',tip:'Portmeirion is the backup if the weather turns — see the Prep tab.',ev:[
+ {id:'d4a',time:'09:30',cat:'swim',title:'Swimming'},
+ {id:'d4b',cat:'transport',title:'Drive to Bala'},
+ {id:'d4c',cat:'place',title:'Bala',q:'Bala Wales'}]},
+{date:'23/10',wd:'Fri',title:'Mountain Spirit',icon:'train',summary:'Ysbryd y Mynydd — a 3-hour, 27-mile return journey on the Ffestiniog & Welsh Highland Railways.',tip:'Prices exclude the 6% online booking fee. Booking online guarantees your seats.',ev:[
+ {id:'d5a',cat:'train',title:'Mountain Spirit / Ysbryd y Mynydd',note:'Approx 3 hours · 27 mile return journey',spirit:true,url:'https://www.festrail.co.uk/mountain-spirit/'}]}
+];
+const catLabel={food:'🛒 Food',parking:'🅿 Car park',swim:'🏊 Swim',task:'📝 Task',stay:'🏡 Stay',place:'📍 Stop',train:'🚂 Train'};
+const PRICE={adult:49.75,child:5.00,fee:.06};
 
-        <div class="section-item">
-            <span class="tag tag-task">Task: Buy Railway Ticket</span>
-            <span class="tag tag-train">Potential Trip</span>
-            <p><strong>Welsh Highland Heritage Railway</strong></p>
-            <div class="address">
-                <span>Porthmadog LL49 9DY</span>
-                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Welsh+Highland+Heritage+Railway+Porthmadog+LL49+9DY" target="_blank">📍 Google Maps</a>
-            </div>
+/* storage (safe) */
+let state={checks:{},stop:'Shrewsbury',todo:{},adults:2,kids:0};
+try{Object.assign(state,JSON.parse(localStorage.getItem('nw2026')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('nw2026',JSON.stringify(state))}catch(e){}};
 
-            <!-- Reconstructed Timetable & Calendar from your screenshots -->
-            <div class="railway-widgets">
-                <div>
-                    <table class="timetable">
-                        <tr class="row-steam">
-                            <td>Steam Service</td><td>–</td><td>10:15</td><td>11:30</td><td>13:30</td><td>14:45</td><td>16:00</td>
-                        </tr>
-                        <tr class="row-diesel5">
-                            <td>Diesel Service (five trains)</td><td>–</td><td>10:15</td><td>11:30</td><td>13:30</td><td>14:45</td><td>16:00</td>
-                        </tr>
-                        <tr class="row-diesel4">
-                            <td>Diesel Service (four trains)</td><td>–</td><td>10:15</td><td>11:30</td><td>13:30</td><td>14:45</td><td></td>
-                        </tr>
-                        <tr class="row-special">
-                            <td>Special Event</td><td>–</td><td colspan="5">see below</td>
-                        </tr>
-                        <tr class="row-tuition">
-                            <td>Tuition</td><td>–</td><td colspan="5"><span style="font-weight:400;">training and</span> driver experience</td>
-                        </tr>
-                    </table>
-                    <p class="timetable-note">Please note: depending on staff availability, steam or diesel locomotives may be substituted at short notice.</p>
-                </div>
+const $=s=>document.querySelector(s);
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),1800)}
+const dayEvents=d=>d.ev.filter(e=>e.cat!=='transport');
 
-                <div>
-                    <table class="cal-table">
-                        <tr><td colspan="7" class="cal-header">October 2026</td></tr>
-                        <tr class="cal-days">
-                            <th>Sa</th><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th>
-                        </tr>
-                        <tr>
-                            <td colspan="5" class="c-empty"></td>
-                            <td class="c-blue">1</td>
-                            <td class="c-blue">2</td>
-                        </tr>
-                        <tr>
-                            <td class="c-blue">3</td>
-                            <td class="c-orange">4</td>
-                            <td class="c-empty">5</td>
-                            <td class="c-empty">6</td>
-                            <td class="c-blue">7</td>
-                            <td class="c-blue">8</td>
-                            <td class="c-empty">9</td>
-                        </tr>
-                        <tr>
-                            <td class="c-blue">10</td>
-                            <td class="c-blue">11</td>
-                            <td class="c-empty">12</td>
-                            <td class="c-empty">13</td>
-                            <td class="c-blue">14</td>
-                            <td class="c-blue">15</td>
-                            <td class="c-empty">16</td>
-                        </tr>
-                        <tr>
-                            <td class="c-purple">17</td>
-                            <td class="c-blue">18</td>
-                            <td class="c-empty">19</td>
-                            <td class="c-blue">20</td>
-                            <td class="c-blue">21</td>
-                            <td class="c-blue">22</td>
-                            <td class="c-blue">23</td>
-                        </tr>
-                        <tr>
-                            <td class="c-blue">24</td>
-                            <td class="c-teal">25</td>
-                            <td class="c-teal">26</td>
-                            <td class="c-teal">27</td>
-                            <td class="c-orange">28</td>
-                            <td class="c-orange">29</td>
-                            <td class="c-teal">30</td>
-                        </tr>
-                        <tr>
-                            <td class="c-teal">31</td>
-                            <td colspan="6" class="c-empty"></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+/* countdown & today */
+const start=new Date(2026,9,19),now=new Date();
+const todayIdx=(()=>{const n=new Date(now.getFullYear(),now.getMonth(),now.getDate());const i=Math.round((n-start)/864e5);return i>=0&&i<5?i:-1})();
+(function(){const c=$('#countdown');const diff=Math.ceil((start-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/864e5);
+ if(diff>0){c.textContent='⏳ '+diff+' day'+(diff>1?'s':'')+' to go';c.hidden=false}
+ else if(todayIdx>=0){c.textContent='🎒 Day '+(todayIdx+1)+' of 5 — enjoy!';c.hidden=false}})();
 
-    <!-- 20/10 -->
-    <div class="day-card">
-        <div class="day-header">
-            <span class="day-badge">20 Oct (Tue)</span>
-            <span class="day-title">Beddgelert & Criccieth</span>
-        </div>
+/* date nav */
+let sel=Math.max(todayIdx,0);
+const nav=$('#date-nav');
+days.forEach((d,i)=>{const b=el('button','date-choice');b.type='button';b.dataset.i=i;b.setAttribute('aria-label',d.date+' '+d.wd);
+ b.innerHTML='<span class="today-dot">'+(i===todayIdx?'TODAY':'')+'</span><span class="node"></span><span class="date-icon"><svg viewBox="0 0 70 76"><use href="#suitcase"/></svg></span><span class="date-value">'+d.date.slice(0,2)+'</span><span class="weekday">'+d.wd+'</span>';
+ b.addEventListener('click',()=>render(i));nav.append(b)});
 
-        <div class="section-item">
-            <span class="tag tag-swim">Swimming: 09:30</span>
-        </div>
+function dayProgress(d){const list=dayEvents(d);return[list.filter(e=>state.checks[e.id]).length,list.length]}
 
-        <div class="section-item">
-            <span class="tag tag-stop">Itinerary Stops</span>
-            <ul class="places-list">
-                <li>
-                    <strong>Sygun Copper Mine</strong> (Beddgelert)
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Sygun+Copper+Mine+Beddgelert" target="_blank">📍 Map</a>
-                </li>
-                <li>
-                    <strong>Beddgelert</strong>
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Beddgelert" target="_blank">📍 Map</a>
-                </li>
-                <li>
-                    <strong>Criccieth</strong>
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Criccieth" target="_blank">📍 Map</a>
-                </li>
-                <li>
-                    <strong>Amgueddfa Lloyd George Museum</strong>
-                    <div class="address">
-                        <span>Llanystumdwy, Criccieth LL52 0SH</span>
-                        <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Lloyd+George+Museum+Llanystumdwy+Criccieth+LL52+0SH" target="_blank">📍 Google Maps</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
+function render(i){
+ sel=i;const d=days[i];
+ document.querySelectorAll('.date-choice').forEach((b,k)=>{b.setAttribute('aria-pressed',String(k===i));const[x,y]=dayProgress(days[k]);b.classList.toggle('done',x===y&&y>0)});
+ $('#day-number').textContent='Day '+(i+1)+' · '+d.date;
+ $('#daily-title').textContent=d.title;$('#day-summary').textContent=d.summary;$('#optional-note').textContent=d.tip;
+ $('#theme use').setAttribute('href','#'+d.icon);
+ $('#prev').disabled=i===0;$('#next').disabled=i===days.length-1;
+ updateProgress();
+ const tl=$('#timeline');tl.replaceChildren();
+ d.ev.forEach((e,k)=>{
+  const row=el('article','event'+(e.cat==='transport'?' transport':'')+(state.checks[e.id]?' checked':''));row.style.animationDelay=k*45+'ms';
+  row.append(el('div','time'+(e.time?' known':''),e.time||'TBC'));
+  row.append(Object.assign(el('span','marker'),{ariaHidden:'true'}));
+  if(e.cat==='transport'){
+   const c=el('div','transport-content');c.append(el('span','badge','🚗 Travel'));
+   const desc=el('div','transport-desc',e.title);
+   let note=e.note;if(e.choice)note='Stop on the way: '+state.stop;if(note)desc.append(el('small',null,note));
+   c.append(desc);
+   if(e.choice){const ch=el('div','choice');ch.style.width='100%';e.options.forEach(o=>{const b=el('button',null,o);b.type='button';b.setAttribute('aria-pressed',String(state.stop===o));b.addEventListener('click',()=>{state.stop=o;save();toast('Stop: '+o);render(sel)});ch.append(b)});c.append(ch)}
+   row.append(c);
+  }else{
+   const card=el('div','event-card');
+   const top=el('div','card-top');
+   const main=el('button','card-main');main.type='button';
+   main.append(el('span','category '+e.cat,catLabel[e.cat]||'📍 Stop'));main.append(el('h2',null,e.title));
+   if(e.note)main.append(Object.assign(el('p',null,e.note),{style:'font-size:13px;color:#8a817c;margin:3px 0 0'}));
+   const hasDetails=e.addr||e.q||e.spirit||e.link;
+   if(hasDetails)main.append(el('span','chev','▼'));
+   const tick=el('button','tick');tick.type='button';tick.setAttribute('aria-label','Mark '+e.title+' as done');
+   tick.addEventListener('click',()=>{state.checks[e.id]=!state.checks[e.id];save();row.classList.toggle('checked',!!state.checks[e.id]);updateProgress();syncDone();if(state.checks[e.id]&&dayProgress(d)[0]===dayProgress(d)[1])toast('Day complete 🎉')});
+   top.append(main,tick);card.append(top);
+   if(hasDetails){
+    const det=el('div','details');
+    if(e.addr)det.append(el('p',null,e.addr));
+    if(e.spirit)det.append(spiritBlock());
+    const acts=el('div','actions');
+    if(e.q){const a=el('a','pill-btn','📍 Map');a.href=map(e.q);a.target='_blank';a.rel='noopener';acts.append(a)}
+    if(e.addr||e.q){const cp=el('button','pill-btn','Copy address');cp.type='button';cp.addEventListener('click',()=>{const txt=e.addr||e.title;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Address copied'),()=>toast('Copy not available'))});acts.append(cp)}
+    if(e.url){const a=el('a','pill-btn','🔗 Official site');a.href=e.url;a.target='_blank';a.rel='noopener';acts.append(a)}
+    if(e.link){const b=el('button','pill-btn',e.link[1]);b.type='button';b.addEventListener('click',()=>panel(e.link[0]));acts.append(b)}
+    det.append(acts);card.append(det);
+    main.addEventListener('click',()=>{card.classList.toggle('open')});
+    if(e.spirit)card.classList.add('open');
+   }
+   row.append(card);
+  }
+  tl.append(row)});
+}
+function syncDone(){document.querySelectorAll('.date-choice').forEach((b,k)=>{const[x,y]=dayProgress(days[k]);b.classList.toggle('done',x===y&&y>0)})}
+function updateProgress(){const[x,y]=dayProgress(days[sel]);$('#progress-text').textContent=x+' / '+y+' done';$('#bar').style.width=(y?x/y*100:0)+'%'}
+$('#prev').addEventListener('click',()=>render(sel-1));$('#next').addEventListener('click',()=>render(sel+1));
+$('#reset').addEventListener('click',()=>{if(confirm('Clear all ticks?')){state.checks={};save();render(sel);toast('Ticks cleared')}});
 
-    <!-- 21/10 -->
-    <div class="day-card">
-        <div class="day-header">
-            <span class="day-badge">21 Oct (Wed)</span>
-            <span class="day-title">Lake Vyrnwy Dam</span>
-        </div>
+/* mountain spirit price calculator */
+function spiritBlock(){
+ const w=el('div');
+ const f=el('div','facts');[['🕒','Approx 3 hours'],['🚩','27 mile return journey'],['☕','Standard: no on-train catering · Gold: at-seat service & Welsh tea option'],['£','Adults £49.75 · Children (3–15) £5.00']].forEach(([i,t])=>{const r=el('div','fact');r.append(el('b',null,i),el('span',null,t));f.append(r)});
+ w.append(f);
+ const c=el('div','calc');c.innerHTML='<div class="calc-row"><span>Adults</span><span class="stepper"><button type="button" data-k="adults" data-d="-1" aria-label="Fewer adults">−</button><output id="o-adults"></output><button type="button" data-k="adults" data-d="1" aria-label="More adults">+</button></span></div><div class="calc-row"><span>Children 3–15</span><span class="stepper"><button type="button" data-k="kids" data-d="-1" aria-label="Fewer children">−</button><output id="o-kids"></output><button type="button" data-k="kids" data-d="1" aria-label="More children">+</button></span></div><div class="calc-row"><span>Online booking fee (6%)</span><b id="o-fee"></b></div><div class="total"><span>Estimated total</span><span id="o-total"></span></div><small>Estimate only — check the final price on the booking page.</small>';
+ c.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();const k=b.dataset.k;state[k]=Math.max(0,Math.min(12,state[k]+Number(b.dataset.d)));save();document.querySelectorAll('.calc').forEach(calc)}));
+ c.addEventListener('click',ev=>ev.stopPropagation());
+ w.append(c);calc(c);return w}
+function calc(c){const sub=state.adults*PRICE.adult+state.kids*PRICE.child,fee=sub*PRICE.fee;
+ c.querySelector('#o-adults').textContent=state.adults;c.querySelector('#o-kids').textContent=state.kids;
+ c.querySelector('#o-fee').textContent='£'+fee.toFixed(2);c.querySelector('#o-total').textContent='£'+(sub+fee).toFixed(2)}
 
-        <div class="section-item">
-            <span class="tag tag-swim">Swimming: 09:30</span>
-        </div>
+/* railway panel */
+const SVC={
+ steam:{name:'Steam service',sub:'Steam locomotive hauled',color:'var(--steam)',times:['10:15','11:30','13:30','14:45','16:00']},
+ d5:{name:'Diesel service · five trains',sub:'Most days this month',color:'var(--d5)',times:['10:15','11:30','13:30','14:45','16:00']},
+ d4:{name:'Diesel service · four trains',sub:'Late October',color:'var(--d4)',times:['10:15','11:30','13:30','14:45']},
+ tuition:{name:'Tuition',sub:'Training & driver experience',color:'var(--tuition)',times:[]},
+ none:{name:'No service shown',sub:'White date on the calendar',color:'#fff',times:[]}};
+const cal={1:'d5',2:'d5',3:'d5',4:'steam',7:'d5',8:'d5',10:'d5',11:'d5',14:'d5',15:'d5',17:'tuition',18:'d5',20:'d5',21:'d5',22:'d5',23:'d5',24:'d4',25:'d4',26:'d4',27:'d4',28:'steam',29:'steam',30:'d4',31:'d4'};
+let calSel=20;
+function buildCal(){
+ const g=$('#cal');g.replaceChildren();g.append(el('div','cal-title','October 2026'));
+ ['Sa','Su','Mo','Tu','We','Th','Fr'].forEach(x=>g.append(el('div','cal-dow',x)));
+ for(let i=0;i<5;i++)g.append(el('div','cal-day blank'));
+ for(let n=1;n<=31;n++){const t=cal[n]||'none';const b=el('button','cal-day '+t+(n>=19&&n<=23?' trip':'')+(n===calSel?' sel':''),String(n));b.type='button';
+  b.setAttribute('aria-label','October '+n+', '+SVC[t].name);b.addEventListener('click',()=>{calSel=n;buildCal();showService()});g.append(b)}
+}
+function showService(){
+ const t=cal[calSel]||'none',s=SVC[t],box=$('#service');box.replaceChildren();
+ const h=el('div','service-head');const sw=el('span','sw');sw.style.background=s.color;
+ const txt=el('div');txt.innerHTML='<small>Fri 2 Oct… </small>';
+ const dow=['Sa','Su','Mo','Tu','We','Th','Fr'];const wdName=['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'][(calSel+4)%7];
+ txt.innerHTML='';const sm=el('small',null,wdName+' '+calSel+' October'+(calSel>=19&&calSel<=23?' · on our trip':''));const b=el('b',null,s.name);txt.append(sm,b);
+ h.append(sw,txt);box.append(h);
+ if(s.times.length){const tr=el('div','trains');s.times.forEach(x=>{const e=el('span','train',x);e.append(el('small',null,'dep.'));tr.append(e)});box.append(tr);
+  box.append(el('p','note',calSel>=19&&calSel<=23?'Same five departures every day we are here (20–23).':'Departure times from your timetable screenshot.'))}
+ else box.append(el('p','note',t==='tuition'?'No passenger trains — training & driver experience.':'No train shown for this date. On our trip, Mon 19 is a no-service day.'));
+ document.querySelectorAll('#tt tr').forEach(r=>{r.classList.toggle('dim',!!r.dataset.k&&r.dataset.k!==t&&!(t==='none'&&false))});
+}
+function buildStatic(){
+ $('#legend').innerHTML='<span><i style="background:var(--steam)"></i>Steam</span><span><i style="background:var(--d5)"></i>Diesel (5)</span><span><i style="background:var(--d4)"></i>Diesel (4)</span><span><i style="background:var(--tuition)"></i>Tuition</span><span><i style="background:#fff"></i>None</span><span><i style="border:2px solid var(--ink);background:none"></i>Our trip</span>';
+ const rows=[['steam','r-steam','Steam Service',['–','10:15','11:30','13:30','14:45','16:00']],['d5','r-d5','Diesel (five trains)',['–','10:15','11:30','13:30','14:45','16:00']],['d4','r-d4','Diesel (four trains)',['–','10:15','11:30','13:30','14:45','']]];
+ const tt=$('#tt');
+ rows.forEach(([k,c,n,v])=>{const r=el('tr',c);r.dataset.k=k;r.append(el('td',null,n));v.forEach(x=>r.append(el('td',null,x)));tt.append(r)});
+ const sp=el('tr','r-sp');const a=el('td',null,'Special Event');const b=el('td',null,'–');const c=el('td',null,'see below');c.colSpan=5;sp.append(a,b,c);tt.append(sp);
+ const tu=el('tr','r-tu');tu.dataset.k='tuition';const t1=el('td',null,'Tuition'),t2=el('td',null,'–'),t3=el('td',null,'training and driver experience');t3.colSpan=5;tu.append(t1,t2,t3);tt.append(tu);
+ const card=$('#spirit-card');card.innerHTML='<h3>🚂 Fri 23 Oct · Mountain Spirit</h3><p style="margin:0;font-size:14px;color:#6f6670">Ffestiniog &amp; Welsh Highland Railways — Ysbryd y Mynydd</p>';
+ card.append(spiritBlock());
+ const a2=el('a','pill-btn','🔗 Official site');a2.href='https://www.festrail.co.uk/mountain-spirit/';a2.target='_blank';a2.rel='noopener';a2.style.marginTop='12px';card.append(a2);
+}
 
-        <div class="section-item">
-            <span class="tag tag-stop">Destination</span>
-            <p><strong>Lake Vyrnwy Dam</strong></p>
-            <div class="address">
-                <span>15 Abertridwr, Llanwddyn, Oswestry SY10 0LR</span>
-                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=15+Abertridwr+Llanwddyn+Oswestry+SY10+0LR" target="_blank">📍 Google Maps</a>
-            </div>
-        </div>
+/* prepare */
+const TODO=[['t1','Choose the stop on Mon 19','Shrewsbury or Abergele — set it in the Plan tab'],['t2','Buy the railway ticket','Welsh Highland Heritage Railway, Porthmadog'],['t3','Book Mountain Spirit online','Fri 23 Oct · booking online guarantees seats'],['t4','Swimming at 09:30','Tue 20 · Wed 21 · Thu 22'],['t5','Pack for Wales weather','Layers, waterproofs, swimwear'],['t6','Save offline maps','Lake Vyrnwy has patchy signal']];
+function buildTodo(){const u=$('#todo');u.replaceChildren();TODO.forEach(([id,t,s])=>{const li=el('li',state.todo[id]?'has-done':'');const l=el('label');const i=el('input');i.type='checkbox';i.checked=!!state.todo[id];i.addEventListener('change',()=>{state.todo[id]=i.checked;save();li.classList.toggle('has-done',i.checked)});const sp=el('span');sp.append(el('b',null,t),el('small',null,s));
+ sp.firstChild.style.display='block';const wrap=el('span');wrap.append(...sp.childNodes);const txt=el('span');txt.append(wrap);l.append(i,txt);li.append(l);u.append(li)})}
+// styles for strike apply on span after input: ensure structure
+function panel(name){document.querySelectorAll('[data-panel]').forEach(b=>{const a=b.dataset.panel===name;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a))});['itinerary','railway','prepare'].forEach(id=>$('#'+id+'-panel').hidden=id!==name);window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>panel(b.dataset.panel)));
 
-        <div class="section-item">
-            <span class="tag tag-stop">Car Park</span>
-            <p><strong>Hafren Dyfrdwy – Lake Vyrnwy Car Park</strong></p>
-            <div class="address">
-                <span>2 Grwn Oer Cottages, Oswestry SY10 0LZ</span>
-                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Hafren+Dyfrdwy+Lake+Vyrnwy+Car+Park+SY10+0LZ" target="_blank">📍 Google Maps</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 22/10 -->
-    <div class="day-card">
-        <div class="day-header">
-            <span class="day-badge">22 Oct (Thu)</span>
-            <span class="day-title">Bala</span>
-        </div>
-
-        <div class="section-item">
-            <span class="tag tag-swim">Swimming: 09:30</span>
-        </div>
-
-        <div class="section-item">
-            <span class="tag tag-stop">Destination</span>
-            <p><strong>Bala</strong></p>
-            <div class="address">
-                <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Bala+Wales" target="_blank">📍 Google Maps</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 23/10 -->
-    <div class="day-card">
-        <div class="day-header">
-            <span class="day-badge">23 Oct (Fri)</span>
-            <span class="day-title">Mountain Spirit / Ysbryd y Mynydd</span>
-        </div>
-
-        <div class="section-item">
-            <span class="tag tag-train">Ffestiniog & Welsh Highland Railways</span>
-            <p><strong>MOUNTAIN SPIRIT / YSBRYD Y MYNYDD</strong></p>
-            <a class="btn-link" href="https://www.festrail.co.uk/mountain-spirit/" target="_blank">🔗 Official Website</a>
-
-            <div class="ms-card">
-                <div class="ms-row">
-                    <div class="ms-icon">🕒</div>
-                    <div class="ms-text">Approx 3 hours</div>
-                </div>
-                <div class="ms-row">
-                    <div class="ms-icon">🚩</div>
-                    <div class="ms-text">27 Mile Return Journey</div>
-                </div>
-                <div class="ms-row">
-                    <div class="ms-icon">☕</div>
-                    <div class="ms-text">Standard: No On-Train Catering Service / Gold: At-Seat Service & Welsh Tea option</div>
-                </div>
-                <div class="ms-row">
-                    <div class="ms-icon">£</div>
-                    <div class="ms-text">
-                        Adults: £49.75 per person / Children (Age 3 – 15): £5.00 - (Please note, these prices do not include the 6% online booking fee of total amount. Booking online guarantees your seat/s for the journey)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Backup -->
-    <div class="day-card" style="border-left: 5px solid var(--secondary);">
-        <div class="day-header" style="border-bottom: none; margin-bottom: 0.5rem; padding-bottom: 0;">
-            <span class="day-title">Backup Options</span>
-        </div>
-        <div class="section-item">
-            <ul class="places-list">
-                <li>
-                    <strong>Portmeirion</strong>
-                    <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Portmeirion" target="_blank">📍 Google Maps</a>
-                </li>
-                <li>
-                    <strong>Saved Google Maps Place:</strong>
-                    <a class="map-link" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18" target="_blank">🔗 Open Link (maps.app.goo.gl/iq1cAc1qWLmU3fL18)</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-</div>
-
+buildStatic();buildCal();showService();buildTodo();render(sel);
+</script>
 </body>
 </html>
