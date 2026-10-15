@@ -208,6 +208,12 @@ svg{overflow:visible}
 @media print{body{background:#fff}.primary-nav,.day-pager,.tick,.chev,.day-footer button,.toast{display:none}.sheet{box-shadow:none}.event{break-inside:avoid}.details{max-height:none!important}#prepare-panel,#railway-panel{display:block!important}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 /* ===== fancy layer ===== */
+.train-pick{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.train-pick button{flex:1;min-width:140px;border:var(--line);border-radius:22px;background:#fff;padding:10px 14px;text-align:left;transition:.15s}.train-pick button b{display:block;font-family:Fredoka,sans-serif;font-size:17px}.train-pick button small{color:#7a726c}.train-pick button[aria-pressed="true"]{background:var(--yellow);box-shadow:4px 4px 0 var(--ink)}
+.route{width:100%;height:auto;display:block}.route text{font-family:Fredoka,"Noto Sans HK",sans-serif;font-size:11px;fill:var(--ink)}
+.tcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tcal-title{grid-column:1/-1;background:#8b0000;color:#fff;text-align:center;font-weight:800;padding:6px;border-radius:12px}.tcal-dow{text-align:center;font-weight:700;font-size:13px;color:#6f6a66}.tcal-day{aspect-ratio:1;border:2px solid transparent;border-radius:12px;font-weight:800;font-size:16px;display:grid;place-items:center;padding:0;position:relative;background:#f1efe9;color:#a7a19b}.tcal-day.ok{background:#177a55;color:#fff}.tcal-day.trip:after{content:"";position:absolute;inset:-5px;border:3px solid var(--ink);border-radius:15px;pointer-events:none}.tcal-day.sel{transform:scale(1.12);box-shadow:3px 3px 0 var(--ink);z-index:2}.tcal-day.blank{visibility:hidden}
+.avail{margin-top:12px;border:2px dashed var(--ink);border-radius:16px;padding:8px 12px;background:#fffdf0;font-size:14px}.avail.no{background:#f8ebe9}
+.desc{font-size:14px;color:#5c5551;margin:6px 0 0}
+.big-link{display:inline-block;margin-top:12px;border:var(--line);border-radius:22px;background:var(--pink);padding:7px 18px;font-weight:700;text-decoration:none;color:var(--ink)}
 body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sans-serif}
 .trip-header{position:relative;overflow:hidden;border-bottom:0;padding-bottom:34px;background:linear-gradient(120deg,#faf9ef,#f6e4e0,#e9eef6,#f7f1d4,#faf9ef);background-size:300% 300%;animation:drift 14s ease-in-out infinite}
 @keyframes drift{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
@@ -216,7 +222,7 @@ body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sa
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
 .title{margin:6px 0 10px;line-height:1;display:flex;flex-direction:column;gap:2px}
 .zh-title{font-family:"Chocolate Classical Sans","Noto Sans HK",sans-serif;font-size:72px;font-weight:400;display:flex;gap:4px;letter-spacing:.02em}
-.zh-title span{display:inline-block;color:var(--ink);animation:bulb 3.2s ease-in-out infinite;animation-delay:calc(var(--i)*.35s)}
+.zh-title{position:relative;display:inline-block;align-self:flex-start;color:var(--ink)}.zh-title .gl{position:absolute;left:0;top:0;white-space:nowrap;pointer-events:none;opacity:0}.zh-title.on .gl{opacity:1;text-shadow:-3px 0 #ff3b6b,3px 0 #19c6d8}.zh-title.on{color:transparent}.zh-title .gl{color:var(--ink)}
 @keyframes bulb{0%,70%,100%{color:var(--ink);text-shadow:none;transform:translateY(0)}
  18%{color:#e0584a;text-shadow:0 0 6px #fff,0 0 16px #f2a79c,0 0 30px #eea096;transform:translateY(-4px) scale(1.06)}
  36%{color:#c98a00;text-shadow:0 0 6px #fff,0 0 16px #f2d078;transform:translateY(0)}}
@@ -283,15 +289,15 @@ body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sa
   <i class="spark s1">✦</i><i class="spark s2">✧</i><i class="spark s3">✦</i><i class="spark s4">✧</i>
   <div class="heading-top"><span class="eyebrow">我們的十月旅程</span><svg class="float" aria-hidden="true" viewBox="0 0 90 80"><use href="#mine"/></svg></div>
   <h1 class="title" aria-label="北威爾斯 North Wales">
-    <span class="zh-title" aria-hidden="true"><span style="--i:0">北</span><span style="--i:1">威</span><span style="--i:2">爾</span><span style="--i:3">斯</span></span>
+    <span class="zh-title" aria-hidden="true" id="glitch" data-text="北威爾斯">北威爾斯</span>
     <span class="en-title" aria-hidden="true">North Wales</span>
   </h1>
   <div class="title-row"><span class="night-pill">5日4夜</span><p class="trip-dates">2026年10月 <b>19–23</b> 日</p></div>
-  <div class="header-places"><span>Criccieth</span><i>·</i><span>Porthmadog</span><i>·</i><span>Bala</span><br><span>Lake Vyrnwy</span><i>·</i><span>Beddgelert</span><i>·</i><span>Woodland Wanderer</span></div>
+  <div class="header-places"><span>Criccieth</span><i>·</i><span>Porthmadog</span><i>·</i><span>Bala</span><br><span>Lake Vyrnwy</span><i>·</i><span>Beddgelert</span><br><span>Woodland Wanderer</span><i>·</i><span>Mountain Spirit</span></div>
   <div class="countdown" id="countdown" hidden></div>
   <div class="bulbs" aria-hidden="true"></div>
 </header>
-<div class="ticker" aria-hidden="true"><div class="ticker-track"><span class="kw">Criccieth</span><u>✦</u><span class="kw">Porthmadog</span><u>✦</u><span class="kw">Bala</span><u>✦</u><span class="kw">Lake Vyrnwy</span><u>✦</u><span class="kw">Beddgelert</span><u>✦</u><span class="kw">Tan-y-Bwlch</span><u>✦</u><span class="kw">Snowdonia</span><u>✦</u><span class="kw">Criccieth</span><u>✦</u><span class="kw">Porthmadog</span><u>✦</u><span class="kw">Bala</span><u>✦</u><span class="kw">Lake Vyrnwy</span><u>✦</u><span class="kw">Beddgelert</span><u>✦</u><span class="kw">Tan-y-Bwlch</span><u>✦</u><span class="kw">Snowdonia</span><u>✦</u></div></div>
+<div class="ticker" aria-hidden="true"><div class="ticker-track"><span class="kw">Criccieth</span><u>✦</u><span class="kw">Porthmadog</span><u>✦</u><span class="kw">Bala</span><u>✦</u><span class="kw">Lake Vyrnwy</span><u>✦</u><span class="kw">Beddgelert</span><u>✦</u><span class="kw">Tan-y-Bwlch</span><u>✦</u><span class="kw">Blaenau Ffestiniog</span><u>✦</u><span class="kw">Snowdonia</span><u>✦</u><span class="kw">Criccieth</span><u>✦</u><span class="kw">Porthmadog</span><u>✦</u><span class="kw">Bala</span><u>✦</u><span class="kw">Lake Vyrnwy</span><u>✦</u><span class="kw">Beddgelert</span><u>✦</u><span class="kw">Tan-y-Bwlch</span><u>✦</u><span class="kw">Blaenau Ffestiniog</span><u>✦</u><span class="kw">Snowdonia</span><u>✦</u></div></div>
 
 <nav class="primary-nav" aria-label="Sections"><svg class="brand-icon" aria-hidden="true" viewBox="0 0 70 76"><use href="#suitcase"/></svg>
   <div class="nav-items">
@@ -315,12 +321,10 @@ body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sa
 </section>
 
 <section class="panel" id="railway-panel" hidden>
-  <h1>Welsh Highland Heritage Railway</h1>
-  <p class="lead">Porthmadog LL49 9DY · tap a date to see that day’s trains (read from your timetable &amp; calendar screenshots).</p>
-  <div class="card"><div class="cal" id="cal"></div><div class="legend" id="legend"></div></div>
-  <div class="card service-card" id="service"></div>
-  <div class="card"><h3>Timetable</h3><table class="tt" id="tt"></table><p class="note">Please note: depending on staff availability, steam or diesel locomotives may be substituted at short notice.</p></div>
-  <div class="card" id="ww-card"></div>
+  <h1>火車</h1>
+  <p class="lead">兩條 Ffestiniog &amp; Welsh Highland Railways 路線，資料根據官方訂位頁面截圖整理。點選下方切換。</p>
+  <div class="train-pick" id="train-pick"></div>
+  <div id="train-view"></div>
 </section>
 
 <section class="panel" id="prepare-panel" hidden>
@@ -365,7 +369,7 @@ const ZH={
 /* day 1 */
 'Arrival, check-in & Porthmadog':'抵達、入住及 Porthmadog',
 'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.':'途中停留一次，15:30 在 Haven Hafan y Môr 集合，之後到 Porthmadog 的 Tesco 補給及購買火車票。',
-'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way. Calendar shows no train service on Mon 19, so check ticket office hours.':'15:30–15:45 在度假村集合——請預留途中停留的時間。日曆顯示 19 日（週一）沒有火車服務，請先查詢售票處開放時間。',
+'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way.':'15:30–15:45 在度假村集合——請預留途中停留的時間。',
 'Drive to Porthmadog':'駕車前往 Porthmadog','Choose your stop on the way':'選擇途中停留的地點',
 'Best for a proper break':'適合好好休息','Best for saving time':'適合節省時間',
 'Historic market town — plenty of cafés and lunch choices':'歷史悠久的市集小鎮——咖啡店及午餐選擇多','Riverside / Quarry Park walk to stretch your legs':'可沿河或在 Quarry Park 散步舒展筋骨','Good place to rest before the winding Welsh roads':'適合在走彎曲的威爾斯山路前休息',
@@ -419,7 +423,9 @@ const ZH={
 'Book Woodland Wanderer online':'網上預訂 Woodland Wanderer','Fri 23 Oct · booking online guarantees seats · 11:10 or 14:50 for Heritage First Class':'10月23日 · 網上預訂可保證座位 · Heritage First Class 只限 11:10 或 14:50',
 'Swimming at 09:30':'09:30 游水','Tue 20 · Wed 21 · Thu 22':'20 日 · 21 日 · 22 日',
 'Pack your bag':'執拾行李','See the “What to bring” list below':'請參閱下方「建議攜帶物品」','Save offline maps':'儲存離線地圖','Lake Vyrnwy has patchy signal':'Lake Vyrnwy 訊號不穩',
-'Portmeirion':'Portmeirion'
+'Train day':'火車日','Pick one: Woodland Wanderer (about 2 h 10 min) or Mountain Spirit (about 3 hours).':'二選一：Woodland Wanderer（約 2 小時 10 分鐘）或 Mountain Spirit（約 3 小時）。',
+'Prices exclude the 6% online booking fee. Both booking calendars show seats on 19–23 Oct. Wheelchair or mobility scooter users should call 01766 516024 to book Mountain Spirit.':'價格不包括 6% 網上訂位費。兩條路線的訂位日曆都顯示 10 月 19–23 日有座位。輪椅或電動代步車使用者預訂 Mountain Spirit 請致電 01766 516024。',
+'Train':'火車','Book your train online (Woodland Wanderer or Mountain Spirit)':'網上預訂火車（Woodland Wanderer 或 Mountain Spirit）','🚂 Train day (Fri 23)':'🚂 火車日（23 日）','Portmeirion':'Portmeirion'
 };
 const lang='zh';
 const tr=s=>(lang==='zh'&&ZH[s])||s;
@@ -437,7 +443,7 @@ function trStatic(){
 
 const map=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const days=[
-{date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way. Calendar shows no train service on Mon 19, so check ticket office hours.',ev:[
+{date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way.',ev:[
  {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele'],suggest:{
   Shrewsbury:{tag:'Best for a proper break',pts:['Historic market town — plenty of cafés and lunch choices','Riverside / Quarry Park walk to stretch your legs','Good place to rest before the winding Welsh roads'],q:'Shrewsbury town centre'},
   Abergele:{tag:'Best for saving time',pts:['Sits right on the A55 coast road — little or no detour','Quick food stop, with the beach at Pensarn close by','Leaves more daylight for Tesco and the railway ticket'],q:'Abergele'}},
@@ -475,14 +481,14 @@ const days=[
  {id:'d4d',cat:'transport',title:'On to Beddgelert village'},
  {id:'d4e',cat:'parking',title:'Colwyn Banc Car Park',addr:'A4085, Beddgelert, Penrhyndeudraeth LL55 4UY',q:'Colwyn Banc Car Park Beddgelert LL55 4UY'},
  {id:'d4f',cat:'place',title:'Beddgelert',note:'Village & river walk',q:'Beddgelert'}]},
-{date:'23/10',wd:'Fri',title:'Woodland Wanderer',icon:'train',summary:'A 1960s-style heritage carriage ride from Porthmadog to Tan-y-Bwlch and back — 2 h 10 min, 14 miles.',tip:'Prices exclude the 6% online booking fee. The booking calendar shows seats available 19–23 Oct. Heritage First Class compartments run on the 11:10 and 14:50 services only. At Tan-y-Bwlch: woodland trails to Llyn Mair, tearoom and a miniature-train playground.',ev:[
- {id:'d5a',cat:'train',title:'Woodland Wanderer',note:'2 h 10 min · 14 mile return · Porthmadog → Tan-y-Bwlch',spirit:true,url:'https://www.festrail.co.uk/woodland-wanderer/'}]}
+{date:'23/10',wd:'Fri',title:'Train day',icon:'train',summary:'Pick one: Woodland Wanderer (about 2 h 10 min) or Mountain Spirit (about 3 hours).',tip:'Prices exclude the 6% online booking fee. Both booking calendars show seats on 19–23 Oct. Wheelchair or mobility scooter users should call 01766 516024 to book Mountain Spirit.',ev:[
+ {id:'d5a',cat:'train',title:'Train',spirit:true}]}
 ];
 const catLabel={food:'🍽 Food',ice:'🍦 Ice cream',shop:'📚 Shop',parking:'🅿 Car park',swim:'🏊 Swim',task:'📝 Task',stay:'🏡 Stay',place:'📍 Stop',train:'🚂 Train'};
-const PRICE={std:{adult:29,child:5},first:{adult:34,child:10},dog:5,fee:.06};
+const PRICE={woodland:{std:{adult:29,child:5},first:{adult:34,child:10}},mountain:{std:{adult:49.75,child:5}},dog:5,fee:.06};
 
 /* storage (safe) */
-let state={checks:{},stop:'Shrewsbury',todo:{},adults:2,kids:0,dogs:0,cls:'std',pack:{},custom:[],notes:[]};
+let state={checks:{},stop:'Shrewsbury',todo:{},adults:2,kids:0,dogs:0,cls:'std',train:'woodland',pack:{},custom:[],notes:[]};
 try{Object.assign(state,JSON.parse(localStorage.getItem('nw2026')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('nw2026',JSON.stringify(state))}catch(e){}};
 
@@ -518,6 +524,7 @@ function render(i){
  updateProgress();
  const tl=$('#timeline');tl.replaceChildren();
  d.ev.forEach((e,k)=>{
+  if(e.spirit){const T0=TRAINS[state.train];e=Object.assign({},e,{title:T0.name,note:T0.short,url:T0.url})}
   const row=el('article','event'+(e.cat==='transport'?' transport':'')+(state.checks[e.id]?' checked':''));row.style.animationDelay=k*45+'ms';
   row.append(el('div','time'+(e.time?' known':''),e.time||'TBC'));
   row.append(Object.assign(el('span','marker'),{ariaHidden:'true'}));
@@ -544,7 +551,7 @@ function render(i){
    if(hasDetails){
     const det=el('div','details');
     if(e.addr)det.append(el('p',null,e.addr));
-    if(e.spirit)det.append(wandererBlock());
+    if(e.spirit)det.append(trainBlock(state.train,false));
     const acts=el('div','actions');
     if(e.q){const a=el('a','pill-btn','📍 Map');a.href=map(e.q);a.target='_blank';a.rel='noopener';acts.append(a)}
     if(e.addr||e.q){const cp=el('button','pill-btn','Copy address');cp.type='button';cp.addEventListener('click',()=>{const txt=e.addr||e.title;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Address copied'),()=>toast('Copy not available'))});acts.append(cp)}
@@ -564,71 +571,81 @@ function updateProgress(){const[x,y]=dayProgress(days[sel]);$('#progress-text').
 $('#prev').addEventListener('click',()=>render(sel-1));$('#next').addEventListener('click',()=>render(sel+1));
 $('#reset').addEventListener('click',()=>{if(confirm(tr('Clear all ticks?'))){state.checks={};save();render(sel);toast('Ticks cleared')}});
 
-/* Woodland Wanderer facts + price calculator */
-function wandererBlock(){
- const w=el('div');
- const f=el('div','facts');[['🕒','2 hours 10 minutes'],['🚩','14 mile return journey · Porthmadog → Tan-y-Bwlch and back'],['☕','No on-train catering service · tearoom at Tan-y-Bwlch station'],['£','Standard: adults £29 · children (3–15) or dog £5'],['⭐','Heritage First Class (11:10 & 14:50 only): adults £34 · children £10']].forEach(([i,t])=>{const r=el('div','fact');r.append(el('b',null,i),el('span',null,t));f.append(r)});
- w.append(f);
- w.append(el('p','note','Booking calendar — seats available (your screenshot):'));
- const av=el('div','trains');av.style.margin='6px 0 12px';for(let n=15;n<=30;n++){const t=el('span','train'+(n>=19&&n<=23?' mine':''),String(n));t.style.fontSize='13px';t.style.padding='1px 8px';av.append(t)}w.append(av);
- const c=el('div','calc');
- const cls=el('div','choice');cls.style.margin='0 0 8px';[['std','Standard'],['first','Heritage First Class']].forEach(([k,l])=>{const b=el('button',null,l);b.type='button';b.dataset.cls=k;b.addEventListener('click',ev=>{ev.stopPropagation();state.cls=k;save();document.querySelectorAll('.calc').forEach(calc)});cls.append(b)});c.append(cls);
- [['adults','Adults'],['kids','Children 3–15'],['dogs','Dogs']].forEach(([k,l])=>{const r=el('div','calc-row');r.append(el('span',null,l));const st=el('span','stepper');const m=el('button',null,'−');m.type='button';m.dataset.k=k;m.dataset.d='-1';const o=el('output');o.dataset.o=k;const pl=el('button',null,'+');pl.type='button';pl.dataset.k=k;pl.dataset.d='1';st.append(m,o,pl);r.append(st);c.append(r)});
- const fr=el('div','calc-row');const fb=el('b');fb.dataset.o='fee';fr.append(el('span',null,'Online booking fee (6%)'),fb);c.append(fr);
- const tot=el('div','total');const tv=el('span');tv.dataset.o='total';tot.append(el('span',null,'Estimated total'),tv);c.append(tot);
- c.append(el('small',null,'Estimate only — check the final price on the booking page. First Class runs on the 11:10 and 14:50 services only.'));
- c.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();const k=b.dataset.k;state[k]=Math.max(0,Math.min(12,state[k]+Number(b.dataset.d)));save();document.querySelectorAll('.calc').forEach(calc)}));
- c.addEventListener('click',ev=>ev.stopPropagation());
- w.append(c);calc(c);return w}
-function calc(c){const p=PRICE[state.cls],sub=state.adults*p.adult+state.kids*p.child+state.dogs*PRICE.dog,fee=sub*PRICE.fee;
+/* ---------- Trains: Mountain Spirit & Woodland Wanderer (from the official booking pages) ---------- */
+const TRAINS={
+ woodland:{name:'Woodland Wanderer',gloss:'林地漫遊者',short:'2 小時 10 分鐘 · 14 英里往返',dur:'2 小時 10 分鐘',mile:'14 英里往返 · Porthmadog → Tan-y-Bwlch 並折返',
+  cat:'車上沒有餐飲服務 · Tan-y-Bwlch 車站設有茶室',avail:[15,30],url:'https://www.festrail.co.uk/woodland-wanderer/',color:'#2f6b2f',stops:2,
+  prices:'標準：成人 £29 · 兒童（3–15 歲）或狗隻 £5',
+  extra:[['⭐','Heritage First Class（9 月起，只限 11:10 及 14:50 班次）：成人 £34 · 兒童 £10'],['🚃','First Class 車廂：16（座位 29）· 17（座位 10）· 20（座位 15、16）']],
+  desc:'乘搭 1960 年代風格的古董車廂，穿過 Eryri（Snowdonia 國家公園）的林地前往 Tan-y-Bwlch 並折返。中途休息時可到 Llyn Mair 林間小徑散步、在茶室歇息，小朋友亦可到迷你火車遊樂場玩耍。適合家庭及帶狗同行。'},
+ mountain:{name:'Mountain Spirit',gloss:'Ysbryd y Mynydd',short:'約 3 小時 · 27 英里往返',dur:'約 3 小時',mile:'27 英里往返 · Porthmadog → Blaenau Ffestiniog 並折返',
+  cat:'Standard：車上沒有餐飲服務 · Gold：座位服務及 Welsh Tea 選項',avail:[15,31],url:'https://www.festrail.co.uk/mountain-spirit/',color:'#8b1d2c',stops:3,
+  prices:'成人 £49.75 · 兒童（3–15 歲）£5.00',
+  extra:[['♿','輪椅或電動代步車使用者請致電 01766 516024 預訂'],['🚂','通常由標誌性的 Double Fairlie 機車牽引']],
+  desc:'乘搭著名的 Ffestiniog Railway 全線旅程，穿過壯麗景色前往有「世界屋頂」之稱的板岩小鎮 Blaenau Ffestiniog。列車由 Cob 堤壩出發，沿途有全景、林木山谷及險峻山景，中途在 Blaenau Ffestiniog 停留。是威爾斯窄軌鐵路最具代表性的旅程之一。'}
+};
+const tn=k=>TRAINS[k].name;
+function routeMap(k){
+ const ww=k==='woodland';
+ const full='M30 100 C70 95 90 72 140 64 S210 44 262 22';
+ const part='M30 100 C70 95 90 72 140 64';
+ const sel=ww?part:full;
+ return '<svg class="route" viewBox="0 0 300 126" role="img" aria-label="路線圖"><rect x="0" y="0" width="300" height="126" rx="16" fill="#e3f3df"/>'
+ +'<path d="'+full+'" fill="none" stroke="#b9b3ac" stroke-width="3" stroke-dasharray="2 6" stroke-linecap="round"/>'
+ +'<path d="'+sel+'" fill="none" stroke="#393533" stroke-width="4" stroke-linecap="round" id="rp"/>'
+ +'<circle cx="30" cy="100" r="6" fill="#e0584a" stroke="#393533" stroke-width="2"/><text x="14" y="120">Porthmadog</text>'
+ +'<circle cx="140" cy="64" r="'+(ww?6:4)+'" fill="'+(ww?'#e0584a':'#fff')+'" stroke="#393533" stroke-width="2"/><text x="100" y="50">Tan-y-Bwlch</text>'
+ +'<circle cx="262" cy="22" r="'+(ww?4:6)+'" fill="'+(ww?'#fff':'#e0584a')+'" stroke="#393533" stroke-width="2"/><text x="196" y="14">Blaenau Ffestiniog</text>'
+ +'<text x="200" y="112" style="font-size:10px;fill:#6b655f">'+(ww?'14 mi return':'27 mi return')+'</text>'
+ +'<circle r="5" fill="#f2d078" stroke="#393533" stroke-width="2"><animateMotion dur="'+(ww?4:6)+'s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear"><mpath href="#rp"/></animateMotion></circle></svg>'}
+function trainFacts(k){
+ const T=TRAINS[k],w=el('div');
+ const f=el('div','facts');[['🕒',T.dur],['🚩',T.mile],['☕',T.cat],['£',T.prices],...T.extra].forEach(([i,t])=>{const r=el('div','fact');r.append(el('b',null,i),el('span',null,t));f.append(r)});
+ w.append(f);return w}
+let calSel=21;
+function trainCal(k){
+ const T=TRAINS[k],box=el('div'),g=el('div','tcal');
+ g.append(el('div','tcal-title','2026年10月'));
+ ['一','二','三','四','五','六','日'].forEach(x=>g.append(el('div','tcal-dow',x)));
+ for(let i=0;i<3;i++)g.append(el('div','tcal-day blank'));
+ for(let n=1;n<=31;n++){const ok=n>=T.avail[0]&&n<=T.avail[1];const b=el('button','tcal-day'+(ok?' ok':'')+(n>=19&&n<=23?' trip':'')+(n===calSel?' sel':''),String(n));b.type='button';b.addEventListener('click',()=>{calSel=n;buildTrains()});g.append(b)}
+ box.append(g);
+ const wd=['週四','週五','週六','週日','週一','週二','週三'][(calSel-1)%7];const ok=calSel>=T.avail[0]&&calSel<=T.avail[1];
+ const a=el('div','avail'+(ok?'':' no'),'10月'+calSel+'日（'+wd+'）· '+(ok?'✓ 訂位日曆顯示有座位':'✗ 截圖中此日沒有座位')+(calSel>=19&&calSel<=23?' · 我們的行程':''));
+ box.append(a);
+ box.append(el('p','note','綠色＝有座位（根據你的訂位日曆截圖，截至 10 月 15 日）；黑框＝我們的行程日期。'));
+ return box}
+function calcBlock(k){
+ const T=TRAINS[k],ww=k==='woodland',c=el('div','calc');c.dataset.train=k;
+ if(ww){const cls=el('div','choice');cls.style.margin='0 0 8px';[['std','標準'],['first','Heritage First Class']].forEach(([id,l])=>{const b=el('button',null,l);b.type='button';b.dataset.cls=id;b.addEventListener('click',ev=>{ev.stopPropagation();state.cls=id;save();document.querySelectorAll('.calc').forEach(calc)});cls.append(b)});c.append(cls)}
+ const rows=[['adults','成人'],['kids','兒童 3–15 歲']];if(ww)rows.push(['dogs','狗隻']);
+ rows.forEach(([key,l])=>{const r=el('div','calc-row');r.append(el('span',null,l));const st=el('span','stepper');const m=el('button',null,'−');m.type='button';m.dataset.k=key;m.dataset.d='-1';const o=el('output');o.dataset.o=key;const pl=el('button',null,'+');pl.type='button';pl.dataset.k=key;pl.dataset.d='1';st.append(m,o,pl);r.append(st);c.append(r)});
+ const fr=el('div','calc-row'),fb=el('b');fb.dataset.o='fee';fr.append(el('span',null,'網上訂位費（6%）'),fb);c.append(fr);
+ const tot=el('div','total'),tv=el('span');tv.dataset.o='total';tot.append(el('span',null,'預計總額'),tv);c.append(tot);
+ c.append(el('small',null,ww?'僅為估算，請以訂位頁面的最終價格為準。First Class 只限 11:10 及 14:50 班次。':'僅為估算，請以訂位頁面的最終價格為準。'));
+ c.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();const key=b.dataset.k;state[key]=Math.max(0,Math.min(12,state[key]+Number(b.dataset.d)));save();document.querySelectorAll('.calc').forEach(calc)}));
+ c.addEventListener('click',ev=>ev.stopPropagation());calc(c);return c}
+function calc(c){const k=c.dataset.train,ww=k==='woodland',p=ww?PRICE.woodland[state.cls]:PRICE.mountain.std,sub=state.adults*p.adult+state.kids*p.child+(ww?state.dogs*PRICE.dog:0),fee=sub*PRICE.fee;
  c.querySelectorAll('[data-cls]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cls===state.cls)));
- ['adults','kids','dogs'].forEach(k=>c.querySelector('[data-o='+k+']').textContent=state[k]);
+ ['adults','kids','dogs'].forEach(key=>{const o=c.querySelector('[data-o='+key+']');if(o)o.textContent=state[key]});
  c.querySelector('[data-o=fee]').textContent='£'+fee.toFixed(2);c.querySelector('[data-o=total]').textContent='£'+(sub+fee).toFixed(2)}
-
-/* railway panel */
-const SVC={
- steam:{name:'Steam service',sub:'Steam locomotive hauled',color:'var(--steam)',times:['10:15','11:30','13:30','14:45','16:00']},
- d5:{name:'Diesel service · five trains',sub:'Most days this month',color:'var(--d5)',times:['10:15','11:30','13:30','14:45','16:00']},
- d4:{name:'Diesel service · four trains',sub:'Late October',color:'var(--d4)',times:['10:15','11:30','13:30','14:45']},
- tuition:{name:'Tuition',sub:'Training & driver experience',color:'var(--tuition)',times:[]},
- none:{name:'No service shown',sub:'White date on the calendar',color:'#fff',times:[]}};
-const cal={1:'d5',2:'d5',3:'d5',4:'steam',7:'d5',8:'d5',10:'d5',11:'d5',14:'d5',15:'d5',17:'tuition',18:'d5',20:'d5',21:'d5',22:'d5',23:'d5',24:'d4',25:'d4',26:'d4',27:'d4',28:'steam',29:'steam',30:'d4',31:'d4'};
-let calSel=20;
-function buildCal(){
- const g=$('#cal');g.replaceChildren();g.append(el('div','cal-title',lang==='zh'?'2026年10月':'October 2026'));
- ['Sa','Su','Mo','Tu','We','Th','Fr'].forEach(x=>g.append(el('div','cal-dow',x)));
- for(let i=0;i<5;i++)g.append(el('div','cal-day blank'));
- for(let n=1;n<=31;n++){const t=cal[n]||'none';const b=el('button','cal-day '+t+(n>=19&&n<=23?' trip':'')+(n===calSel?' sel':''),String(n));b.type='button';
-  b.setAttribute('aria-label',(lang==='zh'?'10月'+n+'日，':'October '+n+', ')+tr(SVC[t].name));b.addEventListener('click',()=>{calSel=n;buildCal();showService()});g.append(b)}
-}
-function showService(){
- const t=cal[calSel]||'none',s=SVC[t],box=$('#service');box.replaceChildren();
- const h=el('div','service-head');const sw=el('span','sw');sw.style.background=s.color;
- const txt=el('div');txt.innerHTML='<small>Fri 2 Oct… </small>';
- const dow=['Sa','Su','Mo','Tu','We','Th','Fr'];const wdName=tr(['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'][(calSel+4)%7]);
- txt.innerHTML='';const sm=el('small',null,(lang==='zh'?'10月'+calSel+'日 '+wdName:wdName+' '+calSel+' October')+(calSel>=19&&calSel<=23?tr(' · on our trip'):''));const b=el('b',null,s.name);txt.append(sm,b);
- h.append(sw,txt);box.append(h);
- if(s.times.length){const tr=el('div','trains');s.times.forEach(x=>{const e=el('span','train',x);e.append(el('small',null,'dep.'));tr.append(e)});box.append(tr);
-  box.append(el('p','note',calSel>=19&&calSel<=23?'Same five departures every day we are here (20–23).':'Departure times from your timetable screenshot.'))}
- else box.append(el('p','note',t==='tuition'?'No passenger trains — training & driver experience.':'No train shown for this date. On our trip, Mon 19 is a no-service day.'));
- document.querySelectorAll('#tt tr').forEach(r=>{r.classList.toggle('dim',!!r.dataset.k&&r.dataset.k!==t&&!(t==='none'&&false))});
-}
-function buildStatic(){
- $('#legend').innerHTML=[['background:var(--steam)','Steam'],['background:var(--d5)','Diesel (5)'],['background:var(--d4)','Diesel (4)'],['background:var(--tuition)','Tuition'],['background:#fff','None'],['border:2px solid var(--ink);background:none','Our trip']].map(([st,l])=>'<span><i style="'+st+'"></i>'+tr(l)+'</span>').join('');
- const rows=[['steam','r-steam','Steam Service',['–','10:15','11:30','13:30','14:45','16:00']],['d5','r-d5','Diesel (five trains)',['–','10:15','11:30','13:30','14:45','16:00']],['d4','r-d4','Diesel (four trains)',['–','10:15','11:30','13:30','14:45','']]];
- const tt=$('#tt');tt.replaceChildren();
- rows.forEach(([k,c,n,v])=>{const r=el('tr',c);r.dataset.k=k;r.append(el('td',null,n));v.forEach(x=>r.append(el('td',null,x)));tt.append(r)});
- const sp=el('tr','r-sp');const a=el('td',null,'Special Event');const b=el('td',null,'–');const c=el('td',null,'see below');c.colSpan=5;sp.append(a,b,c);tt.append(sp);
- const tu=el('tr','r-tu');tu.dataset.k='tuition';const t1=el('td',null,'Tuition'),t2=el('td',null,'–'),t3=el('td',null,'training and driver experience');t3.colSpan=5;tu.append(t1,t2,t3);tt.append(tu);
- const card=$('#ww-card');card.replaceChildren();const h=el('h3',null,'🚂 Fri 23 Oct · Woodland Wanderer');const sub=el('p',null,'Ffestiniog & Welsh Highland Railways — Porthmadog to Tan-y-Bwlch and return');sub.style.cssText='margin:0;font-size:14px;color:#6f6670';card.append(h,sub);
- card.append(wandererBlock());
- const a2=el('a','pill-btn','🔗 Official site');a2.href='https://www.festrail.co.uk/woodland-wanderer/';a2.target='_blank';a2.rel='noopener';a2.style.marginTop='12px';card.append(a2);
-}
+function trainBlock(k,full){
+ const T=TRAINS[k],w=el('div');
+ const m=el('div');m.innerHTML=routeMap(k);m.style.marginBottom='10px';w.append(m);
+ w.append(el('p','desc',T.desc));w.append(trainFacts(k));
+ if(full){w.append(Object.assign(el('h3',null,'📅 訂位日曆'),{style:'margin:16px 0 8px'}));w.append(trainCal(k))}
+ w.append(Object.assign(el('h3',null,'🧮 價錢估算'),{style:'margin:16px 0 0'}));w.append(calcBlock(k));
+ const a=el('a','big-link','🔗 官方訂位網站');a.href=T.url;a.target='_blank';a.rel='noopener';w.append(a);
+ return w}
+function buildTrains(){
+ const pick=$('#train-pick');pick.replaceChildren();
+ ['woodland','mountain'].forEach(k=>{const b=el('button');b.type='button';b.setAttribute('aria-pressed',String(state.train===k));const bb=el('b',null,TRAINS[k].name);b.append(bb,el('small',null,TRAINS[k].short));b.addEventListener('click',()=>{state.train=k;save();buildTrains();render(sel)});pick.append(b)});
+ const v=$('#train-view');v.replaceChildren();const card=el('div','card');card.append(trainBlock(state.train,true));v.append(card)}
 
 /* packing */
 const PACK=[['🏊 Swimming (09:30 swims on 20, 21, 22)',['Swimsuit x3','Towel','Goggles','Flip-flops','Bag for wet kit']],
 ['🌧 Weather & walking',['Waterproof jacket','Warm layers','Hat & gloves','Sturdy walking shoes','Spare dry socks']],
-['🚂 Woodland Wanderer (Fri 23)',['Booking confirmation','Warm top for the train','Camera / phone','Snacks & drinks (no catering on the train)','Layers for the Tan-y-Bwlch woodland walk']],
+['🚂 Train day (Fri 23)',['Booking confirmation','Warm top for the train','Camera / phone','Snacks & drinks (no catering on the train)','Layers for the Tan-y-Bwlch woodland walk']],
 ['🧾 Practical',['Railway ticket / booking ref','Power bank & charger','Offline maps (Lake Vyrnwy)','Coins / card for car parks','Reusable bag for Tesco','Medicines & basics']]];
 function buildPack(){const w=$('#pack');w.replaceChildren();
  const groups=PACK.slice();if(state.custom.length)groups.push(['✏️ Your own',state.custom]);
@@ -647,14 +664,20 @@ $('#msg-share').addEventListener('click',()=>{const v=$('#msg-text').value.trim(
  else{(navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(()=>toast('Copied — paste it into a message'),()=>{location.href='mailto:?subject='+encodeURIComponent('North Wales trip')+'&body='+encodeURIComponent(text)})}});
 
 /* prepare */
-const TODO=[['t1','Choose the stop on Mon 19','Shrewsbury or Abergele — set it in the Plan tab'],['t2','Buy the railway ticket','Welsh Highland Heritage Railway, Porthmadog'],['t3','Book Woodland Wanderer online','Fri 23 Oct · booking online guarantees seats · 11:10 or 14:50 for Heritage First Class'],['t4','Swimming at 09:30','Tue 20 · Wed 21 · Thu 22'],['t5','Pack your bag','See the “What to bring” list below'],['t6','Save offline maps','Lake Vyrnwy has patchy signal']];
+const TODO=[['t1','Choose the stop on Mon 19','Shrewsbury or Abergele — set it in the Plan tab'],['t2','Buy the railway ticket','Welsh Highland Heritage Railway, Porthmadog'],['t3','Book your train online (Woodland Wanderer or Mountain Spirit)','Fri 23 Oct · booking online guarantees seats'],['t4','Swimming at 09:30','Tue 20 · Wed 21 · Thu 22'],['t5','Pack your bag','See the “What to bring” list below'],['t6','Save offline maps','Lake Vyrnwy has patchy signal']];
 function buildTodo(){const u=$('#todo');u.replaceChildren();TODO.forEach(([id,t,s])=>{const li=el('li',state.todo[id]?'has-done':'');const l=el('label');const i=el('input');i.type='checkbox';i.checked=!!state.todo[id];i.addEventListener('change',()=>{state.todo[id]=i.checked;save();li.classList.toggle('has-done',i.checked)});const sp=el('span');sp.append(el('b',null,t),el('small',null,s));
  sp.firstChild.style.display='block';const wrap=el('span');wrap.append(...sp.childNodes);const txt=el('span');txt.append(wrap);l.append(i,txt);li.append(l);u.append(li)})}
 // styles for strike apply on span after input: ensure structure
 function panel(name){document.querySelectorAll('[data-panel]').forEach(b=>{const a=b.dataset.panel===name;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a))});['itinerary','railway','prepare'].forEach(id=>$('#'+id+'-panel').hidden=id!==name);window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>panel(b.dataset.panel)));
 
-function applyLang(){setCountdown();navLabels();buildStatic();buildCal();showService();buildTodo();buildPack();buildNotes();render(sel);trStatic()}
+/* Glitch Slices (#34): title cut into strips that jump sideways for a split second, readable in between */
+(function(){const g=$('#glitch');if(!g)return;const txt=g.dataset.text,N=8,layers=[];
+ for(let i=0;i<N;i++){const l=document.createElement('span');l.className='gl';l.setAttribute('aria-hidden','true');l.textContent=txt;l.style.clipPath='inset('+(i*100/N)+'% 0 '+(100-(i+1)*100/N)+'% 0)';g.append(l);layers.push(l)}
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ function burst(){let f=0;const id=setInterval(()=>{g.classList.add('on');layers.forEach(l=>l.style.transform='translateX('+Math.round((Math.random()-.5)*26)+'px)');if(++f>4){clearInterval(id);g.classList.remove('on');layers.forEach(l=>l.style.transform='')}},45);setTimeout(burst,2200+Math.random()*1800)}
+ setTimeout(burst,1200)})();
+function applyLang(){setCountdown();navLabels();buildTrains();buildTodo();buildPack();buildNotes();render(sel);trStatic()}
 applyLang();
 </script>
 </body>
