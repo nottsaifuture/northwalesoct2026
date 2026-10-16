@@ -211,6 +211,7 @@ svg{overflow:visible}
 .train-pick{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.train-pick button{flex:1;min-width:140px;border:var(--line);border-radius:22px;background:#fff;padding:10px 14px;text-align:left;transition:.15s}.train-pick button b{display:block;font-family:Fredoka,sans-serif;font-size:17px}.train-pick button small{color:#7a726c}.train-pick button[aria-pressed="true"]{background:var(--yellow);box-shadow:4px 4px 0 var(--ink)}
 .route{width:100%;height:auto;display:block}.route text{font-family:Fredoka,"Noto Sans HK",sans-serif;font-size:11px;fill:var(--ink)}
 .tcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tcal-title{grid-column:1/-1;background:#8b0000;color:#fff;text-align:center;font-weight:800;padding:6px;border-radius:12px}.tcal-dow{text-align:center;font-weight:700;font-size:13px;color:#6f6a66}.tcal-day{aspect-ratio:1;border:2px solid transparent;border-radius:12px;font-weight:800;font-size:16px;display:grid;place-items:center;padding:0;position:relative;background:#f1efe9;color:#a7a19b}.tcal-day.ok{background:#177a55;color:#fff}.tcal-day.trip:after{content:"";position:absolute;inset:-5px;border:3px solid var(--ink);border-radius:15px;pointer-events:none}.tcal-day.sel{transform:scale(1.12);box-shadow:3px 3px 0 var(--ink);z-index:2}.tcal-day.blank{visibility:hidden}
+.dep-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px dashed #cdbdb6;padding:6px 0}.dep-row:last-child{border:0}.dep-date{font-weight:700;font-size:14px}
 .avail{margin-top:12px;border:2px dashed var(--ink);border-radius:16px;padding:8px 12px;background:#fffdf0;font-size:14px}.avail.no{background:#f8ebe9}
 .desc{font-size:14px;color:#5c5551;margin:6px 0 0}
 .big-link{display:inline-block;margin-top:12px;border:var(--line);border-radius:22px;background:var(--pink);padding:7px 18px;font-weight:700;text-decoration:none;color:var(--ink)}
@@ -524,7 +525,7 @@ function render(i){
  updateProgress();
  const tl=$('#timeline');tl.replaceChildren();
  d.ev.forEach((e,k)=>{
-  if(e.spirit){const T0=TRAINS[state.train];e=Object.assign({},e,{title:T0.name,note:T0.short,url:T0.url})}
+  if(e.spirit){const T0=TRAINS[state.train];e=Object.assign({},e,{title:T0.name,note:T0.short,url:T0.url,time:DEPS[state.train][23][0]})}
   const row=el('article','event'+(e.cat==='transport'?' transport':'')+(state.checks[e.id]?' checked':''));row.style.animationDelay=k*45+'ms';
   row.append(el('div','time'+(e.time?' known':''),e.time||'TBC'));
   row.append(Object.assign(el('span','marker'),{ariaHidden:'true'}));
@@ -584,6 +585,13 @@ const TRAINS={
   extra:[['♿','輪椅或電動代步車使用者請致電 01766 516024 預訂'],['🚂','通常由標誌性的 Double Fairlie 機車牽引']],
   desc:'乘搭著名的 Ffestiniog Railway 全線旅程，穿過壯麗景色前往有「世界屋頂」之稱的板岩小鎮 Blaenau Ffestiniog。列車由 Cob 堤壩出發，沿途有全景、林木山谷及險峻山景，中途在 Blaenau Ffestiniog 停留。是威爾斯窄軌鐵路最具代表性的旅程之一。'}
 };
+const DEPS={woodland:{19:['14:50'],20:['11:10','14:50'],21:['11:10','14:50'],22:['11:10','14:50'],23:['14:50']},mountain:{19:['14:50'],20:['14:50'],21:['14:50'],22:['14:50'],23:['14:50']}};
+const WD={19:'週一',20:'週二',21:'週三',22:'週四',23:'週五'};
+function chips(list){const w=el('div','trains');list.forEach(t=>{const c=el('span','train mine',t);c.append(el('small',null,'開出'));w.append(c)});return w}
+function depTable(k){
+ const box=el('div');box.append(Object.assign(el('h3',null,'🕒 我們的行程開出時間'),{style:'margin:16px 0 8px'}));
+ for(let d=19;d<=23;d++){const r=el('div','dep-row');r.append(el('span','dep-date','10月'+d+'日（'+WD[d]+'）'),chips(DEPS[k][d]));box.append(r)}
+ return box}
 const tn=k=>TRAINS[k].name;
 function routeMap(k){
  const ww=k==='woodland';
@@ -613,6 +621,7 @@ function trainCal(k){
  const wd=['週四','週五','週六','週日','週一','週二','週三'][(calSel-1)%7];const ok=calSel>=T.avail[0]&&calSel<=T.avail[1];
  const a=el('div','avail'+(ok?'':' no'),'10月'+calSel+'日（'+wd+'）· '+(ok?'✓ 訂位日曆顯示有座位':'✗ 截圖中此日沒有座位')+(calSel>=19&&calSel<=23?' · 我們的行程':''));
  box.append(a);
+ const dl=DEPS[k][calSel];if(dl){box.append(chips(dl));box.lastChild.style.marginTop='8px'}else if(ok)box.append(el('p','note','此日開出時間未有資料，請查看訂位頁面。'));
  box.append(el('p','note','綠色＝有座位（根據你的訂位日曆截圖，截至 10 月 15 日）；黑框＝我們的行程日期。'));
  return box}
 function calcBlock(k){
@@ -632,7 +641,7 @@ function calc(c){const k=c.dataset.train,ww=k==='woodland',p=ww?PRICE.woodland[s
 function trainBlock(k,full){
  const T=TRAINS[k],w=el('div');
  const m=el('div');m.innerHTML=routeMap(k);m.style.marginBottom='10px';w.append(m);
- w.append(el('p','desc',T.desc));w.append(trainFacts(k));
+ w.append(el('p','desc',T.desc));w.append(trainFacts(k));w.append(depTable(k));
  if(full){w.append(Object.assign(el('h3',null,'📅 訂位日曆'),{style:'margin:16px 0 8px'}));w.append(trainCal(k))}
  w.append(Object.assign(el('h3',null,'🧮 價錢估算'),{style:'margin:16px 0 0'}));w.append(calcBlock(k));
  const a=el('a','big-link','🔗 官方訂位網站');a.href=T.url;a.target='_blank';a.rel='noopener';w.append(a);
