@@ -585,7 +585,7 @@ const TRAINS={
   extra:[['♿','輪椅或電動代步車使用者請致電 01766 516024 預訂'],['🚂','通常由標誌性的 Double Fairlie 機車牽引']],
   desc:'乘搭著名的 Ffestiniog Railway 全線旅程，穿過壯麗景色前往有「世界屋頂」之稱的板岩小鎮 Blaenau Ffestiniog。列車由 Cob 堤壩出發，沿途有全景、林木山谷及險峻山景，中途在 Blaenau Ffestiniog 停留。是威爾斯窄軌鐵路最具代表性的旅程之一。'}
 };
-const DEPS={woodland:{19:['14:50'],20:['11:10','14:50'],21:['11:10','14:50'],22:['11:10','14:50'],23:['14:50']},mountain:{19:['14:50'],20:['14:50'],21:['14:50'],22:['14:50'],23:['14:50']}};
+const DEPS={woodland:{19:['14:50'],20:['11:10','14:50'],21:['11:10','14:50'],22:['11:10','14:50'],23:['14:50']},mountain:{19:['10:40'],20:['10:40'],21:['10:40'],22:['10:40'],23:['10:40']}};
 const WD={19:'週一',20:'週二',21:'週三',22:'週四',23:'週五'};
 function chips(list){const w=el('div','trains');list.forEach(t=>{const c=el('span','train mine',t);c.append(el('small',null,'開出'));w.append(c)});return w}
 function depTable(k){
