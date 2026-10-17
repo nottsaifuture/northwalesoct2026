@@ -334,10 +334,10 @@ body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sa
   <ul class="todo" id="todo"></ul>
   <div class="card" style="margin-top:20px"><h3>🎒 What to bring</h3><p class="lead" style="margin:0 0 12px">Suggestions based on this trip — tap to tick as packed, or add your own.</p><div id="pack"></div><div class="add-row"><input id="pack-in" placeholder="Add your own item" maxlength="60" aria-label="Add your own packing item"><button type="button" class="pill-btn" id="pack-add">Add</button></div></div>
   <div class="card" style="margin-top:20px"><h3>Backup options</h3>
-    <div class="backup-item"><span><b>Portmeirion</b><br><small>Portmeirion Shops Office, Penrhyndeudraeth LL48 6ET</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Portmeirion+Shops+Office+LL48+6ET">📍 Map</a></div><div class="backup-item"><span><b>Pwllheli Beach</b><br><small>6 Min y Traeth, Pwllheli LL53 5AJ</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Pwllheli+Beach+6+Min+y+Traeth+LL53+5AJ">📍 Map</a></div>
+    <div class="backup-item"><span><b>Portmeirion</b><br><small>Portmeirion Shops Office, Penrhyndeudraeth LL48 6ET</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Portmeirion+Shops+Office+LL48+6ET">🍎 Apple 地圖</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portmeirion+Shops+Office+LL48+6ET">📍 Google 地圖</a></div><div class="backup-item"><span><b>Pwllheli Beach</b><br><small>6 Min y Traeth, Pwllheli LL53 5AJ</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Pwllheli+Beach+6+Min+y+Traeth+LL53+5AJ">🍎 Apple 地圖</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pwllheli+Beach+6+Min+y+Traeth+LL53+5AJ">📍 Google 地圖</a></div>
     <div class="backup-item"><span><b>Saved Google Maps place</b><br><small>Check the place at the link</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18">🔗 Open</a></div>
   </div>
-  <div class="card"><h3>Where we’re staying</h3><b>Haven Hafan y Môr Holiday Park</b><div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Haven+Hafan+y+Mor+Holiday+Park">📍 Map</a></div></div>
+  <div class="card"><h3>Where we’re staying</h3><b>Haven Hafan y Môr Holiday Park</b><div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Haven+Hafan+y+Mor+Holiday+Park">🍎 Apple 地圖</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Haven+Hafan+y+Mor+Holiday+Park">📍 Google 地圖</a></div></div>
 </section>
 </main>
 <section class="msg-wrap" id="msg"><div class="card msg"><h3>💬 Comments &amp; suggestions</h3><p class="lead" style="margin:0 0 10px">Got a question, idea or change for the trip? Write it here.</p><textarea id="msg-text" maxlength="600" placeholder="e.g. Can we add a café stop in Beddgelert?" aria-label="Your comment or suggestion"></textarea><div class="msg-actions"><button type="button" class="pill-btn main" id="msg-save">Save note</button><button type="button" class="pill-btn" id="msg-share">Share / send</button></div><ul class="note-list" id="notes"></ul></div></section>
@@ -442,7 +442,9 @@ function trStatic(){
  [['#msg-text','e.g. Can we add a café stop in Beddgelert?'],['#pack-in','Add your own item']].forEach(([s,k])=>$(s).placeholder=tr(k));
 }
 
-const map=q=>'https://maps.apple.com/?q='+encodeURIComponent(q);
+const amap=q=>'https://maps.apple.com/?q='+encodeURIComponent(q);
+const gmap=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+function mapLinks(q,parent){[['🍎 Apple 地圖',amap],['📍 Google 地圖',gmap]].forEach(([l,f])=>{const a=el('a','pill-btn',l);a.href=f(q);a.target='_blank';a.rel='noopener';parent.append(a)})}
 const days=[
 {date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way.',ev:[
  {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele'],suggest:{
@@ -535,7 +537,7 @@ function render(i){
    let note=e.note;if(e.choice)note=tr('Stop on the way: ')+state.stop;if(note)desc.append(el('small',null,note));
    c.append(desc);
    if(e.choice){const ch=el('div','choice');ch.style.width='100%';e.options.forEach(o=>{const b=el('button',null,o);b.type='button';b.setAttribute('aria-pressed',String(state.stop===o));b.addEventListener('click',()=>{state.stop=o;save();toast(tr('Stop: ')+o);render(sel)});ch.append(b)});c.append(ch)
-    const sg=el('div','suggest');e.options.forEach(o=>{const x=e.suggest[o];const card=el('div','sg'+(state.stop===o?' on':''));const h=el('h4',null,o);h.append(el('em',null,x.tag));card.append(h);const ul=el('ul');x.pts.forEach(t=>ul.append(el('li',null,t)));card.append(ul);const acts=el('div','actions');acts.style.marginTop='4px';const a=el('a','pill-btn','📍 Map');a.href=map(x.q);a.target='_blank';a.rel='noopener';const pick=el('button','pill-btn'+(state.stop===o?' on':''),state.stop===o?'✓ Chosen':'Choose this');pick.type='button';pick.addEventListener('click',()=>{state.stop=o;save();toast(tr('Stop: ')+o);render(sel)});acts.append(a,pick);card.append(acts);sg.append(card)});
+    const sg=el('div','suggest');e.options.forEach(o=>{const x=e.suggest[o];const card=el('div','sg'+(state.stop===o?' on':''));const h=el('h4',null,o);h.append(el('em',null,x.tag));card.append(h);const ul=el('ul');x.pts.forEach(t=>ul.append(el('li',null,t)));card.append(ul);const acts=el('div','actions');acts.style.marginTop='4px';const pick=el('button','pill-btn'+(state.stop===o?' on':''),state.stop===o?'✓ Chosen':'Choose this');pick.type='button';pick.addEventListener('click',()=>{state.stop=o;save();toast(tr('Stop: ')+o);render(sel)});mapLinks(x.q,acts);acts.append(pick);card.append(acts);sg.append(card)});
     sg.append(el('p','sg-note',e.advice));c.append(sg)}
    row.append(c);
   }else{
@@ -554,7 +556,7 @@ function render(i){
     if(e.addr)det.append(el('p',null,e.addr));
     if(e.spirit)det.append(trainBlock(state.train,false));
     const acts=el('div','actions');
-    if(e.q){const a=el('a','pill-btn','📍 Map');a.href=map(e.q);a.target='_blank';a.rel='noopener';acts.append(a)}
+    if(e.q)mapLinks(e.q,acts);
     if(e.addr||e.q){const cp=el('button','pill-btn','Copy address');cp.type='button';cp.addEventListener('click',()=>{const txt=e.addr||e.title;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Address copied'),()=>toast('Copy not available'))});acts.append(cp)}
     if(e.url){const a=el('a','pill-btn','🔗 Official site');a.href=e.url;a.target='_blank';a.rel='noopener';acts.append(a)}
     if(e.link){const b=el('button','pill-btn',e.link[1]);b.type='button';b.addEventListener('click',()=>panel(e.link[0]));acts.append(b)}
