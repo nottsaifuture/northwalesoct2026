@@ -417,7 +417,7 @@ const ZH={
 '🏊 Swimming (09:30 swims on 20, 21, 22)':'🏊 游水（20、21、22 日 09:30）','Swimsuit x3':'泳衣 ×3','Towel':'毛巾','Goggles':'泳鏡','Flip-flops':'拖鞋','Bag for wet kit':'濕衣物袋',
 '🌧 Weather & walking':'🌧 天氣及行山','Waterproof jacket':'防水外套','Warm layers':'保暖衣物','Hat & gloves':'帽及手套','Sturdy walking shoes':'耐用行山鞋','Spare dry socks':'後備乾襪',
 '🚂 Woodland Wanderer (Fri 23)':'🚂 Woodland Wanderer（23 日）','Booking confirmation':'訂位確認','Warm top for the train':'火車上穿的保暖上衣','Camera / phone':'相機／手機','Snacks & drinks (no catering on the train)':'小食及飲品（車上沒有餐飲）','Layers for the Tan-y-Bwlch woodland walk':'Tan-y-Bwlch 林間散步穿的衣物',
-'🧾 Practical':'🧾 實用物品','Railway ticket / booking ref':'火車票／訂位編號','Power bank & charger':'行動電源及充電線','Offline maps (Lake Vyrnwy)':'離線地圖（Lake Vyrnwy）','Coins / card for car parks':'停車場用的硬幣／咭','Reusable bag for Tesco':'Tesco 用的環保袋','Medicines & basics':'藥物及日用品','✏️ Your own':'✏️ 自己加入',
+'🏡 Self-catering & home':'🏡 住宿及煮食','Hair dryer':'風筒','Cooking supplies':'煮食用品','Rubbish bags':'垃圾袋','Baking paper':'牛油紙','🧾 Practical':'🧾 實用物品','Railway ticket / booking ref':'火車票／訂位編號','Power bank & charger':'行動電源及充電線','Offline maps (Lake Vyrnwy)':'離線地圖（Lake Vyrnwy）','Coins / card for car parks':'停車場用的硬幣／咭','Reusable bag for Tesco':'Tesco 用的環保袋','Medicines & basics':'藥物及日用品','✏️ Your own':'✏️ 自己加入',
 /* todo */
 'Choose the stop on Mon 19':'選擇 19 日途中停留地點','Shrewsbury or Abergele — set it in the Plan tab':'Shrewsbury 或 Abergele——在「行程」分頁設定',
 'Buy the railway ticket':'購買火車票','Welsh Highland Heritage Railway, Porthmadog':'Welsh Highland Heritage Railway，Porthmadog',
@@ -657,6 +657,7 @@ function buildTrains(){
 const PACK=[['🏊 Swimming (09:30 swims on 20, 21, 22)',['Swimsuit x3','Towel','Goggles','Flip-flops','Bag for wet kit']],
 ['🌧 Weather & walking',['Waterproof jacket','Warm layers','Hat & gloves','Sturdy walking shoes','Spare dry socks']],
 ['🚂 Train day (Fri 23)',['Booking confirmation','Warm top for the train','Camera / phone','Snacks & drinks (no catering on the train)','Layers for the Tan-y-Bwlch woodland walk']],
+['🏡 Self-catering & home',['Hair dryer','Cooking supplies','Rubbish bags','Baking paper']],
 ['🧾 Practical',['Railway ticket / booking ref','Power bank & charger','Offline maps (Lake Vyrnwy)','Coins / card for car parks','Reusable bag for Tesco','Medicines & basics']]];
 function buildPack(){const w=$('#pack');w.replaceChildren();
  const groups=PACK.slice();if(state.custom.length)groups.push(['✏️ Your own',state.custom]);
