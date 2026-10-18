@@ -208,6 +208,14 @@ svg{overflow:visible}
 @media print{body{background:#fff}.primary-nav,.day-pager,.tick,.chev,.day-footer button,.toast{display:none}.sheet{box-shadow:none}.event{break-inside:avoid}.details{max-height:none!important}#prepare-panel,#railway-panel{display:block!important}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 /* ===== fancy layer ===== */
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+.map-scroll{overflow:auto;border:var(--line);border-radius:20px;max-height:440px;background:#f0efe9;margin-top:10px;-webkit-overflow-scrolling:touch}
+.map-inner{position:relative;width:100%;transition:width .25s}.map-inner img{display:block;width:100%;height:auto;max-width:none}.map-inner svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.route-line{fill:none;stroke:#e0584a;stroke-width:9;stroke-dasharray:2 20;stroke-linecap:round;animation:march 1.2s linear infinite}
+@keyframes march{to{stroke-dashoffset:-22}}
+.map-label{font:700 28px "Noto Sans HK",sans-serif;fill:#393533;paint-order:stroke;stroke:#fff;stroke-width:6px}.map-tag{font:700 30px Fredoka,sans-serif;fill:#fff}
+.map-ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 6px}.map-ctrl button{border:3px solid var(--ink);border-radius:18px;background:#fff;padding:3px 14px;font-weight:700;font-size:15px}.map-ctrl button[aria-pressed=true]{background:var(--yellow)}
+.home-chip{margin-top:10px;margin-left:8px;border:var(--line);border-radius:30px;background:#cfe0bd;padding:4px 14px;font-weight:700;font-size:14px;animation:breathe 2.4s ease-in-out infinite}
 .train-pick{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.train-pick button{flex:1;min-width:140px;border:var(--line);border-radius:22px;background:#fff;padding:10px 14px;text-align:left;transition:.15s}.train-pick button b{display:block;font-family:Fredoka,sans-serif;font-size:17px}.train-pick button small{color:#7a726c}.train-pick button[aria-pressed="true"]{background:var(--yellow);box-shadow:4px 4px 0 var(--ink)}
 .route{width:100%;height:auto;display:block}.route text{font-family:Fredoka,"Noto Sans HK",sans-serif;font-size:11px;fill:var(--ink)}
 .tcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tcal-title{grid-column:1/-1;background:#8b0000;color:#fff;text-align:center;font-weight:800;padding:6px;border-radius:12px}.tcal-dow{text-align:center;font-weight:700;font-size:13px;color:#6f6a66}.tcal-day{aspect-ratio:1;border:2px solid transparent;border-radius:12px;font-weight:800;font-size:16px;display:grid;place-items:center;padding:0;position:relative;background:#f1efe9;color:#a7a19b}.tcal-day.ok{background:#177a55;color:#fff}.tcal-day.trip:after{content:"";position:absolute;inset:-5px;border:3px solid var(--ink);border-radius:15px;pointer-events:none}.tcal-day.sel{transform:scale(1.12);box-shadow:3px 3px 0 var(--ink);z-index:2}.tcal-day.blank{visibility:hidden}
@@ -295,7 +303,7 @@ body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sa
   </h1>
   <div class="title-row"><span class="night-pill">5日4夜</span><p class="trip-dates">2026年10月 <b>19–23</b> 日</p></div>
   <div class="header-places"><span>Criccieth</span><i>·</i><span>Porthmadog</span><i>·</i><span>Bala</span><br><span>Lake Vyrnwy</span><i>·</i><span>Beddgelert</span><br><span>Woodland Wanderer</span><i>·</i><span>Mountain Spirit</span></div>
-  <div class="countdown" id="countdown" hidden></div>
+  <div class="countdown" id="countdown" hidden></div><button type="button" class="home-chip" id="home150">🏠 No. 150 Mountain View</button>
   <div class="bulbs" aria-hidden="true"></div>
 </header>
 <div class="ticker" aria-hidden="true"><div class="ticker-track"><span class="kw">Criccieth</span><u>✦</u><span class="kw">Porthmadog</span><u>✦</u><span class="kw">Bala</span><u>✦</u><span class="kw">Lake Vyrnwy</span><u>✦</u><span class="kw">Beddgelert</span><u>✦</u><span class="kw">Tan-y-Bwlch</span><u>✦</u><span class="kw">Blaenau Ffestiniog</span><u>✦</u><span class="kw">Snowdonia</span><u>✦</u><span class="kw">Criccieth</span><u>✦</u><span class="kw">Porthmadog</span><u>✦</u><span class="kw">Bala</span><u>✦</u><span class="kw">Lake Vyrnwy</span><u>✦</u><span class="kw">Beddgelert</span><u>✦</u><span class="kw">Tan-y-Bwlch</span><u>✦</u><span class="kw">Blaenau Ffestiniog</span><u>✦</u><span class="kw">Snowdonia</span><u>✦</u></div></div>
@@ -337,7 +345,24 @@ body{font-family:"Noto Sans HK","PingFang HK","Microsoft JhengHei",ui-rounded,sa
     <div class="backup-item"><span><b>Portmeirion</b><br><small>Portmeirion Shops Office, Penrhyndeudraeth LL48 6ET</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Portmeirion+Shops+Office+LL48+6ET">🍎 Apple 地圖</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Portmeirion+Shops+Office+LL48+6ET">📍 Google 地圖</a></div><div class="backup-item"><span><b>Pwllheli Beach</b><br><small>6 Min y Traeth, Pwllheli LL53 5AJ</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Pwllheli+Beach+6+Min+y+Traeth+LL53+5AJ">🍎 Apple 地圖</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Pwllheli+Beach+6+Min+y+Traeth+LL53+5AJ">📍 Google 地圖</a></div>
     <div class="backup-item"><span><b>Saved Google Maps place</b><br><small>Check the place at the link</small></span><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/iq1cAc1qWLmU3fL18">🔗 Open</a></div>
   </div>
-  <div class="card"><h3>Where we’re staying</h3><b>Haven Hafan y Môr Holiday Park</b><div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?q=Haven+Hafan+y+Mor+Holiday+Park">🍎 Apple 地圖</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Haven+Hafan+y+Mor+Holiday+Park">📍 Google 地圖</a></div></div>
+  <div class="card house" id="house">
+    <h3>🏠 住宿 · No. 150 Mountain View</h3>
+    <div class="badges"><span class="badge">Haven Hafan y Môr Holiday Park</span><span class="badge">銅級 Bronze caravan</span><span class="badge">2 間睡房</span></div>
+    <p class="desc">下圖藍色標記就是 150 號。位置在園區西面（左邊）的外圍，靠近草地；北面（上方）是粉紅色的住宅區。點 ＋ 放大，拖動地圖移動。</p>
+    <div class="map-scroll" id="map-scroll"><div class="map-inner" id="map-inner">
+      <img src="images/park-map.jpg" alt="Haven Hafan y Môr 園區地圖，藍色標記為 No. 150 Mountain View" width="1180" height="980">
+      <svg viewBox="0 0 1180 980" aria-hidden="true">
+        <path id="route" class="route-line" d="M335 168 C380 180 430 190 470 215 S560 300 585 345 S560 395 520 405 S430 425 385 412"/>
+        <circle cx="335" cy="168" r="11" fill="#f2d078" stroke="#393533" stroke-width="4"/>
+        <text x="352" y="150" class="map-label">入口（示意）</text>
+        <circle cx="321" cy="410" r="40" fill="none" stroke="#e0584a" stroke-width="6"><animate attributeName="r" values="40;84" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.9;0" dur="1.8s" repeatCount="indefinite"/></circle>
+        <rect x="236" y="330" width="170" height="46" rx="23" fill="#393533"/><text x="321" y="362" text-anchor="middle" class="map-tag">No. 150</text>
+      </svg></div></div>
+    <div class="map-ctrl"><button type="button" id="zout" aria-label="縮小">−</button><button type="button" id="zin" aria-label="放大">＋</button><button type="button" id="zreset">重設</button><button type="button" id="zroute" aria-pressed="true">示意路線：開</button></div>
+    <p class="note">紅色虛線只是根據地圖道路推測的示意路線，入口位置亦是推測，請以園內路牌及接待處指引為準。</p>
+    <div class="actions"><a class="pill-btn" target="_blank" rel="noopener" href="https://maps.apple.com/?daddr=52.90599,-4.3341&dirflg=d&q=Haven%20Hafan%20y%20M%C3%B4r">🍎 Apple 地圖導航</a><a class="pill-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=52.90599,-4.3341">📍 Google 地圖導航</a></div>
+    <p class="note">導航目的地為園區座標（VisitWales 資料）。郵編 LL53 6HX（另有來源為 LL53 6NQ），出發前請向 Haven 核對。</p>
+  </div>
 </section>
 </main>
 <section class="msg-wrap" id="msg"><div class="card msg"><h3>💬 Comments &amp; suggestions</h3><p class="lead" style="margin:0 0 10px">Got a question, idea or change for the trip? Write it here.</p><textarea id="msg-text" maxlength="600" placeholder="e.g. Can we add a café stop in Beddgelert?" aria-label="Your comment or suggestion"></textarea><div class="msg-actions"><button type="button" class="pill-btn main" id="msg-save">Save note</button><button type="button" class="pill-btn" id="msg-share">Share / send</button></div><ul class="note-list" id="notes"></ul></div></section>
@@ -452,6 +477,7 @@ const days=[
   Abergele:{tag:'Best for saving time',pts:['Sits right on the A55 coast road — little or no detour','Quick food stop, with the beach at Pensarn close by','Leaves more daylight for Tesco and the railway ticket'],q:'Abergele'}},
   advice:'Suggestion: pick Shrewsbury if you want a relaxed lunch and a walk; pick Abergele if you would rather keep the day short. Check the live route and traffic on the day.'},
  {id:'d1b',time:'15:30',cat:'stay',title:'Meet at Haven Hafan y Môr Holiday Park',note:'Meeting 15:30–15:45 · then check in',q:'Haven Hafan y Môr Holiday Park'},
+ {id:'d1h',cat:'stay',title:'No. 150 Mountain View',note:'銅級 Bronze caravan · 2 間睡房 · 點選查看位置圖',q:'Haven Hafan y Môr Holiday Park',link:['prepare','📍 查看 150 號位置圖 →','house']},
  {id:'d1c',cat:'transport',title:'After check-in → Porthmadog'},
  {id:'d1d',cat:'food',title:'Tesco Superstore',note:'Stop: Porthmadog',addr:'Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU',q:'Tesco Superstore Stryd Fawr Porthmadog LL49 9NU'},
  {id:'d1e',cat:'task',title:'Buy railway ticket',note:'Potential trip: Welsh Highland Heritage Railway',addr:'Porthmadog LL49 9DY',q:'Welsh Highland Heritage Railway Porthmadog LL49 9DY',link:['railway','See train times →']}]},
@@ -559,7 +585,7 @@ function render(i){
     if(e.q)mapLinks(e.q,acts);
     if(e.addr||e.q){const cp=el('button','pill-btn','Copy address');cp.type='button';cp.addEventListener('click',()=>{const txt=e.addr||e.title;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Address copied'),()=>toast('Copy not available'))});acts.append(cp)}
     if(e.url){const a=el('a','pill-btn','🔗 Official site');a.href=e.url;a.target='_blank';a.rel='noopener';acts.append(a)}
-    if(e.link){const b=el('button','pill-btn',e.link[1]);b.type='button';b.addEventListener('click',()=>panel(e.link[0]));acts.append(b)}
+    if(e.link){const b=el('button','pill-btn',e.link[1]);b.type='button';b.addEventListener('click',()=>panel(e.link[0],e.link[2]));acts.append(b)}
     det.append(acts);card.append(det);
     main.addEventListener('click',()=>{card.classList.toggle('open')});
     if(e.spirit)card.classList.add('open');
@@ -680,7 +706,7 @@ const TODO=[['t1','Choose the stop on Mon 19','Shrewsbury or Abergele — set it
 function buildTodo(){const u=$('#todo');u.replaceChildren();TODO.forEach(([id,t,s])=>{const li=el('li',state.todo[id]?'has-done':'');const l=el('label');const i=el('input');i.type='checkbox';i.checked=!!state.todo[id];i.addEventListener('change',()=>{state.todo[id]=i.checked;save();li.classList.toggle('has-done',i.checked)});const sp=el('span');sp.append(el('b',null,t),el('small',null,s));
  sp.firstChild.style.display='block';const wrap=el('span');wrap.append(...sp.childNodes);const txt=el('span');txt.append(wrap);l.append(i,txt);li.append(l);u.append(li)})}
 // styles for strike apply on span after input: ensure structure
-function panel(name){document.querySelectorAll('[data-panel]').forEach(b=>{const a=b.dataset.panel===name;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a))});['itinerary','railway','prepare'].forEach(id=>$('#'+id+'-panel').hidden=id!==name);window.scrollTo({top:0,behavior:'smooth'})}
+function panel(name,anchor){document.querySelectorAll('[data-panel]').forEach(b=>{const a=b.dataset.panel===name;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a))});['itinerary','railway','prepare'].forEach(id=>$('#'+id+'-panel').hidden=id!==name);if(anchor){setTimeout(()=>{const t=document.getElementById(anchor);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},60)}else window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>panel(b.dataset.panel)));
 
 /* Glitch Slices (#34): title cut into strips that jump sideways for a split second, readable in between */
@@ -689,6 +715,16 @@ document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',
  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
  function burst(){let f=0;const id=setInterval(()=>{g.classList.add('on');layers.forEach(l=>l.style.transform='translateX('+Math.round((Math.random()-.5)*26)+'px)');if(++f>4){clearInterval(id);g.classList.remove('on');layers.forEach(l=>l.style.transform='')}},45);setTimeout(burst,2200+Math.random()*1800)}
  setTimeout(burst,1200)})();
+/* park map viewer: zoom, pan, route toggle */
+(function(){const sc=$('#map-scroll'),inner=$('#map-inner');if(!sc)return;const PX=321/1180,PY=410/980,Z=[1,1.8,2.8,4];let zi=0;
+ function apply(){inner.style.width=(Z[zi]*100)+'%';const w=sc.clientWidth*Z[zi],h=w*980/1180;sc.scrollLeft=Math.max(0,PX*w-sc.clientWidth/2);sc.scrollTop=Math.max(0,PY*h-sc.clientHeight/2)}
+ $('#zin').addEventListener('click',()=>{zi=Math.min(Z.length-1,zi+1);apply()});$('#zout').addEventListener('click',()=>{zi=Math.max(0,zi-1);apply()});$('#zreset').addEventListener('click',()=>{zi=0;apply();sc.scrollTo(0,0)});
+ const rb=$('#zroute');rb.addEventListener('click',()=>{const on=rb.getAttribute('aria-pressed')!=='true';rb.setAttribute('aria-pressed',String(on));rb.textContent='示意路線：'+(on?'開':'關');$('#route').style.display=on?'':'none'});
+ // drag to pan with mouse
+ let d=null;sc.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){d={x:e.clientX,y:e.clientY,l:sc.scrollLeft,t:sc.scrollTop};sc.setPointerCapture(e.pointerId)}});
+ sc.addEventListener('pointermove',e=>{if(d){sc.scrollLeft=d.l-(e.clientX-d.x);sc.scrollTop=d.t-(e.clientY-d.y)}});['pointerup','pointercancel'].forEach(t=>sc.addEventListener(t,()=>d=null));
+ $('#home150').addEventListener('click',()=>{panel('prepare','house')});
+})();
 function applyLang(){setCountdown();navLabels();buildTrains();buildTodo();buildPack();buildNotes();render(sel);trStatic()}
 applyLang();
 </script>
