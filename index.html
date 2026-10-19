@@ -213,6 +213,9 @@ svg{overflow:visible}
 .wx-row{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;padding:7px 0;border-top:1px dashed #b7c4cf}
 .wx-row:first-of-type{border-top:0}.wx-ico{font-size:32px;grid-row:span 2;animation:bob 4s ease-in-out infinite}
 .wx-place{font-weight:700;font-size:14px}.wx-main{font-size:13px;color:#4d4642}
+.wx-hours{grid-column:1/-1;display:flex;gap:6px;overflow-x:auto;padding:6px 2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.wx-h{flex:0 0 52px;scroll-snap-align:start;border:2px solid var(--ink);border-radius:12px;background:#fff;text-align:center;padding:4px 2px;display:flex;flex-direction:column;gap:1px;font-size:11px;color:#4d4642}
+.wx-h b{font-size:12px;color:var(--ink)}.wx-h .i{font-size:20px;line-height:1.2}.wx-h .t{font-size:14px;font-weight:800;color:var(--ink)}.wx-h .p{color:#2f6fa3;font-weight:700}.wx-h.now{background:#fbe3a6}
 .wx-warn{margin-top:6px;border:2px solid var(--ink);border-radius:14px;background:#fbe3a6;padding:4px 10px;font-size:13px;font-weight:600}.wx-warn.cold{background:#cfe6f2}
 .spots{margin:6px 0 8px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:2px 10px}
 .spots summary{cursor:pointer;font-weight:700;font-size:14px;padding:6px 0}
@@ -759,14 +762,20 @@ function renderWeather(i){
  const head=el('div','wx-head');head.append(el('b',null,'🌤 天氣預報（'+days[i].date+'）'),el('small',null,'Open-Meteo · '+WX.stamp));box.append(head);
  let warn=[],cold=false;
  WX_DAY[i].forEach(k=>{const d=WX.d[k];if(!d)return;const [ic,tx]=wxDesc(d.c[i]);const row=el('div','wx-row');row.append(el('span','wx-ico',ic));row.append(el('div','wx-place',WX_LOC[k].n+' · '+tx));
-  row.append(el('div','wx-main',Math.round(d.lo[i])+'–'+Math.round(d.hi[i])+'°C · 雨量 '+d.r[i].toFixed(1)+' mm（'+d.p[i]+'%）· 陣風約 '+mph(d.g[i])+' mph'));box.append(row);
+  row.append(el('div','wx-main',Math.round(d.lo[i])+'–'+Math.round(d.hi[i])+'°C · 雨量 '+d.r[i].toFixed(1)+' mm（'+d.p[i]+'%）· 陣風約 '+mph(d.g[i])+' mph'));
+  if(d.h&&d.h.t&&d.h.t.length>=(i+1)*24){const strip=el('div','wx-hours'),now=new Date(),today=now.getFullYear()===2026&&now.getMonth()===9&&now.getDate()===19+i;let cur=null;
+   for(let hr=6;hr<24;hr++){const n=i*24+hr,[hi]=wxDesc(d.h.c[n]),night=(hr<7||hr>=19)&&d.h.c[n]<=2;const c=el('div','wx-h');
+    c.append(el('b',null,String(hr).padStart(2,'0')+':00'),el('span','i',night?'🌙':hi),el('span','t',Math.round(d.h.t[n])+'°'),el('span','p','☔'+d.h.p[n]+'%'),el('span',null,'💨'+mph(d.h.g[n])));
+    if(today&&hr===now.getHours()){c.classList.add('now');cur=c}strip.append(c)}
+   row.append(strip);if(cur)requestAnimationFrame(()=>{strip.scrollLeft=cur.offsetLeft-strip.offsetLeft})}
+  box.append(row);
   if(mph(d.g[i])>=45)warn.push('強風：'+WX_LOC[k].n+' 陣風約 '+mph(d.g[i])+' mph');if(d.r[i]>=15)warn.push('大雨：'+WX_LOC[k].n+' 約 '+Math.round(d.r[i])+' mm');if(d.lo[i]<=2)cold=true});
  if(warn.length){const w=el('div','wx-warn','⚠️ '+warn.join(' · ')+(i===4?'。火車可能減班或取消，當日早上請先查看營運狀態。':'。'));box.append(w)}
  if(cold)box.append(el('div','wx-warn cold','🥶 清晨氣溫接近冰點，路面可能有霜，請注意駕駛安全及保暖。'))}
 /* nightly snapshot written by the scheduled update (weather.json); the live fetch below wins when it works */
 fetch('weather.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{if(!WX.live&&j&&j.d){WX.d=j.d;WX.stamp='快照 '+j.stamp;renderWeather(sel)}}).catch(()=>{});
-(function(){const ks=Object.keys(WX_LOC);const url='https://api.open-meteo.com/v1/forecast?latitude='+ks.map(k=>WX_LOC[k].la).join(',')+'&longitude='+ks.map(k=>WX_LOC[k].lo).join(',')+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&timezone=Europe%2FLondon&start_date=2026-10-19&end_date=2026-10-23';
- fetch(url).then(r=>r.json()).then(j=>{if(!Array.isArray(j))return;const m={};ks.forEach((k,n)=>{const x=j[n].daily;m[k]={c:x.weather_code,hi:x.temperature_2m_max,lo:x.temperature_2m_min,r:x.precipitation_sum,p:x.precipitation_probability_max,g:x.wind_gusts_10m_max}});
+(function(){const ks=Object.keys(WX_LOC);const url='https://api.open-meteo.com/v1/forecast?latitude='+ks.map(k=>WX_LOC[k].la).join(',')+'&longitude='+ks.map(k=>WX_LOC[k].lo).join(',')+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&hourly=weather_code,temperature_2m,precipitation_probability,wind_gusts_10m&timezone=Europe%2FLondon&start_date=2026-10-19&end_date=2026-10-23';
+ fetch(url).then(r=>r.json()).then(j=>{if(!Array.isArray(j))return;const m={};ks.forEach((k,n)=>{const x=j[n].daily;m[k]={c:x.weather_code,hi:x.temperature_2m_max,lo:x.temperature_2m_min,r:x.precipitation_sum,p:x.precipitation_probability_max,g:x.wind_gusts_10m_max};const h=j[n].hourly;if(h)m[k].h={c:h.weather_code,t:h.temperature_2m,p:h.precipitation_probability,g:h.wind_gusts_10m}});
   if(ks.every(k=>m[k].c.length===5)){WX.d=m;const n=new Date();WX.stamp='即時 '+n.toLocaleString('zh-HK',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});WX.live=true;renderWeather(sel)}}).catch(()=>{})})();
 function applyLang(){setCountdown();navLabels();buildTrains();buildTodo();buildPack();buildNotes();render(sel);trStatic()}
 applyLang();

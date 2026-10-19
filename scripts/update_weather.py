@@ -13,7 +13,8 @@ url = (
     "https://api.open-meteo.com/v1/forecast?latitude=" + ",".join(str(l[1]) for l in LOCS)
     + "&longitude=" + ",".join(str(l[2]) for l in LOCS)
     + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,"
-      "precipitation_probability_max,wind_gusts_10m_max&timezone=Europe%2FLondon"
+      "precipitation_probability_max,wind_gusts_10m_max"
+      "&hourly=weather_code,temperature_2m,precipitation_probability,wind_gusts_10m&timezone=Europe%2FLondon"
       "&start_date=2026-10-19&end_date=2026-10-23"
 )
 
@@ -39,6 +40,9 @@ for (key, _, _), loc in zip(LOCS, data):
     d[key] = {"c": x["weather_code"], "hi": x["temperature_2m_max"], "lo": x["temperature_2m_min"],
               "r": x["precipitation_sum"], "p": x["precipitation_probability_max"], "g": x["wind_gusts_10m_max"]}
     assert all(len(v) == 5 for v in d[key].values()), "unexpected forecast length"
+    h = loc["hourly"]
+    d[key]["h"] = {"c": h["weather_code"], "t": h["temperature_2m"], "p": h["precipitation_probability"], "g": h["wind_gusts_10m"]}
+    assert all(len(v) == 120 for v in d[key]["h"].values()), "unexpected hourly length"
 
 with open("weather.json", "w", encoding="utf-8") as f:
     json.dump({"stamp": now.strftime("%d/%m %H:%M"), "d": d}, f, ensure_ascii=False, indent=1)
