@@ -763,6 +763,8 @@ function renderWeather(i){
   if(mph(d.g[i])>=45)warn.push('強風：'+WX_LOC[k].n+' 陣風約 '+mph(d.g[i])+' mph');if(d.r[i]>=15)warn.push('大雨：'+WX_LOC[k].n+' 約 '+Math.round(d.r[i])+' mm');if(d.lo[i]<=2)cold=true});
  if(warn.length){const w=el('div','wx-warn','⚠️ '+warn.join(' · ')+(i===4?'。火車可能減班或取消，當日早上請先查看營運狀態。':'。'));box.append(w)}
  if(cold)box.append(el('div','wx-warn cold','🥶 清晨氣溫接近冰點，路面可能有霜，請注意駕駛安全及保暖。'))}
+/* nightly snapshot written by the scheduled update (weather.json); the live fetch below wins when it works */
+fetch('weather.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{if(!WX.live&&j&&j.d){WX.d=j.d;WX.stamp='快照 '+j.stamp;renderWeather(sel)}}).catch(()=>{});
 (function(){const ks=Object.keys(WX_LOC);const url='https://api.open-meteo.com/v1/forecast?latitude='+ks.map(k=>WX_LOC[k].la).join(',')+'&longitude='+ks.map(k=>WX_LOC[k].lo).join(',')+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_gusts_10m_max&timezone=Europe%2FLondon&start_date=2026-10-19&end_date=2026-10-23';
  fetch(url).then(r=>r.json()).then(j=>{if(!Array.isArray(j))return;const m={};ks.forEach((k,n)=>{const x=j[n].daily;m[k]={c:x.weather_code,hi:x.temperature_2m_max,lo:x.temperature_2m_min,r:x.precipitation_sum,p:x.precipitation_probability_max,g:x.wind_gusts_10m_max}});
   if(ks.every(k=>m[k].c.length===5)){WX.d=m;const n=new Date();WX.stamp='即時 '+n.toLocaleString('zh-HK',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});WX.live=true;renderWeather(sel)}}).catch(()=>{})})();
