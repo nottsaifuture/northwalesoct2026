@@ -208,6 +208,11 @@ svg{overflow:visible}
 @media print{body{background:#fff}.primary-nav,.day-pager,.tick,.chev,.day-footer button,.toast{display:none}.sheet{box-shadow:none}.event{break-inside:avoid}.details{max-height:none!important}#prepare-panel,#railway-panel{display:block!important}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 /* ===== fancy layer ===== */
+.spots{margin:6px 0 8px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:2px 10px}
+.spots summary{cursor:pointer;font-weight:700;font-size:14px;padding:6px 0}
+.spot{border-top:1px dashed #cdbdb6;padding:8px 0}
+.spot-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.spot-cat{font-size:12px;border:2px solid var(--ink);border-radius:14px;padding:0 8px;background:var(--lavender)}
+.spot p{margin:4px 0 2px;font-size:13px;color:#6f6660}.spot small{color:#8a817c;font-size:12px;overflow-wrap:anywhere}
 .badges{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
 .map-scroll{overflow:auto;border:var(--line);border-radius:20px;max-height:440px;background:#f0efe9;margin-top:10px;-webkit-overflow-scrolling:touch}
 .map-inner{position:relative;width:100%;transition:width .25s}.map-inner img{display:block;width:100%;height:auto;max-width:none}.map-inner svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -473,7 +478,12 @@ function mapLinks(q,parent){[['🍎 Apple 地圖',amap],['📍 Google 地圖',gm
 const days=[
 {date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way.',ev:[
  {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele'],suggest:{
-  Shrewsbury:{tag:'Best for a proper break',pts:['Historic market town — plenty of cafés and lunch choices','Riverside / Quarry Park walk to stretch your legs','Good place to rest before the winding Welsh roads'],q:'Shrewsbury town centre'},
+  Shrewsbury:{tag:'Best for a proper break',pts:['Historic market town — plenty of cafés and lunch choices','Riverside / Quarry Park walk to stretch your legs','Good place to rest before the winding Welsh roads'],q:'Shrewsbury town centre',spots:[
+   {name:'Frankwell Main Car Park',cat:'🅿 停車',note:'位於 Severn 河西岸的大型停車場，由這裡步行過橋即到市中心。先停車，再開始逛。收費及限高以現場告示為準。',addr:'P66V+MV, Shrewsbury SY3 8RD',q:'Frankwell Main Car Park Shrewsbury SY3 8RD'},
+   {name:'High St',cat:'🛍 街道',note:'市中心主要街道，兩旁是歷史建築，有商店、咖啡店及午餐選擇。',addr:'39 High St, Shrewsbury SY1 1ST',q:'39 High St Shrewsbury SY1 1ST'},
+   {name:'Wyle Cop',cat:'🛍 街道',note:'由 English Bridge 向上走的斜坡老街，有獨立小店及古老木架建築。',addr:'Wyle Cop, Shrewsbury SY1 1XJ',q:'Wyle Cop Shrewsbury SY1 1XJ'},
+   {name:'Grope Ln',cat:'📸 小巷',note:'中世紀的狹窄小巷，木架屋緊貼兩旁，適合影相。',addr:'52.7077650, -2.7533086',q:'52.707764961141436,-2.7533085802517574'},
+   {name:'Saint Alkmund’s Church',cat:'⛪ 教堂',note:'市中心的歷史教堂，帶尖塔，位於 St Alkmund’s Square 旁。',addr:'6 St Alkmonds Square, Shrewsbury SY1 1UL',q:'Saint Alkmund\'s Church 6 St Alkmonds Square Shrewsbury SY1 1UL'}]},
   Abergele:{tag:'Best for saving time',pts:['Sits right on the A55 coast road — little or no detour','Quick food stop, with the beach at Pensarn close by','Leaves more daylight for Tesco and the railway ticket'],q:'Abergele'}},
   advice:'Suggestion: pick Shrewsbury if you want a relaxed lunch and a walk; pick Abergele if you would rather keep the day short. Check the live route and traffic on the day.'},
  {id:'d1b',time:'15:30',cat:'stay',title:'Meet at Haven Hafan y Môr Holiday Park',note:'Meeting 15:30–15:45 · then check in',q:'Haven Hafan y Môr Holiday Park'},
@@ -563,7 +573,9 @@ function render(i){
    let note=e.note;if(e.choice)note=tr('Stop on the way: ')+state.stop;if(note)desc.append(el('small',null,note));
    c.append(desc);
    if(e.choice){const ch=el('div','choice');ch.style.width='100%';e.options.forEach(o=>{const b=el('button',null,o);b.type='button';b.setAttribute('aria-pressed',String(state.stop===o));b.addEventListener('click',()=>{state.stop=o;save();toast(tr('Stop: ')+o);render(sel)});ch.append(b)});c.append(ch)
-    const sg=el('div','suggest');e.options.forEach(o=>{const x=e.suggest[o];const card=el('div','sg'+(state.stop===o?' on':''));const h=el('h4',null,o);h.append(el('em',null,x.tag));card.append(h);const ul=el('ul');x.pts.forEach(t=>ul.append(el('li',null,t)));card.append(ul);const acts=el('div','actions');acts.style.marginTop='4px';const pick=el('button','pill-btn'+(state.stop===o?' on':''),state.stop===o?'✓ Chosen':'Choose this');pick.type='button';pick.addEventListener('click',()=>{state.stop=o;save();toast(tr('Stop: ')+o);render(sel)});mapLinks(x.q,acts);acts.append(pick);card.append(acts);sg.append(card)});
+    const sg=el('div','suggest');e.options.forEach(o=>{const x=e.suggest[o];const card=el('div','sg'+(state.stop===o?' on':''));const h=el('h4',null,o);h.append(el('em',null,x.tag));card.append(h);const ul=el('ul');x.pts.forEach(t=>ul.append(el('li',null,t)));card.append(ul);
+    if(x.spots){const dt=document.createElement('details');dt.className='spots';dt.append(el('summary',null,'📍 '+o+' 停車及景點（'+x.spots.length+' 個）'));x.spots.forEach(sp=>{const row=el('div','spot');const hd=el('div','spot-head');hd.append(el('b',null,sp.name),el('span','spot-cat',sp.cat));row.append(hd,el('p',null,sp.note),el('small',null,sp.addr));const ac=el('div','actions');ac.style.marginTop='6px';mapLinks(sp.q,ac);row.append(ac);dt.append(row)});dt.append(el('p','sg-note','次序只是參考，可按當日情況調整。'));card.append(dt)}
+    const acts=el('div','actions');acts.style.marginTop='4px';const pick=el('button','pill-btn'+(state.stop===o?' on':''),state.stop===o?'✓ Chosen':'Choose this');pick.type='button';pick.addEventListener('click',()=>{state.stop=o;save();toast(tr('Stop: ')+o);render(sel)});mapLinks(x.q,acts);acts.append(pick);card.append(acts);sg.append(card)});
     sg.append(el('p','sg-note',e.advice));c.append(sg)}
    row.append(c);
   }else{
