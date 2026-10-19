@@ -1,0 +1,28 @@
+name: Nightly weather
+
+on:
+  schedule:
+    - cron: "0 21 * * *"   # 21:00 UTC = 22:00 UK time (BST, until 25 Oct)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch latest forecast
+        run: python3 scripts/update_weather.py
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain weather.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add weather.json
+            git commit -m "Nightly weather update"
+            git push
+          else
+            echo "No change"
+          fi
