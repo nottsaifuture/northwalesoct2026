@@ -83,7 +83,7 @@ svg{overflow:visible}
 .category{display:inline-block;font-size:12px;border:2px solid var(--ink);border-radius:20px;padding:0 9px;background:var(--lavender);margin-bottom:8px;line-height:1.5}
 .category.parking{background:var(--blue)}.category.food{background:var(--pink)}.category.swim{background:var(--blue)}.category.task{background:var(--yellow)}.category.stay{background:var(--green)}.category.ice{background:var(--pink)}.category.shop{background:var(--yellow)}.category.train{background:#f4c9a0}
 .details{overflow:hidden;max-height:0;transition:max-height .3s ease}
-.event-card.open .details{max-height:420px}
+.event-card.open .details{max-height:420px}.event-card.open .details:has(.route){max-height:1200px}
 .details p{font-size:14px;line-height:1.6;color:#786f6b;margin:8px 0 0;overflow-wrap:anywhere}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .pill-btn{display:inline-block;border:2px solid var(--ink);border-radius:20px;background:#fff;padding:2px 12px;font-size:13px;text-decoration:none;color:var(--ink)}
@@ -212,6 +212,7 @@ svg{overflow:visible}
 .wx-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}.wx-head b{font-size:15px}.wx-head small{color:#7a726c;font-size:11px}
 .wx-row{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;padding:7px 0;border-top:1px dashed #b7c4cf}
 .wx-row:first-of-type{border-top:0}.wx-ico{font-size:32px;grid-row:span 2;animation:bob 4s ease-in-out infinite}
+.route{margin:8px 0}.route img{display:block;width:100%;height:auto;border:2px solid var(--ink);border-radius:14px}.route figcaption{font-size:12px;color:#7a726c;margin-top:4px}
 .wx-place{font-weight:700;font-size:14px}.wx-main{font-size:13px;color:#4d4642}
 .wx-hours{grid-column:1/-1;display:flex;gap:6px;overflow-x:auto;padding:6px 2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
 .wx-h{flex:0 0 52px;scroll-snap-align:start;border:2px solid var(--ink);border-radius:12px;background:#fff;text-align:center;padding:4px 2px;display:flex;flex-direction:column;gap:1px;font-size:11px;color:#4d4642}
@@ -422,7 +423,7 @@ const ZH={
 /* day 2 */
 'Criccieth & Porthmadog':'Criccieth 及 Porthmadog','Morning swim, Criccieth seafront and the Lloyd George Museum, then Porthmadog harbour, High Street and ice cream.':'早上游水，遊覽 Criccieth 海濱及 Lloyd George 博物館，再到 Porthmadog 港口、High Street 及食雪糕。',
 'Unconfirmed: Blas y Môr (seafood) came from an undated directory — check it is still open. Two Cadwaladers ice cream shops (Criccieth and Porthmadog) — pick one or try both!':'未確認：Blas y Môr（海鮮）資料來自沒有日期的名錄——請確認仍在營業。Criccieth 及 Porthmadog 各有一間 Cadwaladers 雪糕店——可揀其一或兩間都試！',
-'Swimming':'游水','Drive to Criccieth':'駕車前往 Criccieth','Lunch? · seafront restaurant':'午餐？· 海濱餐廳','Cadwaladers (ice cream)':'Cadwaladers（雪糕）','On to Porthmadog':'前往 Porthmadog',
+'Swimming':'游水','Splashaway Bay Swimming Pool · in the holiday park':'Splashaway Bay 泳池 · 度假村內','Splashaway Bay, Haven Hafan y Môr Holiday Park':'Splashaway Bay，Haven Hafan y Môr Holiday Park','Route from No. 150 Mountain View to Splashaway Bay (red line)':'由 150 號 Mountain View 前往 Splashaway Bay 的路線（紅線）','Drive to Criccieth':'駕車前往 Criccieth','Lunch? · seafront restaurant':'午餐？· 海濱餐廳','Cadwaladers (ice cream)':'Cadwaladers（雪糕）','On to Porthmadog':'前往 Porthmadog',
 'Seafood · unconfirmed — check it is open':'海鮮 · 未確認——請確認有營業','Cariad Gelato Kiosk (ice cream)':'Cariad Gelato 小攤（雪糕）','Maritime Museum':'海事博物館',
 /* day 3 */
 'Bala & Lake Vyrnwy':'Bala 及 Lake Vyrnwy','Swim first, then Bala and its mound, and the Lake Vyrnwy dam.':'先游水，再遊 Bala 及其土丘，然後到 Lake Vyrnwy 水壩。',
@@ -484,7 +485,8 @@ function trStatic(){
 
 const amap=q=>'https://maps.apple.com/?q='+encodeURIComponent(q);
 const gmap=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
-function mapLinks(q,parent){[['🍎 Apple 地圖',amap],['📍 Google 地圖',gmap]].forEach(([l,f])=>{const a=el('a','pill-btn',l);a.href=f(q);a.target='_blank';a.rel='noopener';parent.append(a)})}
+const POOL={note:'Splashaway Bay Swimming Pool · in the holiday park',addr:'Splashaway Bay, Haven Hafan y Môr Holiday Park',q:'Splashaway Bay Haven Hafan y Môr',gq:'https://maps.app.goo.gl/RpsKbzUhxFUgrL5c6',img:['images/pool-route.jpg','Route from No. 150 Mountain View to Splashaway Bay (red line)']};
+function mapLinks(q,parent,g){[['🍎 Apple 地圖',amap],['📍 Google 地圖',x=>g||gmap(x)]].forEach(([l,f])=>{const a=el('a','pill-btn',l);a.href=f(q);a.target='_blank';a.rel='noopener';parent.append(a)})}
 const days=[
 {date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way.',ev:[
  {id:'d1a',cat:'transport',title:'Drive to Porthmadog',note:'Choose your stop on the way',choice:'stop',options:['Shrewsbury','Abergele'],suggest:{
@@ -502,7 +504,7 @@ const days=[
  {id:'d1d',cat:'food',title:'Tesco Superstore',note:'Stop: Porthmadog',addr:'Tesco Stores Ltd, Stryd Fawr, Porthmadog LL49 9NU',q:'Tesco Superstore Stryd Fawr Porthmadog LL49 9NU'},
  {id:'d1e',cat:'task',title:'Buy railway ticket',note:'Potential trip: Welsh Highland Heritage Railway',addr:'Porthmadog LL49 9DY',q:'Welsh Highland Heritage Railway Porthmadog LL49 9DY',link:['railway','See train times →']}]},
 {date:'20/10',wd:'Tue',title:'Criccieth & Porthmadog',icon:'bala',summary:'Morning swim, Criccieth seafront and the Lloyd George Museum, then Porthmadog harbour, High Street and ice cream.',tip:'Unconfirmed: Blas y Môr (seafood) came from an undated directory — check it is still open. Two Cadwaladers ice cream shops (Criccieth and Porthmadog) — pick one or try both!',ev:[
- {id:'d2a',time:'09:30',cat:'swim',title:'Swimming'},
+ {id:'d2a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
  {id:'d2b',cat:'transport',title:'Drive to Criccieth'},
  {id:'d2c',cat:'parking',title:'Criccieth Beach Car Park',addr:'Esplanade, Criccieth LL52 0HZ',q:'Criccieth Beach Car Park Esplanade LL52 0HZ'},
  {id:'d2d',cat:'food',title:'Dylan’s Criccieth',note:'Lunch? · seafront restaurant',addr:'Maes y Môr, Esplanade, Criccieth LL52 0HU',q:'Dylan\'s Criccieth Maes y Mor Esplanade LL52 0HU'},
@@ -516,7 +518,7 @@ const days=[
  {id:'d2l',cat:'shop',title:'Browsers Bookshop',addr:'73 High St, Porthmadog LL49 9EU',q:'Browsers Bookshop 73 High St Porthmadog LL49 9EU'},
  {id:'d2m',cat:'place',title:'Maritime Museum',addr:'The Harbour, Porthmadog LL49 9LU',q:'Porthmadog Maritime Museum The Harbour LL49 9LU'}]},
 {date:'21/10',wd:'Wed',title:'Bala & Lake Vyrnwy',icon:'lake',summary:'Swim first, then Bala and its mound, and the Lake Vyrnwy dam.',tip:'Bala and Vyrnwy are a drive apart — start Bala early. Parking at The Green is council pay-and-display; check the tariff board. Lake Vyrnwy can have patchy phone signal.',ev:[
- {id:'d3a',time:'09:30',cat:'swim',title:'Swimming'},
+ {id:'d3a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
  {id:'d3b',cat:'transport',title:'Drive to Bala'},
  {id:'d3c',cat:'parking',title:'The Green (parking)',addr:'Station Rd, Bala, Gwynedd LL23',q:'The Green car park Bala LL23 7NG'},
  {id:'d3d',cat:'place',title:'Tomen y Bala',note:'Medieval castle mound',addr:'Bala LL23 7RS',q:'Tomen y Bala LL23 7RS'},
@@ -524,7 +526,7 @@ const days=[
  {id:'d3f',cat:'parking',title:'Hafren Dyfrdwy – Lake Vyrnwy Car Park',addr:'2 Grwn Oer Cottages, Oswestry SY10 0LZ',q:'Hafren Dyfrdwy Lake Vyrnwy Car Park SY10 0LZ'},
  {id:'d3g',cat:'place',title:'Lake Vyrnwy Dam',addr:'15 Abertridwr, Llanwddyn, Oswestry SY10 0LR',q:'15 Abertridwr Llanwddyn Oswestry SY10 0LR'}]},
 {date:'22/10',wd:'Thu',title:'Sygun Copper Mine & Beddgelert',icon:'mine',summary:'Swim, then Sygun Copper Mine first, and on to Beddgelert village.',tip:'Sygun has its own car park — check the price at the mine. Colwyn Banc in Beddgelert is council pay-and-display (about £4.60 for up to 6 hours in the 2026 summer band) — check the board. Portmeirion is the backup if the weather turns.',ev:[
- {id:'d4a',time:'09:30',cat:'swim',title:'Swimming'},
+ {id:'d4a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
  {id:'d4b',cat:'transport',title:'Drive to Sygun Copper Mine'},
  {id:'d4c',cat:'place',title:'Sygun Copper Mine',note:'First stop · parking at the mine — check the price',addr:'Beddgelert LL55 4NE',q:'Sygun Copper Mine Beddgelert'},
  {id:'d4d',cat:'transport',title:'On to Beddgelert village'},
@@ -594,7 +596,7 @@ function render(i){
    const main=el('button','card-main');main.type='button';
    main.append(el('span','category '+e.cat,catLabel[e.cat]||'📍 Stop'));main.append(el('h2',null,e.title));
    if(e.note)main.append(Object.assign(el('p',null,e.note),{style:'font-size:13px;color:#8a817c;margin:3px 0 0'}));
-   const hasDetails=e.addr||e.q||e.spirit||e.link;
+   const hasDetails=e.addr||e.q||e.spirit||e.link||e.img;
    if(hasDetails)main.append(el('span','chev','▼'));
    const tick=el('button','tick');tick.type='button';tick.setAttribute('aria-label',(lang==='zh'?'標記完成：':'Mark ')+tr(e.title)+(lang==='zh'?'':' as done'));
    tick.addEventListener('click',()=>{state.checks[e.id]=!state.checks[e.id];save();row.classList.toggle('checked',!!state.checks[e.id]);updateProgress();syncDone();if(state.checks[e.id]&&dayProgress(d)[0]===dayProgress(d)[1]){toast('Day complete 🎉');confetti()}});
@@ -602,9 +604,10 @@ function render(i){
    if(hasDetails){
     const det=el('div','details');
     if(e.addr)det.append(el('p',null,e.addr));
+    if(e.img){const f=el('figure','route');const im=el('img');im.src=e.img[0];im.alt=tr(e.img[1]);im.loading='lazy';f.append(im,el('figcaption',null,e.img[1]));det.append(f)}
     if(e.spirit)det.append(trainBlock(state.train,false));
     const acts=el('div','actions');
-    if(e.q)mapLinks(e.q,acts);
+    if(e.q)mapLinks(e.q,acts,e.gq);
     if(e.addr||e.q){const cp=el('button','pill-btn','Copy address');cp.type='button';cp.addEventListener('click',()=>{const txt=e.addr||e.title;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Address copied'),()=>toast('Copy not available'))});acts.append(cp)}
     if(e.url){const a=el('a','pill-btn','🔗 Official site');a.href=e.url;a.target='_blank';a.rel='noopener';acts.append(a)}
     if(e.link){const b=el('button','pill-btn',e.link[1]);b.type='button';b.addEventListener('click',()=>panel(e.link[0],e.link[2]));acts.append(b)}
