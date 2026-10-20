@@ -212,7 +212,7 @@ svg{overflow:visible}
 .wx-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}.wx-head b{font-size:15px}.wx-head small{color:#7a726c;font-size:11px}
 .wx-row{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;padding:7px 0;border-top:1px dashed #b7c4cf}
 .wx-row:first-of-type{border-top:0}.wx-ico{font-size:32px;grid-row:span 2;animation:bob 4s ease-in-out infinite}
-.route{margin:8px 0}.route img{display:block;width:100%;height:auto;border:2px solid var(--ink);border-radius:14px}.route figcaption{font-size:12px;color:#7a726c;margin-top:4px}
+.info{margin:6px 0 8px;font-size:14px}.info ul{margin:4px 0 0;padding-left:20px}.route{margin:8px 0}.route img{display:block;width:100%;height:auto;border:2px solid var(--ink);border-radius:14px}.route figcaption{font-size:12px;color:#7a726c;margin-top:4px}
 .wx-place{font-weight:700;font-size:14px}.wx-main{font-size:13px;color:#4d4642}
 .wx-hours{grid-column:1/-1;display:flex;gap:6px;overflow-x:auto;padding:6px 2px 4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
 .wx-h{flex:0 0 52px;scroll-snap-align:start;border:2px solid var(--ink);border-radius:12px;background:#fff;text-align:center;padding:4px 2px;display:flex;flex-direction:column;gap:1px;font-size:11px;color:#4d4642}
@@ -431,8 +431,8 @@ const ZH={
 'Drive to Bala':'駕車前往 Bala','The Green (parking)':'The Green（停車）','Medieval castle mound':'中世紀城堡土丘','Drive to Lake Vyrnwy':'駕車前往 Lake Vyrnwy',
 /* day 4 */
 'Sygun Copper Mine & Beddgelert':'Sygun 銅礦及 Beddgelert','Swim, then Sygun Copper Mine first, and on to Beddgelert village.':'先游水，首先到 Sygun 銅礦，然後前往 Beddgelert 村。',
-'Sygun has its own car park — check the price at the mine. Colwyn Banc in Beddgelert is council pay-and-display (about £4.60 for up to 6 hours in the 2026 summer band) — check the board. Portmeirion is the backup if the weather turns.':'Sygun 設有自己的停車場——請向礦場查詢收費。Beddgelert 的 Colwyn Banc 為議會收費停車場（2026 年夏季收費約 6 小時內 £4.60）——請查看收費牌。天氣轉差可改去 Portmeirion。',
-'Drive to Sygun Copper Mine':'駕車前往 Sygun 銅礦','Sygun Copper Mine':'Sygun 銅礦','First stop · parking at the mine — check the price':'第一站 · 礦場停車——請查詢收費',
+'You can park on the street just outside Sygun (pin below). No booking needed for the self-guided tour — just turn up and pay. Colwyn Banc in Beddgelert is council pay-and-display (about £4.60 for up to 6 hours in the 2026 summer band) — check the board. Portmeirion is the backup if the weather turns.':'Sygun 門外路邊可以泊車（見下面的位置）。自助導覽毋須預約，即場付款即可。Beddgelert 的 Colwyn Banc 為議會收費停車場（2026 年夏季收費約 6 小時內 £4.60）——請查看收費牌。天氣轉差可改去 Portmeirion。',
+'Drive to Sygun Copper Mine':'駕車前往 Sygun 銅礦','Sygun Copper Mine':'Sygun 銅礦','Self-guided tour · no booking, pay on arrival':'自助導覽 · 毋須預約，即場付款','Street parking outside Sygun':'Sygun 門外路邊泊車','Park on the road just outside the mine':'礦場門外路邊可泊車','Entrance charge':'入場費','Adult £12':'成人 £12','Child £7.50':'小童 £7.50','Student £10':'學生 £10','Family (2 adults + 2 children) £34':'家庭（2 大 2 小）£34','Family (2 adults + 3 children) £40':'家庭（2 大 3 小）£40','Groups: call for details':'團體：請致電查詢',
 'On to Beddgelert village':'前往 Beddgelert 村','Village & river walk':'村莊及河邊散步',
 /* day 5 */
 'Woodland Wanderer':'Woodland Wanderer（林地漫遊者）','A 1960s-style heritage carriage ride from Porthmadog to Tan-y-Bwlch and back — 2 h 10 min, 14 miles.':'乘搭 1960 年代風格的古董車廂，由 Porthmadog 前往 Tan-y-Bwlch 並折返——約 2 小時 10 分鐘，來回 14 英里。',
@@ -517,7 +517,15 @@ const days=[
  {id:'d2k',cat:'ice',title:'Cariad Gelato Kiosk (ice cream)',addr:'The kiosk, High St, Porthmadog LL49 9LP',q:'Cariad Gelato Kiosk High St Porthmadog LL49 9LP'},
  {id:'d2l',cat:'shop',title:'Browsers Bookshop',addr:'73 High St, Porthmadog LL49 9EU',q:'Browsers Bookshop 73 High St Porthmadog LL49 9EU'},
  {id:'d2m',cat:'place',title:'Maritime Museum',addr:'The Harbour, Porthmadog LL49 9LU',q:'Porthmadog Maritime Museum The Harbour LL49 9LU'}]},
-{date:'21/10',wd:'Wed',title:'Bala & Lake Vyrnwy',icon:'lake',summary:'Swim first, then Bala and its mound, and the Lake Vyrnwy dam.',tip:'Bala and Vyrnwy are a drive apart — start Bala early. Parking at The Green is council pay-and-display; check the tariff board. Lake Vyrnwy can have patchy phone signal.',ev:[
+{date:'21/10',wd:'Wed',title:'Sygun Copper Mine & Beddgelert',icon:'mine',summary:'Swim, then Sygun Copper Mine first, and on to Beddgelert village.',tip:'You can park on the street just outside Sygun (pin below). No booking needed for the self-guided tour — just turn up and pay. Colwyn Banc in Beddgelert is council pay-and-display (about £4.60 for up to 6 hours in the 2026 summer band) — check the board. Portmeirion is the backup if the weather turns.',ev:[
+ {id:'d4a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
+ {id:'d4b',cat:'transport',title:'Drive to Sygun Copper Mine'},
+ {id:'d4p',cat:'parking',title:'Street parking outside Sygun',note:'Park on the road just outside the mine',addr:'2WC9+387 Caernarfon · 53.0201684, -4.0817015',q:'53.0201684,-4.0817015'},
+ {id:'d4c',cat:'place',title:'Sygun Copper Mine',note:'Self-guided tour · no booking, pay on arrival',addr:'Beddgelert LL55 4NE',q:'Sygun Copper Mine Beddgelert',info:['Entrance charge','Adult £12','Child £7.50','Student £10','Family (2 adults + 2 children) £34','Family (2 adults + 3 children) £40','Groups: call for details']},
+ {id:'d4d',cat:'transport',title:'On to Beddgelert village'},
+ {id:'d4e',cat:'parking',title:'Colwyn Banc Car Park',addr:'A4085, Beddgelert, Penrhyndeudraeth LL55 4UY',q:'Colwyn Banc Car Park Beddgelert LL55 4UY'},
+ {id:'d4f',cat:'place',title:'Beddgelert',note:'Village & river walk',q:'Beddgelert'}]},
+{date:'22/10',wd:'Thu',title:'Bala & Lake Vyrnwy',icon:'lake',summary:'Swim first, then Bala and its mound, and the Lake Vyrnwy dam.',tip:'Bala and Vyrnwy are a drive apart — start Bala early. Parking at The Green is council pay-and-display; check the tariff board. Lake Vyrnwy can have patchy phone signal.',ev:[
  {id:'d3a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
  {id:'d3b',cat:'transport',title:'Drive to Bala'},
  {id:'d3c',cat:'parking',title:'The Green (parking)',addr:'Station Rd, Bala, Gwynedd LL23',q:'The Green car park Bala LL23 7NG'},
@@ -525,13 +533,6 @@ const days=[
  {id:'d3e',cat:'transport',title:'Drive to Lake Vyrnwy'},
  {id:'d3f',cat:'parking',title:'Hafren Dyfrdwy – Lake Vyrnwy Car Park',addr:'2 Grwn Oer Cottages, Oswestry SY10 0LZ',q:'Hafren Dyfrdwy Lake Vyrnwy Car Park SY10 0LZ'},
  {id:'d3g',cat:'place',title:'Lake Vyrnwy Dam',addr:'15 Abertridwr, Llanwddyn, Oswestry SY10 0LR',q:'15 Abertridwr Llanwddyn Oswestry SY10 0LR'}]},
-{date:'22/10',wd:'Thu',title:'Sygun Copper Mine & Beddgelert',icon:'mine',summary:'Swim, then Sygun Copper Mine first, and on to Beddgelert village.',tip:'Sygun has its own car park — check the price at the mine. Colwyn Banc in Beddgelert is council pay-and-display (about £4.60 for up to 6 hours in the 2026 summer band) — check the board. Portmeirion is the backup if the weather turns.',ev:[
- {id:'d4a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
- {id:'d4b',cat:'transport',title:'Drive to Sygun Copper Mine'},
- {id:'d4c',cat:'place',title:'Sygun Copper Mine',note:'First stop · parking at the mine — check the price',addr:'Beddgelert LL55 4NE',q:'Sygun Copper Mine Beddgelert'},
- {id:'d4d',cat:'transport',title:'On to Beddgelert village'},
- {id:'d4e',cat:'parking',title:'Colwyn Banc Car Park',addr:'A4085, Beddgelert, Penrhyndeudraeth LL55 4UY',q:'Colwyn Banc Car Park Beddgelert LL55 4UY'},
- {id:'d4f',cat:'place',title:'Beddgelert',note:'Village & river walk',q:'Beddgelert'}]},
 {date:'23/10',wd:'Fri',title:'Train day',icon:'train',summary:'Pick one: Woodland Wanderer (about 2 h 10 min) or Mountain Spirit (about 3 hours).',tip:'Prices exclude the 6% online booking fee. Both booking calendars show seats on 19–23 Oct. Wheelchair or mobility scooter users should call 01766 516024 to book Mountain Spirit.',ev:[
  {id:'d5a',cat:'train',title:'Train',spirit:true}]}
 ];
@@ -596,7 +597,7 @@ function render(i){
    const main=el('button','card-main');main.type='button';
    main.append(el('span','category '+e.cat,catLabel[e.cat]||'📍 Stop'));main.append(el('h2',null,e.title));
    if(e.note)main.append(Object.assign(el('p',null,e.note),{style:'font-size:13px;color:#8a817c;margin:3px 0 0'}));
-   const hasDetails=e.addr||e.q||e.spirit||e.link||e.img;
+   const hasDetails=e.addr||e.q||e.spirit||e.link||e.img||e.info;
    if(hasDetails)main.append(el('span','chev','▼'));
    const tick=el('button','tick');tick.type='button';tick.setAttribute('aria-label',(lang==='zh'?'標記完成：':'Mark ')+tr(e.title)+(lang==='zh'?'':' as done'));
    tick.addEventListener('click',()=>{state.checks[e.id]=!state.checks[e.id];save();row.classList.toggle('checked',!!state.checks[e.id]);updateProgress();syncDone();if(state.checks[e.id]&&dayProgress(d)[0]===dayProgress(d)[1]){toast('Day complete 🎉');confetti()}});
@@ -604,6 +605,7 @@ function render(i){
    if(hasDetails){
     const det=el('div','details');
     if(e.addr)det.append(el('p',null,e.addr));
+    if(e.info){const box=el('div','info');box.append(el('b',null,e.info[0]));const ul=el('ul');e.info.slice(1).forEach(t=>ul.append(el('li',null,t)));box.append(ul);det.append(box)}
     if(e.img){const f=el('figure','route');const im=el('img');im.src=e.img[0];im.alt=tr(e.img[1]);im.loading='lazy';f.append(im,el('figcaption',null,e.img[1]));det.append(f)}
     if(e.spirit)det.append(trainBlock(state.train,false));
     const acts=el('div','actions');
@@ -752,7 +754,7 @@ document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',
 })();
 /* weather: live forecast from Open-Meteo, with a saved snapshot as fallback */
 const WX_LOC={porth:{n:'Porthmadog',la:52.929,lo:-4.131},bala:{n:'Bala',la:52.911,lo:-3.597},vyr:{n:'Lake Vyrnwy',la:52.76,lo:-3.50},bedd:{n:'Beddgelert',la:53.012,lo:-4.103}};
-const WX_DAY=[['porth'],['porth'],['bala','vyr'],['bedd'],['porth']];
+const WX_DAY=[['porth'],['porth'],['bedd'],['bala','vyr'],['porth']];
 const WX={stamp:'2026-10-19 快照',live:false,d:{
  porth:{c:[51,51,63,63,63],hi:[12.9,10.8,10.4,11.6,12.9],lo:[6.3,7.7,2.4,4.9,7.6],r:[0.2,0.8,9.55,12.6,20.3],p:[47,60,80,90,90],g:[47.2,25.9,52.6,60.1,82.1]},
  bala:{c:[53,55,53,63,63],hi:[11.4,9.8,8.7,11.0,12.1],lo:[4.4,3.4,0.1,3.2,6.2],r:[1.8,4.4,4.23,10.5,18.9],p:[100,91,72,87,95],g:[32.8,14.0,49.0,59.8,74.2]},
