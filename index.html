@@ -423,7 +423,7 @@ const ZH={
 /* day 2 */
 'Criccieth & Porthmadog':'Criccieth 及 Porthmadog','Morning swim, Criccieth seafront and the Lloyd George Museum, then Porthmadog harbour, High Street and ice cream.':'早上游水，遊覽 Criccieth 海濱及 Lloyd George 博物館，再到 Porthmadog 港口、High Street 及食雪糕。',
 'Unconfirmed: Blas y Môr (seafood) came from an undated directory — check it is still open. Two Cadwaladers ice cream shops (Criccieth and Porthmadog) — pick one or try both!':'未確認：Blas y Môr（海鮮）資料來自沒有日期的名錄——請確認仍在營業。Criccieth 及 Porthmadog 各有一間 Cadwaladers 雪糕店——可揀其一或兩間都試！',
-'Swimming':'游水','Splashaway Bay Swimming Pool · in the holiday park':'Splashaway Bay 泳池 · 度假村內','Splashaway Bay, Haven Hafan y Môr Holiday Park':'Splashaway Bay，Haven Hafan y Môr Holiday Park','Route from No. 150 Mountain View to Splashaway Bay (red line)':'由 150 號 Mountain View 前往 Splashaway Bay 的路線（紅線）','Drive to Criccieth':'駕車前往 Criccieth','Lunch? · seafront restaurant':'午餐？· 海濱餐廳','Cadwaladers (ice cream)':'Cadwaladers（雪糕）','On to Porthmadog':'前往 Porthmadog',
+'Swimming':'游水','Splashaway Bay Swimming Pool · in the holiday park':'Splashaway Bay 泳池 · 度假村內','Splashaway Bay, Haven Hafan y Môr Holiday Park · 52°54′22.9″N 4°20′00.3″W':'Splashaway Bay，Haven Hafan y Môr Holiday Park · 52°54′22.9″N 4°20′00.3″W','Route from No. 150 Mountain View to Splashaway Bay (red line)':'由 150 號 Mountain View 前往 Splashaway Bay 的路線（紅線）','Drive to Criccieth':'駕車前往 Criccieth','Lunch? · seafront restaurant':'午餐？· 海濱餐廳','Cadwaladers (ice cream)':'Cadwaladers（雪糕）','On to Porthmadog':'前往 Porthmadog',
 'Seafood · unconfirmed — check it is open':'海鮮 · 未確認——請確認有營業','Cariad Gelato Kiosk (ice cream)':'Cariad Gelato 小攤（雪糕）','Maritime Museum':'海事博物館',
 /* day 3 */
 'Bala & Lake Vyrnwy':'Bala 及 Lake Vyrnwy','Swim first, then Bala and its mound, and the Lake Vyrnwy dam.':'先游水，再遊 Bala 及其土丘，然後到 Lake Vyrnwy 水壩。',
@@ -485,7 +485,7 @@ function trStatic(){
 
 const amap=q=>'https://maps.apple.com/?q='+encodeURIComponent(q);
 const gmap=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
-const POOL={note:'Splashaway Bay Swimming Pool · in the holiday park',addr:'Splashaway Bay, Haven Hafan y Môr Holiday Park',q:'Splashaway Bay Haven Hafan y Môr',gq:'https://maps.app.goo.gl/RpsKbzUhxFUgrL5c6',img:['images/pool-route.jpg','Route from No. 150 Mountain View to Splashaway Bay (red line)']};
+const POOL={note:'Splashaway Bay Swimming Pool · in the holiday park',addr:'Splashaway Bay, Haven Hafan y Môr Holiday Park · 52°54′22.9″N 4°20′00.3″W',q:'52.906361,-4.333417',gq:'https://maps.app.goo.gl/RpsKbzUhxFUgrL5c6',img:['images/pool-route.jpg','Route from No. 150 Mountain View to Splashaway Bay (red line)']};
 function mapLinks(q,parent,g){[['🍎 Apple 地圖',amap],['📍 Google 地圖',x=>g||gmap(x)]].forEach(([l,f])=>{const a=el('a','pill-btn',l);a.href=f(q);a.target='_blank';a.rel='noopener';parent.append(a)})}
 const days=[
 {date:'19/10',wd:'Mon',title:'Arrival, check-in & Porthmadog',icon:'car',summary:'Drive in with one stop, meet at Haven Hafan y Môr at 15:30, then Tesco and the railway ticket in Porthmadog.',tip:'Meeting at the holiday park is 15:30–15:45 — allow for the stop on the way.',ev:[
