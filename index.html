@@ -465,7 +465,7 @@ const ZH={
 'Book Woodland Wanderer online':'網上預訂 Woodland Wanderer','Fri 23 Oct · booking online guarantees seats · 11:10 or 14:50 for Heritage First Class':'10月23日 · 網上預訂可保證座位 · Heritage First Class 只限 11:10 或 14:50',
 'Swimming at 09:30':'09:30 游水','Tue 20 · Wed 21 · Thu 22':'20 日 · 21 日 · 22 日',
 'Pack your bag':'執拾行李','See the “What to bring” list below':'請參閱下方「建議攜帶物品」','Save offline maps':'儲存離線地圖','Lake Vyrnwy has patchy signal':'Lake Vyrnwy 訊號不穩',
-'Train day':'火車日','Pick one: Woodland Wanderer (about 2 h 10 min) or Mountain Spirit (about 3 hours).':'二選一：Woodland Wanderer（約 2 小時 10 分鐘）或 Mountain Spirit（約 3 小時）。',
+'Train day':'火車日','Swim, Cheshire Oaks & home':'游水、Cheshire Oaks 及回程','Morning swim, a Wales supermarket stop at Abergele, Designer Outlet Cheshire Oaks, then home to Nottingham.':'早上游水，在 Abergele 超市補給，再到 Cheshire Oaks Designer Outlet，然後回 Nottingham。','Confirm the check-out time at the park and pack the car before the swim. Heavy rain and strong gusts are forecast — leave extra driving time and check the A55 for warnings. Tesco Abergele parking is free for 3 hours; Aldi Colwyn Bay (394 Abergele Rd) is the alternative.':'請向營地確認退房時間，並在游水前先收拾好行李上車。預報有大雨及強陣風——請預留額外駕駛時間，並留意 A55 的警告。Tesco Abergele 停車場可免費停 3 小時；Aldi Colwyn Bay（394 Abergele Rd）可作後備。','Drive to Abergele':'駕車前往 Abergele','Tesco Abergele Superstore':'Tesco Abergele 超市','Wales supermarket stop · free parking up to 3 hours':'威爾斯超市補給站 · 免費停車最長 3 小時','Drive to Cheshire Oaks':'駕車前往 Cheshire Oaks','Designer Outlet Cheshire Oaks':'Cheshire Oaks Designer Outlet','140+ stores, cafés and restaurants':'140 多間商店、咖啡店及餐廳','Drive home to Nottingham':'駕車回 Nottingham','Pick one: Woodland Wanderer (about 2 h 10 min) or Mountain Spirit (about 3 hours).':'二選一：Woodland Wanderer（約 2 小時 10 分鐘）或 Mountain Spirit（約 3 小時）。',
 'Prices exclude the 6% online booking fee. Both booking calendars show seats on 19–23 Oct. Wheelchair or mobility scooter users should call 01766 516024 to book Mountain Spirit.':'價格不包括 6% 網上訂位費。兩條路線的訂位日曆都顯示 10 月 19–23 日有座位。輪椅或電動代步車使用者預訂 Mountain Spirit 請致電 01766 516024。',
 'Train':'火車','Book your train online (Woodland Wanderer or Mountain Spirit)':'網上預訂火車（Woodland Wanderer 或 Mountain Spirit）','🚂 Train day (Fri 23)':'🚂 火車日（23 日）','Portmeirion':'Portmeirion'
 };
@@ -539,8 +539,13 @@ const days=[
  {id:'d3e',cat:'transport',title:'Drive to Lake Vyrnwy'},
  {id:'d3f',cat:'parking',title:'Hafren Dyfrdwy – Lake Vyrnwy Car Park',addr:'2 Grwn Oer Cottages, Oswestry SY10 0LZ',q:'Hafren Dyfrdwy Lake Vyrnwy Car Park SY10 0LZ'},
  {id:'d3g',cat:'place',title:'Lake Vyrnwy Dam',addr:'15 Abertridwr, Llanwddyn, Oswestry SY10 0LR',q:'15 Abertridwr Llanwddyn Oswestry SY10 0LR'}]},
-{date:'23/10',wd:'Fri',title:'Train day',icon:'train',summary:'Pick one: Woodland Wanderer (about 2 h 10 min) or Mountain Spirit (about 3 hours).',tip:'Prices exclude the 6% online booking fee. Both booking calendars show seats on 19–23 Oct. Wheelchair or mobility scooter users should call 01766 516024 to book Mountain Spirit.',ev:[
- {id:'d5a',cat:'train',title:'Train',spirit:true}]}
+{date:'23/10',wd:'Fri',title:'Swim, Cheshire Oaks & home',icon:'car',summary:'Morning swim, a Wales supermarket stop at Abergele, Designer Outlet Cheshire Oaks, then home to Nottingham.',tip:'Confirm the check-out time at the park and pack the car before the swim. Heavy rain and strong gusts are forecast — leave extra driving time and check the A55 for warnings. Tesco Abergele parking is free for 3 hours; Aldi Colwyn Bay (394 Abergele Rd) is the alternative.',ev:[
+ {id:'d5a',time:'09:30',cat:'swim',title:'Swimming',...POOL},
+ {id:'d5b',cat:'transport',title:'Drive to Abergele'},
+ {id:'d5c',cat:'food',title:'Tesco Abergele Superstore',note:'Wales supermarket stop · free parking up to 3 hours',addr:'Market Street, Abergele LL22 7AA',q:'Tesco Abergele Superstore Market Street LL22 7AA'},
+ {id:'d5d',cat:'transport',title:'Drive to Cheshire Oaks'},
+ {id:'d5e',cat:'shop',title:'Designer Outlet Cheshire Oaks',note:'140+ stores, cafés and restaurants',addr:'Kinsey Rd, Wirral CH65 9JJ · +44 151 348 5600',q:'Designer Outlet Cheshire Oaks Kinsey Rd CH65 9JJ',url:'https://outlets.mcarthurglen.com/'},
+ {id:'d5f',cat:'transport',title:'Drive home to Nottingham'}]}
 ];
 const catLabel={food:'🍽 Food',ice:'🍦 Ice cream',shop:'📚 Shop',parking:'🅿 Car park',swim:'🏊 Swim',task:'📝 Task',stay:'🏡 Stay',place:'📍 Stop',train:'🚂 Train'};
 const PRICE={woodland:{std:{adult:29,child:5},first:{adult:34,child:10}},mountain:{std:{adult:49.75,child:5}},dog:5,fee:.06};
@@ -781,7 +786,7 @@ function renderWeather(i){
    row.append(strip);if(cur)requestAnimationFrame(()=>{strip.scrollLeft=cur.offsetLeft-strip.offsetLeft})}
   box.append(row);
   if(mph(d.g[i])>=45)warn.push('強風：'+WX_LOC[k].n+' 陣風約 '+mph(d.g[i])+' mph');if(d.r[i]>=15)warn.push('大雨：'+WX_LOC[k].n+' 約 '+Math.round(d.r[i])+' mm');if(d.lo[i]<=2)cold=true});
- if(warn.length){const w=el('div','wx-warn','⚠️ '+warn.join(' · ')+(i===4?'。火車可能減班或取消，當日早上請先查看營運狀態。':'。'));box.append(w)}
+ if(warn.length){const w=el('div','wx-warn','⚠️ '+warn.join(' · ')+(i===4?'。長途駕車請預留額外時間，出發前先查看路面及 A55 的警告。':'。'));box.append(w)}
  if(cold)box.append(el('div','wx-warn cold','🥶 清晨氣溫接近冰點，路面可能有霜，請注意駕駛安全及保暖。'))}
 /* nightly snapshot written by the scheduled update (weather.json); the live fetch below wins when it works */
 fetch('weather.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{if(!WX.live&&j&&j.d){WX.d=j.d;WX.stamp='快照 '+j.stamp;renderWeather(sel)}}).catch(()=>{});
