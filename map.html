@@ -108,7 +108,16 @@
         try{localStorage.setItem('nwBgm','0')}catch(e){}},
       toggle:function(){on?api.stop():api.start();return on}};
     return api}
-  window.__BGM=makeBGM();
+  /* prefer the recorded track (bgm.mp3 next to this page); fall back to the synth above if it is missing */
+  function makeFileBGM(synth){
+    var el=null,ok=true,on=false;
+    function audio(){if(!el){el=new Audio('bgm.mp3');el.loop=true;el.preload='auto';el.volume=.75;el.addEventListener('error',function(){ok=false;if(on){on=false;synth.start()}})}return el}
+    var api={get on(){return on||synth.on},
+      start:function(){if(!ok)return synth.start();var a=audio();on=true;var p=a.play();if(p&&p.catch)p.catch(function(e){if(e&&e.name==='NotAllowedError'){on=false}else{ok=false;on=false;synth.start()}})},
+      stop:function(){if(el)el.pause();on=false;synth.stop()},
+      toggle:function(){api.on?api.stop():api.start();return api.on}};
+    return api}
+  window.__BGM=makeFileBGM(makeBGM());
   var q=new URLSearchParams(location.search);
   if(window===window.top&&q.get('solo')!=='1'){
     window.__SHELL=true;document.documentElement.classList.add('shell');
