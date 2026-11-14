@@ -61,7 +61,69 @@
     background:rgba(255,255,255,.88);color:#1b2440;box-shadow:0 2px 8px rgba(0,0,30,.25)}
   #err{position:fixed;inset:auto 0 50% 0;text-align:center;color:#fff;z-index:9;font-size:14px}
   @media (max-width:600px){.flag{padding:3px 7px}.flag .en{font-size:10px}.flag .zh{font-size:9px;letter-spacing:.08em}.flag .st{display:none}#title{top:58px;left:16px}#title .en{font-size:16px}#controls button{padding:7px 10px}#caption{left:16px;bottom:86px}}
+  #controls button.on{background:var(--gold);color:#3a2a00}
+  html.shell,html.shell body{background:#0e1a3a}
+  html.shell body>*:not(#shellFrame):not(#shellGate){display:none!important}
+  #shellFrame{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+  #shellGate{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;
+    background:rgba(8,14,40,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:opacity .5s}
+  #shellGate.gone{opacity:0;pointer-events:none}
+  #shellGate .card{background:#fff;color:#1b2440;border-radius:14px;padding:22px 24px;max-width:360px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,30,.4)}
+  #shellGate h1{font:700 22px/1.15 Georgia,serif;margin:0 0 4px}
+  #shellGate p{margin:0 0 16px;font-size:13px;letter-spacing:.12em;opacity:.75}
+  #shellGate button{display:block;width:100%;border:0;border-radius:999px;padding:12px 16px;margin-top:8px;font:700 14px/1.2 inherit;cursor:pointer}
+  #shellGate .go{background:#f5c542;color:#3a2a00}
+  #shellGate .quiet{background:#eef1f7;color:#1b2440;font-weight:600;font-size:12px}
 </style>
+<script>
+/* Background music + shell. The top window keeps the music playing while the
+   map itself runs in an iframe, so changing day does not cut the music. */
+(function(){
+  function makeBGM(){
+    var ctx=null,master=null,send=null,on=false,timer=null,next=0,step=0,E=60/192;
+    var n=null,MEL=[0,4,7,9,7,4, 5,4,2,0,n,n, 7,9,12,14,12,9, 7,n,4,7,n,n, 9,7,4,5,4,2, 4,7,12,9,n,7, 5,2,4,2,0,2, 0,n,n,n,n,n,
+      12,n,9,7,n,4, 5,7,9,7,n,n, 12,n,9,7,9,12, 14,n,12,11,n,9, 7,9,7,4,2,0, 2,4,5,7,n,9, 7,4,0,2,n,4, 0,n,n,n,n,n];
+    var CH={D:[0,4,7],G:[5,9,12],A:[7,11,14]},BARS='DGDAGDAD'+'DGDADGAD';
+    function hz(s,base){return base*Math.pow(2,s/12)}
+    function tone(f,t,d,type,g,att){var o=ctx.createOscillator(),a=ctx.createGain();o.type=type;o.frequency.value=f;
+      a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+(att||.006));a.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(a);a.connect(master);a.connect(send);o.start(t);o.stop(t+d+.05)}
+    function pluck(f,t,g){tone(f,t,1.6,'triangle',g);tone(f*2,t,.7,'sine',g*.35)}
+    function schedule(){while(next<ctx.currentTime+.25){var i=step%96,bar=Math.floor(i/6),c=CH[BARS[bar]];
+        if(MEL[i]!==null)pluck(hz(MEL[i],293.66),next,.16);
+        if(i%6===0){tone(hz(c[0]-12,146.83),next,1.5,'triangle',.13);c.forEach(function(v){tone(hz(v,146.83),next,2.4,'sine',.025,.5)})}
+        if(i%6===3)tone(hz(c[2]-12,146.83),next,.9,'triangle',.08);
+        if(i%2===1&&i%6!==5)pluck(hz(c[(i>>1)%3]+12,146.83),next,.035);
+        next+=E;step++}}
+    function init(){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;ctx=new AC();
+      var lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3400;lp.connect(ctx.destination);
+      master=ctx.createGain();master.gain.value=0;master.connect(lp);
+      var dl=ctx.createDelay(1),fb=ctx.createGain(),wet=ctx.createGain();dl.delayTime.value=.29;fb.gain.value=.3;wet.gain.value=.22;
+      send=ctx.createGain();send.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(master);return true}
+    var api={get on(){return on},
+      start:function(){if(!ctx&&!init())return;if(ctx.resume)ctx.resume();if(on)return;on=true;next=ctx.currentTime+.1;
+        master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setTargetAtTime(.55,ctx.currentTime,.6);timer=setInterval(schedule,40);schedule();
+        try{localStorage.setItem('nwBgm','1')}catch(e){}},
+      stop:function(){if(!on)return;on=false;clearInterval(timer);master.gain.setTargetAtTime(0,ctx.currentTime,.25);
+        try{localStorage.setItem('nwBgm','0')}catch(e){}},
+      toggle:function(){on?api.stop():api.start();return on}};
+    return api}
+  window.__BGM=makeBGM();
+  var q=new URLSearchParams(location.search);
+  if(window===window.top&&q.get('solo')!=='1'){
+    window.__SHELL=true;document.documentElement.classList.add('shell');
+    document.addEventListener('DOMContentLoaded',function(){
+      var fr=document.createElement('iframe');fr.id='shellFrame';fr.title='North Wales journey map';fr.allow='autoplay';
+      fr.src=location.pathname+location.search;document.body.appendChild(fr);
+      fr.addEventListener('load',function(){try{history.replaceState(null,'',location.pathname+fr.contentWindow.location.search)}catch(e){}});
+      var g=document.createElement('div');g.id='shellGate';
+      g.innerHTML='<div class="card"><h1>North Wales</h1><p>北威爾斯之旅 · 19–23 Oct</p><button class="go">▶ Start with music · 開始（有音樂）</button><button class="quiet">Start without music · 靜音開始</button></div>';
+      document.body.appendChild(g);
+      function go(music){if(music)window.__BGM.start();g.classList.add('gone');setTimeout(function(){g.remove()},600);
+        try{var d=fr.contentWindow.__diorama;if(d){d.seek(0);d.setPlaying(true)}}catch(e){}fr.focus()}
+      g.querySelector('.go').onclick=function(){go(true)};g.querySelector('.quiet').onclick=function(){go(false)}})}
+})();
+</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -73,6 +135,8 @@
 <div id="controls">
   <button id="bPlay" aria-label="Play or pause">❚❚</button>
   <button id="bReplay" aria-label="Replay">↺</button>
+  <button id="bSpin" aria-label="Auto rotate 360">⟳ 360°</button>
+  <button id="bMusic" aria-label="Background music">♪ BGM</button>
   <button id="bTheme"></button>
 </div>
 <div id="err"></div>
@@ -82,6 +146,7 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
+main:{if(window.__SHELL)break main;
 
 /* ═══════════════════════════════════════════════════════════════════════
    1. JOURNEY — the schedule. THIS IS THE PART YOU REWRITE FOR EVERY JOB.
@@ -102,7 +167,7 @@ const SWIM={time:'09:30',kind:'pool',name:{en:'Splashaway Bay',zh:'度假村泳�
 const JOURNEY = {
   title:{en:'North Wales', zh:'北威爾斯之旅'},
   water:{en:'Snowdonia & the Llŷn  ·  19–23 October', zh:'北威爾斯'},
-  travellers:[{color:'#3f7fd9',hat:'cap'},{color:'#e2543f',hat:'sun'},{color:'#f2b632',hat:'none',size:.72}],
+  travellers:[{color:'#3f7fd9',hat:'cap'},{color:'#e2543f',hat:'sun'},{color:'#f2b632',hat:'none',size:.68},{color:'#3fae6a',hat:'cap',size:.62}],
   days:[
   { label:'Mon 19', title:{en:'Mon 19 Oct · Arrival, check-in and Porthmadog', zh:'10月19日(一)· 抵達、Check-in、Porthmadog'},
     intro:{en:'Five days in North Wales start here', zh:'北威爾斯五日,由呢度開始'},
@@ -432,7 +497,8 @@ const qs=new URLSearchParams(location.search);
 /* multi-day: JOURNEY.days=[{label,title,intro,outro,stops},...] → one map per day, picked with ?day=N */
 const DAYS=JOURNEY.days||null, dayIdx=DAYS?Math.max(0,Math.min(DAYS.length-1,(+qs.get('day')||1)-1)):0;
 if(DAYS)Object.assign(JOURNEY,DAYS[dayIdx]);
-const goDay=i=>{qs.set('day',i+1);location.search=qs.toString()};
+const goDay=i=>{qs.set('day',i+1);qs.set('spin',spin?1:0);location.search=qs.toString()};
+let spin=qs.get('spin')!=='0';
 const themeName=names.includes(qs.get('theme'))?qs.get('theme'):names[0];
 const TH=THEMES[themeName], PAL=TH.pal;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -588,16 +654,20 @@ addEventListener('keydown',e=>{const s=stateAt(time);
 if(reduced){seek(T_END+.1);finale=79}
 
 /* ---- camera: fixed tilt (that is the 2.5D), follows the travellers ---- */
-const camDir=new THREE.Vector3(0,.74,.67).normalize(),focus=new THREE.Vector3(0,0,1),pan=new THREE.Vector3();
+const camDir=new THREE.Vector3(0,.74,.67).normalize(),focus=new THREE.Vector3(0,0,1),pan=new THREE.Vector3(),camD=new THREE.Vector3();
+let yaw=0,tilt=0,spinWait=0;
+function setSpin(v){spin=v;$('#bSpin').classList.toggle('on',v);$('#bSpin').textContent=v?'⟳ 360° on':'⟳ 360°'}setSpin(spin&&!reduced);$('#bSpin').onclick=()=>setSpin(!spin);
+const BGM=(()=>{try{if(window!==top&&top.__SHELL&&top.__BGM)return top.__BGM}catch(e){}return window.__BGM})();
+const musicLabel=()=>{const v=BGM&&BGM.on;$('#bMusic').classList.toggle('on',!!v);$('#bMusic').textContent=v?'♪ BGM on':'♪ BGM off'};
+$('#bMusic').onclick=()=>{if(BGM)BGM.toggle();musicLabel()};musicLabel();setInterval(musicLabel,1000);
 let zoom=1.3,userZoom=1,W=1,H=1,fitZ=1;
 function resize(){W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();fitZ=Math.min(2.1,Math.max(1,1.5/camera.aspect))}   /* portrait: crop the overview rather than shrink it to a dot */
 addEventListener('resize',resize);resize();
-{const c=$('#c');let drag=null;
+let drag0=()=>false;{const c=$('#c');let drag=null;drag0=()=>!!drag;
   c.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};c.setPointerCapture(e.pointerId);c.style.cursor='grabbing'});
-  c.addEventListener('pointermove',e=>{if(!drag)return;const k=.05*zoom*userZoom*fitZ*(900/H);pan.x-=(e.clientX-drag.x)*k;pan.z-=(e.clientY-drag.y)*k*1.4;
-    pan.x=Math.max(-22,Math.min(22,pan.x));pan.z=Math.max(-14,Math.min(14,pan.z));drag={x:e.clientX,y:e.clientY}});
+  c.addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-drag.x)*.008;tilt=Math.max(-.35,Math.min(.45,tilt+(e.clientY-drag.y)*.004));spinWait=3;drag={x:e.clientX,y:e.clientY}});
   c.addEventListener('pointerup',()=>{drag=null;c.style.cursor='grab'});
-  c.addEventListener('dblclick',()=>{pan.set(0,0,0);userZoom=1});
+  c.addEventListener('dblclick',()=>{yaw=0;tilt=0;userZoom=1});
   c.addEventListener('wheel',e=>{e.preventDefault();userZoom=Math.max(.45,Math.min(1.6,userZoom*Math.exp(e.deltaY*.0012)))},{passive:false})}
 
 /* ---- frame ---- */
@@ -614,16 +684,19 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;if
   for(const f of tickers)f(clock);
   for(const c of clouds){c.position.x+=c.userData.v*dt;if(c.position.x>28)c.position.x=-28}
   // travellers
-  people.forEach((g,i)=>{const u=Math.max(0,s.u-i*.9/LEN),p=P(u),q=P(u+.004),dx=q.x-p.x,dz=q.z-p.z;
-    const side=s.moving?0:(i-(people.length-1)/2)*.9;
-    g.position.set(p.x+side,s.moving?Math.abs(Math.sin(clock*9+i))*.16:Math.sin(clock*2+i)*.02+.02,p.z+(s.moving?0:.5));
+  people.forEach((g,i)=>{const u=s.moving?Math.max(0,s.u-i*.9/LEN):s.u,p=P(u),q=P(u+.004),dx=q.x-p.x,dz=q.z-p.z;
+    /* walking: single file along the road. stopped: the family gathers in a row in front of the stop */
+    const side=s.moving?0:(i-(people.length-1)/2)*.75,y=s.moving?Math.abs(Math.sin(clock*9+i))*.16:Math.sin(clock*2+i)*.02+.02;
+    v3.set(p.x+side,y,p.z+(s.moving?0:.9));if(g.userData.placed)g.position.lerp(v3,Math.min(1,dt*7));else{g.position.copy(v3);g.userData.placed=1}g.position.y=y;
     const want=s.moving&&(dx||dz)?Math.atan2(dx,dz):0;let d=want-g.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));g.rotation.y+=d*Math.min(1,dt*8)});
   // camera
   const overview=s.idx<0||s.done,wp=people[0].position;
   v3.set(overview?0:wp.x*.8,0,overview?1:wp.z*.6+1).add(pan);focus.lerp(v3,Math.min(1,dt*1.6));
   zoom+=((overview?1.3:STOPS.length>7?.98:.78)-zoom)*Math.min(1,dt*1.2);
   const dist=48*zoom*userZoom*fitZ;scene.fog.near=dist*1.5;scene.fog.far=dist*3.6;   // fog only eats the far table, never the board
-  camera.position.copy(focus).addScaledVector(camDir,dist);camera.lookAt(focus);
+  if(spin&&!drag0()){if(spinWait>0)spinWait-=dt;else yaw+=dt*2*Math.PI/50}
+  {const el=Math.atan2(camDir.y,Math.hypot(camDir.x,camDir.z))+tilt,h=Math.cos(el);camD.set(Math.sin(yaw)*h,Math.sin(el),Math.cos(yaw)*h)}
+  camera.position.copy(focus).addScaledVector(camD,dist);camera.lookAt(focus);
   renderer.render(scene,camera);
   // labels
   STOPS.forEach((st,i)=>{const el=flags[i],done=s.done||i<s.idx||(i===s.idx),here=!s.done&&i===s.idx&&!s.moving;
@@ -639,10 +712,11 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;if
   else if(s.idx===0&&time<K[1].t0+1.2)caption('tag',TH.tag);
   if(s.done&&DAYS&&dayIdx<DAYS.length-1&&!$('#bNext')){const b=document.createElement('button');b.id='bNext';
     b.textContent='Next day 下一日 ▶';b.onclick=()=>goDay(dayIdx+1);$('#controls').prepend(b)}
-  if(playing&&time>T_END+6)setPlaying(false);
+  if(playing&&time>T_END+6){if(DAYS&&dayIdx<DAYS.length-1)goDay(dayIdx+1);else setPlaying(false)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
-window.__diorama={seek,stateAt,T_END,STOPS,setPlaying,get time(){return time}};   // for testing from the console
+window.__diorama={seek,stateAt,T_END,STOPS,setPlaying,get time(){return time},get yaw(){return yaw},people};   /* for testing from the console */
+}
 </script>
 </body>
 </html>
