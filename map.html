@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>North Wales · Oct 2026</title>
+<style>
+  :root{--ink:#1e3f8f;--paper:#fff;--gold:#f5c542;--cap:#fff}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#dfe6f2;
+    font-family:"Avenir Next","Helvetica Neue","PingFang HK","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+  canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+  /* fake tilt-shift: blur the far and near bands so the scene reads as a miniature */
+  .tilt{position:fixed;left:0;right:0;height:24%;pointer-events:none;z-index:1;
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .tilt.top{top:0;-webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent)}
+  .tilt.bottom{bottom:0;-webkit-mask-image:linear-gradient(transparent,#000);mask-image:linear-gradient(transparent,#000)}
+  #vignette{position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(10,15,40,.38) 100%)}
+  #scrim{position:fixed;inset:0;pointer-events:none;z-index:1;
+    background:linear-gradient(rgba(8,14,40,.42),transparent 16%,transparent 62%,rgba(8,14,40,.62))}
+  #labels{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+  .flag{position:absolute;left:0;top:0;padding:5px 10px 5px 9px;border-radius:3px;white-space:nowrap;
+    background:var(--paper);color:var(--ink);border-left:4px solid var(--ink);
+    box-shadow:0 3px 10px rgba(0,0,20,.22);line-height:1.15;transition:opacity .5s,background .5s,color .5s,border-color .5s}
+  .flag::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:22px;background:var(--ink);opacity:.7}
+  .flag .en{font:700 12px/1.1 Georgia,"Times New Roman",serif;letter-spacing:.03em}
+  .flag .zh{font-size:10px;letter-spacing:.18em;opacity:.8;margin-top:2px}
+  .flag .st{font-size:9px;letter-spacing:.08em;opacity:.65;margin-top:1px}
+  .flag.upcoming{opacity:.62}
+  .flag.here{transform-origin:50% 100%}
+  .flag.goal{background:var(--gold);color:#3a2a00;border-left-color:#b33a1e}
+  .flag.goal::after{background:#b33a1e}
+  #title{position:fixed;left:22px;top:18px;z-index:3;color:var(--cap);text-shadow:0 1px 8px rgba(0,0,30,.45)}
+  #title .en{font:700 20px/1.1 Georgia,serif;letter-spacing:.04em}
+  #title .zh{font-size:12px;letter-spacing:.3em;margin-top:5px;opacity:.9}
+  #days{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  #days button{border:1px solid rgba(255,255,255,.6);background:rgba(10,20,50,.25);color:#fff;border-radius:999px;padding:5px 11px;font:600 11px/1 inherit;cursor:pointer}
+  #days button.on{background:#fff;color:#1b2440}
+  #bNext{background:var(--gold)!important}
+  #caption{position:fixed;left:26px;bottom:92px;z-index:3;color:var(--cap);max-width:min(560px,80vw);
+    text-shadow:0 2px 10px rgba(0,0,30,.6);transition:opacity .45s,transform .45s}
+  #caption.out{opacity:0;transform:translateY(8px)}
+  #caption .bar{width:34px;height:3px;background:var(--gold);margin-bottom:9px;border-radius:2px}
+  #caption .en{font-weight:800;font-size:clamp(17px,2.3vw,26px);line-height:1.15}
+  #caption .zh{font-size:clamp(12px,1.4vw,16px);letter-spacing:.12em;margin-top:6px;opacity:.92}
+  #caption .info{font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-line;opacity:.92}
+  #caption .info:empty{display:none}
+  .flag.minor{padding:3px 7px}.flag.minor .en{font-size:10px}.flag.minor .zh{font-size:9px}.flag.minor .st{display:none}
+  #timeline{position:fixed;left:0;right:0;bottom:0;z-index:3;display:flex;gap:4px;align-items:flex-end;
+    padding:10px 14px 14px;overflow-x:auto;}
+  #timeline button{flex:1 1 0;min-width:74px;border:0;background:none;color:#fff;cursor:pointer;text-align:left;
+    padding:8px 4px 0;border-top:3px solid rgba(255,255,255,.3);font:inherit;opacity:.7;transition:opacity .3s,border-color .3s}
+  #timeline button b{display:block;font-size:12px;font-variant-numeric:tabular-nums}
+  #timeline button span{display:block;font-size:10px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #timeline button.done{opacity:1;border-top-color:#fff}
+  #timeline button.here{opacity:1;border-top-color:var(--gold)}
+  #timeline button:focus-visible,#controls button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  #controls{position:fixed;right:16px;top:16px;z-index:3;display:flex;gap:8px}
+  #controls button{border:0;border-radius:999px;padding:8px 14px;font:600 12px/1 inherit;cursor:pointer;
+    background:rgba(255,255,255,.88);color:#1b2440;box-shadow:0 2px 8px rgba(0,0,30,.25)}
+  #err{position:fixed;inset:auto 0 50% 0;text-align:center;color:#fff;z-index:9;font-size:14px}
+  @media (max-width:600px){.flag{padding:3px 7px}.flag .en{font-size:10px}.flag .zh{font-size:9px;letter-spacing:.08em}.flag .st{display:none}#title{top:58px;left:16px}#title .en{font-size:16px}#controls button{padding:7px 10px}#caption{left:16px;bottom:86px}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="tilt top"></div><div class="tilt bottom"></div><div id="vignette"></div><div id="scrim"></div>
+<div id="labels"></div>
+<header id="title"><div class="en"></div><div class="zh"></div></header>
+<div id="caption" class="out"><div class="bar"></div><div class="en"></div><div class="zh"></div><div class="info"></div></div>
+<nav id="timeline" aria-label="Schedule"></nav>
+<div id="controls">
+  <button id="bPlay" aria-label="Play or pause">❚❚</button>
+  <button id="bReplay" aria-label="Replay">↺</button>
+  <button id="bTheme"></button>
+</div>
+<div id="err"></div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   1. JOURNEY — the schedule. THIS IS THE PART YOU REWRITE FOR EVERY JOB.
+   Board is about x ∈ [-17,17] (left→right), z ∈ [-8,8] (far→near).
+   kind  : a key of PROPS below (write a new prop when nothing fits).
+   via   : true = a bend in the road only (no landmark, no label, no stop).
+   goal  : true on the one stop the whole day is heading for (gold flag).
+   minor : true = a small supporting stop (car park, ticket desk): small prop, small flag, short pause.
+   info  : ['line', 'line'] = practical detail shown under the caption while there (address, postcode, price, warning).
+   x, z  : optional. Leave BOTH out on every stop of a day and the engine lays the day out itself.
+   time  : optional; leave it out when the schedule gives none (shows 1, 2, 3…).
+   travellers: {color, hat:'cap'|'sun'|'chef'|'none', size} — size .75 for a child.
+   MULTI-DAY: add days:[{label:'Mon 19', title, intro, outro, stops}, …] and
+   leave the top-level stops out. Each day is its own map with day tabs.
+   ═══════════════════════════════════════════════════════════════════════ */
+const CARPARK=(en,zh,info,cap)=>({kind:'parking',minor:true,name:{en,zh},info,cap:cap||{en:'Park here',zh:'喺呢度泊車'}});
+const SWIM={time:'09:30',kind:'pool',name:{en:'Splashaway Bay',zh:'度假村泳池'},cap:{en:'Morning swim at the holiday park',zh:'朝早喺度假村游水'}};
+const JOURNEY = {
+  title:{en:'North Wales', zh:'北威爾斯之旅'},
+  water:{en:'Snowdonia & the Llŷn  ·  19–23 October', zh:'北威爾斯'},
+  travellers:[{color:'#3f7fd9',hat:'cap'},{color:'#e2543f',hat:'sun'},{color:'#f2b632',hat:'none',size:.72}],
+  days:[
+  { label:'Mon 19', title:{en:'Mon 19 Oct · Arrival, check-in and Porthmadog', zh:'10月19日(一)· 抵達、Check-in、Porthmadog'},
+    intro:{en:'Five days in North Wales start here', zh:'北威爾斯五日,由呢度開始'},
+    outro:{en:'Keys in hand, fridge full, tickets bought', zh:'攞咗鎖匙、買齊餸、火車飛到手'},
+    stops:[
+      {kind:'house', name:{en:'Nottingham',zh:'諾丁漢 · 出發'}, cap:{en:'Drive to Porthmadog, with a choice of stop on the way',zh:'揸車去 Porthmadog,中途揀一個站停'}},
+      {kind:'timber', name:{en:'Stop A · Shrewsbury',zh:'中途站 A · 舒茲伯利'}, cap:{en:'A walk through old Shrewsbury',zh:'喺 Shrewsbury 舊城行一圈'},
+        info:['Park: Frankwell Main Car Park','Walk: High St → Wyle Cop → Grope Ln → Saint Alkmund’s Church']},
+      {kind:'pin', minor:true, name:{en:'Stop B · Abergele',zh:'中途站 B · Abergele'}, cap:{en:'…or stop at Abergele instead',zh:'或者改喺 Abergele 停'}},
+      {time:'15:30',kind:'station', name:{en:'Hafan y Môr · meet',zh:'度假村 · 集合'}, cap:{en:'Meet at Haven Hafan y Môr Holiday Park, then check in',zh:'喺 Haven Hafan y Môr 度假村集合,然後 Check-in'},
+        info:['Meet 15:30–15:45']},
+      {kind:'caravan', goal:true, name:{en:'No. 150 Mountain View',zh:'150號 Mountain View'}, cap:{en:'Our caravan for the week',zh:'今個星期住嘅 caravan'},
+        info:['Bronze caravan · 2 bedrooms','Park map: see the Prep tab']},
+      {kind:'shop', name:{en:'Tesco Superstore',zh:'Tesco · 買餸'}, cap:{en:'After check-in, drive to Porthmadog for food',zh:'Check-in 之後揸車去 Porthmadog 買餸'},
+        info:['Stryd Fawr, Porthmadog LL49 9NU']},
+      {kind:'train', name:{en:'Heritage Railway',zh:'高地鐵路 · 買飛'}, cap:{en:'Buy the railway ticket',zh:'買火車飛'},
+        info:['Welsh Highland Heritage Railway','Porthmadog LL49 9DY']},
+    ]},
+  { label:'Tue 20', title:{en:'Tue 20 Oct · Criccieth and Porthmadog', zh:'10月20日(二)· Criccieth 同 Porthmadog'},
+    intro:{en:'A seaside day: lunch, ice cream, books and boats', zh:'海邊嘅一日:午餐、雪糕、書同船'},
+    outro:{en:'Two towns, three ice-cream stops', zh:'兩個小鎮,三間雪糕'},
+    stops:[
+      SWIM,
+      CARPARK('Criccieth Beach Car Park','Criccieth 海灘泊車場',['Esplanade LL52 0HZ'],{en:'Drive to Criccieth and park by the beach',zh:'揸車去 Criccieth,泊喺海灘旁'}),
+      {kind:'restaurant', name:{en:'Dylan’s Criccieth',zh:'Dylan’s · 午餐'}, cap:{en:'Lunch on the Esplanade',zh:'海旁食午餐'}, info:['Maes y Môr, Esplanade LL52 0HU']},
+      {kind:'icecream', name:{en:'Cadwaladers',zh:'Cadwaladers 雪糕'}, cap:{en:'Ice cream under the castle',zh:'城堡腳下食雪糕'}, info:['The Iris, Castle St, Criccieth LL52 0DP']},
+      {kind:'museum', name:{en:'Lloyd George Museum',zh:'勞合喬治博物館'}, cap:{en:'A short hop to Llanystumdwy',zh:'順路去 Llanystumdwy'}, info:['Llanystumdwy LL52 0SH']},
+      CARPARK('Llyn Bach Car Park','Llyn Bach 泊車場',['Pay & Display · Porthmadog LL49 9DD'],{en:'On to Porthmadog',zh:'再去 Porthmadog'}),
+      {kind:'fish', name:{en:'Blas y Môr',zh:'Blas y Môr · 海鮮'}, cap:{en:'Taste of the Sea',zh:'食海鮮'}, info:['82 High St, LL49 9NW','⚠ Unconfirmed — check it is open']},
+      {kind:'icecream', name:{en:'Cadwaladers Porthmadog',zh:'Cadwaladers(Porthmadog)'}, cap:{en:'Ice cream, round two',zh:'雪糕第二回'}, info:['43–47 High St, LL49 9LR']},
+      {kind:'kiosk', minor:true, name:{en:'Cariad Gelato Kiosk',zh:'Cariad Gelato 小亭'}, cap:{en:'…and gelato, round three',zh:'再嚟 gelato,第三回'}, info:['High St, LL49 9LP']},
+      {kind:'book', name:{en:'Browsers Bookshop',zh:'Browsers 書店'}, cap:{en:'A browse on the High Street',zh:'High Street 行書店'}, info:['73 High St, LL49 9EU']},
+      {kind:'boat', goal:true, name:{en:'Maritime Museum',zh:'海事博物館'}, cap:{en:'End the day at Porthmadog harbour',zh:'喺 Porthmadog 碼頭完結一日'}, info:['The Harbour, LL49 9LU']},
+    ]},
+  { label:'Wed 21', title:{en:'Wed 21 Oct · Sygun Copper Mine, Beddgelert and Pwllheli', zh:'10月21日(三)· Sygun 銅礦、Beddgelert、Pwllheli'},
+    intro:{en:'Into the mountains, back by the sea', zh:'入山探礦,沿海返屋企'},
+    outro:{en:'From underground to the promenade', zh:'由地底行到海濱長廊'},
+    stops:[
+      SWIM,
+      CARPARK('Sygun car park','Sygun 銅礦泊車場',['First choice: 53.019000, -4.081194','Backup: street parking outside Sygun','53.0201684, -4.0817015'],{en:'Drive to Sygun Copper Mine',zh:'揸車去 Sygun 銅礦'}),
+      {kind:'mine', goal:true, name:{en:'Sygun Copper Mine',zh:'Sygun 銅礦'}, cap:{en:'Self-guided tour underground',zh:'自助遊地底礦洞'}, info:['LL55 4NE','No booking — pay on arrival']},
+      CARPARK('Colwyn Banc Car Park','Colwyn Banc 泊車場',['Beddgelert LL55 4UY'],{en:'On to Beddgelert village',zh:'再去 Beddgelert 村'}),
+      {kind:'bridge', name:{en:'Beddgelert',zh:'Beddgelert 村'}, cap:{en:'Village and river walk',zh:'行村仔、沿河散步'}},
+      CARPARK('Asda car park','Asda 泊車場',['First choice: 43 North St, LL53 5EG','Or Y Maes car park: 1 h £1.55 · 2 h £3.10 · 3 h £4.60 (charged 9am–5pm)','Backup: Cei’r Gogledd by the harbour, same prices'],{en:'On to Pwllheli',zh:'再去 Pwllheli'}),
+      {kind:'lighthouse', name:{en:'Pwllheli',zh:'Pwllheli · 海港'}, cap:{en:'Town, harbour and promenade',zh:'市鎮、海港、海濱長廊'}},
+      {kind:'caravan', name:{en:'Back to the caravan',zh:'返 caravan'}, cap:{en:'Home for the night',zh:'返去休息'}},
+    ]},
+  { label:'Thu 22', title:{en:'Thu 22 Oct · Bala and Lake Vyrnwy', zh:'10月22日(四)· Bala 同 Vyrnwy 湖'},
+    intro:{en:'The long drive inland', zh:'入內陸嘅長途車'},
+    outro:{en:'A mound, a waterfall and a very big dam', zh:'一個土丘、一條瀑布、一座大壩'},
+    stops:[
+      SWIM,
+      CARPARK('The Green (parking)','The Green 泊車',['Station Rd, Bala'],{en:'Drive to Bala',zh:'揸車去 Bala'}),
+      {kind:'mound', name:{en:'Tomen y Bala',zh:'Bala 古堡土丘'}, cap:{en:'Climb the castle mound',zh:'行上古堡土丘'}, info:['LL23 7RS']},
+      CARPARK('Rhiwargor car park','Rhiwargor 瀑布泊車場',['SY10 0NE'],{en:'Drive to Lake Vyrnwy',zh:'揸車去 Vyrnwy 湖'}),
+      {kind:'waterfall', name:{en:'Rhiwargor Waterfall',zh:'Rhiwargor 瀑布'}, cap:{en:'Up to the waterfall',zh:'行上瀑布'}, info:['Uphill walk, about 20–25 minutes each way','⚠ Slippery when wet']},
+      CARPARK('Lake Vyrnwy Car Park','Vyrnwy 湖泊車場',['Hafren Dyfrdwy – Lake Vyrnwy Car Park','SY10 0LZ']),
+      {kind:'dam', goal:true, name:{en:'Lake Vyrnwy Dam',zh:'Vyrnwy 湖大壩'}, cap:{en:'The great stone dam',zh:'石砌大壩'}, info:['SY10 0LR']},
+      CARPARK('Marian Mawr Car Park','Marian Mawr 泊車場',['Dolgellau'],{en:'On the way back: Dolgellau',zh:'回程經 Dolgellau'}),
+      {kind:'tower', name:{en:'Dolgellau',zh:'Dolgellau · 小休'}, cap:{en:'A stop to stretch your legs',zh:'落車伸展吓'}},
+    ]},
+  { label:'Fri 23', title:{en:'Fri 23 Oct · Swim, Cheshire Oaks and home', zh:'10月23日(五)· 游水、Cheshire Oaks、返屋企'},
+    intro:{en:'One last swim, then the road home', zh:'游最後一次水,然後返屋企'},
+    outro:{en:'Home — with a full boot', zh:'返到屋企,車尾箱滿晒'},
+    stops:[
+      {time:'09:30',kind:'pool', name:{en:'Last swim',zh:'最後一次游水'}, cap:{en:'One more swim',zh:'再游一次'}, info:['Confirm the check-out time and pack the car first']},
+      {kind:'shop', name:{en:'Tesco Abergele',zh:'Tesco Abergele'}, cap:{en:'Drive to Abergele for lunch',zh:'揸車去 Abergele 食午餐'}, info:['Tesco Abergele Superstore, Market Street LL22 7AA','Free parking for 3 hours']},
+      {kind:'bag', name:{en:'Cheshire Oaks',zh:'Cheshire Oaks Outlet'}, cap:{en:'Designer Outlet — 140+ stores',zh:'名牌 Outlet,140 幾間舖'}, info:['Kinsey Rd, Wirral CH65 9JJ']},
+      {kind:'house', goal:true, name:{en:'Nottingham',zh:'諾丁漢 · 屋企'}, cap:{en:'Drive home to Nottingham',zh:'揸車返諾丁漢'}},
+    ]},
+  ],
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   2. THEMES — three different CONCEPTS, not three palettes.
+   ink*    : the two tones everything wears BEFORE it is visited.
+   pal     : real colours, used by PROPS once the travellers arrive.
+   ground  : paints the ground twice — col=false (blank) and col=true
+             (coloured). Colour is revealed through a mask as they walk.
+   See references/themes.md to add a new one.
+   ═══════════════════════════════════════════════════════════════════════ */
+const BASE_PAL={wall:'#fff1dc',roof:'#d9483b',accent:'#f2b632',leaf:'#63a94a',leaf2:'#8cc968',trunk:'#8a5a3c',
+  stone:'#c9c2b6',gold:'#f5c542',water:'#62b6dc',white:'#ffffff',dark:'#39424e',pink:'#f29bb2'};
+const THEMES = {
+  platter:{
+    label:'Blue-willow platter', tag:{en:'A blue-willow platter takes colour',zh:'青花大盤,一路染上顏色'},
+    shape:'ellipse', fit:.74, landW:7.5, sky:'#e9e2d3', table:'gingham', tableColor:'#c9d6ea',
+    inkLight:'#f3f6fb', inkDark:'#1e3f8f', css:{ink:'#1e3f8f',paper:'#ffffff',cap:'#ffffff'},
+    sun:'#fff3df', sunI:2.3, amb:'#eaf0ff', ambI:1.15, clouds:3, lights:false,
+    scatter:['tree','tree','pine','bush','rock'], pal:{...BASE_PAL},
+    ground(ctx,W,H,col,a){
+      const cx=W/2,cy=H/2,cob='#1e3f8f',E=k=>{ctx.beginPath();ctx.ellipse(cx,cy,cx*k,cy*k,0,0,7)};
+      ctx.fillStyle=col?'#fbf7ee':'#f6f8fb';ctx.fillRect(0,0,W,H);
+      // land = a fat stroke along the road, so the island always fits the schedule
+      if(col){a.road(a.landW*a.S,'#b9dc98');a.road(a.landW*.72*a.S,'#cfe8b0');a.blobs('#a9d286',40,a.S*1.1)}
+      else{a.road(a.landW*a.S,cob);a.road(a.landW*a.S-7,'#f6f8fb');a.road(a.landW*.7*a.S,cob,[3,9]);a.road(a.landW*.7*a.S-3,'#f6f8fb')}
+      a.river(col?'#8ccbe6':cob,col?a.S*1.5:3,!col);
+      if(col){a.road(a.S*1.25,'#f3dfae')}else{a.road(3,cob,[10,10])}
+      // rim band with motifs — the plate pattern
+      E(.925);ctx.lineWidth=H*.085;ctx.strokeStyle=cob;ctx.stroke();
+      E(.845);ctx.lineWidth=3;ctx.stroke();E(.83);ctx.lineWidth=1.5;ctx.stroke();
+      for(let i=0;i<64;i++){const t=i/64*Math.PI*2,x=cx+Math.cos(t)*cx*.925,y=cy+Math.sin(t)*cy*.925;
+        ctx.fillStyle=i%2?'#f6f8fb':(col?'#f5c542':'#9db4e6');ctx.beginPath();ctx.arc(x,y,i%2?H*.012:H*.02,0,7);ctx.fill()}
+      ctx.fillStyle='#f6f8fb';ctx.font=`700 ${H*.034}px Georgia,serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      a.spaced('JOURNEY MAP  ·  旅 程 地 圖',cx,cy+cy*.925,H*.012);
+    }},
+  blueprint:{
+    label:'Dawn blueprint', tag:{en:'A blueprint, painted as they walk',zh:'清晨的藍圖,走過的地方就上色'},
+    shape:'rect', fit:1, landW:9, sky:'#1a2f73', table:'plain', tableColor:'#182a66',
+    inkLight:'#cfdcff', inkDark:'#3355b5', css:{ink:'#1d3a8c',paper:'#eef3ff',cap:'#ffffff'},
+    sun:'#ffd9b0', sunI:2.1, amb:'#93a8ff', ambI:1.0, clouds:0, lights:true,
+    scatter:['tree','pine','bush','tree'], pal:{...BASE_PAL,wall:'#ffe9c9',roof:'#e2543f',leaf:'#5fae6a',leaf2:'#f2a7c3',water:'#7fc4ff'},
+    ground(ctx,W,H,col,a){
+      const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,col?'#2a4fb0':'#2743a0');g.addColorStop(1,col?'#1f3d95':'#213a8f');
+      ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+      for(let u=0;u<=a.GW;u++){ctx.beginPath();ctx.moveTo(u*a.S,0);ctx.lineTo(u*a.S,H);ctx.lineWidth=1;
+        ctx.strokeStyle=`rgba(255,255,255,${u%5?.05:.13})`;ctx.stroke()}
+      for(let v=0;v<=a.GH;v++){ctx.beginPath();ctx.moveTo(0,v*a.S);ctx.lineTo(W,v*a.S);
+        ctx.strokeStyle=`rgba(255,255,255,${v%5?.05:.13})`;ctx.stroke()}
+      if(col){a.road((a.landW+2.2)*a.S,'rgba(140,190,255,.22)');a.road((a.landW+.7)*a.S,'#ecd9a6');
+        a.road(a.landW*a.S,'#79b96a');a.road(a.landW*.6*a.S,'#8cc77a');a.blobs('#6cae5f',46,a.S);a.road(a.S*1.3,'#f0d2a4')}
+      else{a.road(a.landW*a.S,'rgba(255,255,255,.85)');a.road(a.landW*a.S-5,'#2540a0');
+        a.road(a.landW*.62*a.S,'rgba(255,255,255,.45)',[4,10]);a.road(a.landW*.62*a.S-3,'#2540a0');a.road(2.5,'rgba(255,255,255,.8)',[9,9])}
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.font=`600 ${H*.022}px "Avenir Next",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      a.spaced(a.water.en+'    '+a.water.zh,W/2,H*.95,H*.02);
+    }},
+  countryside:{
+    label:'Countryside map', tag:{en:'An old paper map turns green',zh:'舊地圖,一步一步綠起來'},
+    shape:'rect', fit:1, landW:9, sky:'#cfe3f2', table:'plain', tableColor:'#b98a5a',
+    inkLight:'#f4ead2', inkDark:'#8a6c47', css:{ink:'#5b4326',paper:'#fff8e8',cap:'#ffffff'},
+    sun:'#fff0cf', sunI:2.5, amb:'#e6f1ff', ambI:1.1, clouds:5, lights:false,
+    scatter:['tree','tree','bush','pine','rock','tree'], pal:{...BASE_PAL,roof:'#c8533b',wall:'#fff6e2'},
+    ground(ctx,W,H,col,a){
+      ctx.fillStyle=col?'#a8cf7c':'#efe2c4';ctx.fillRect(0,0,W,H);
+      const r=a.rng(7),nx=11,nz=8,V=[];
+      for(let j=0;j<=nz;j++){V[j]=[];for(let i=0;i<=nx;i++)V[j][i]=[i/nx*W+(i%nx?(r()-.5)*W*.05:0),j/nz*H+(j%nz?(r()-.5)*H*.07:0)]}
+      const fields=['#a8cf7c','#bfdc86','#8fc06b','#e6d77a','#cfe08f','#9cc978','#dcc96a'];
+      for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const q=[V[j][i],V[j][i+1],V[j+1][i+1],V[j+1][i]];
+        ctx.beginPath();q.forEach((p,k)=>k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();
+        const f=fields[Math.floor(r()*fields.length)],rows=r()<.45;
+        if(col){ctx.fillStyle=f;ctx.fill();ctx.lineWidth=5;ctx.strokeStyle='#5f9a4b';ctx.stroke()}
+        else{ctx.lineWidth=1.5;ctx.strokeStyle='rgba(120,92,58,.55)';ctx.stroke()}
+        if(rows){ctx.save();ctx.clip();ctx.lineWidth=col?3:1;ctx.strokeStyle=col?'rgba(70,110,40,.28)':'rgba(120,92,58,.3)';
+          for(let s=-H;s<W;s+=14){ctx.beginPath();ctx.moveTo(q[0][0]+s,q[0][1]);ctx.lineTo(q[0][0]+s+H*.3,q[0][1]+H);ctx.stroke()}ctx.restore()}}
+      a.river(col?'#6fb8e0':'rgba(120,92,58,.8)',col?a.S*1.7:3,!col);
+      if(col){a.road(a.S*1.9,'#b88d5c');a.road(a.S*1.4,'#f3e3bd')}else{a.road(a.S*1.4,'rgba(120,92,58,.8)');a.road(a.S*1.4-4,'#efe2c4')}
+      ctx.fillStyle=col?'rgba(60,80,40,.6)':'rgba(120,92,58,.75)';ctx.font=`italic 700 ${H*.03}px Georgia,serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+      a.spaced((a.water.en||a.title.en).toUpperCase(),W/2,H*.94,H*.012);
+    }},
+};
+
+/* ── designs for THIS trip: a road map, Welsh slate, a camping plate ── */
+Object.assign(THEMES.countryside,{label:'Folded road map', tag:{en:'An old road map turns green as we drive',zh:'舊地圖,車到邊度綠到邊度'}});
+delete THEMES.platter; delete THEMES.blueprint;
+THEMES.slate={
+  label:'Welsh slate', tag:{en:'Chalk on Welsh slate, coloured in by the road',zh:'威爾斯石板上嘅粉筆畫,行過就上色'},
+  shape:'rect', fit:1, landW:9, sky:'#20262d', table:'plain', tableColor:'#2a2f36',
+  inkLight:'#eef1f3', inkDark:'#7d8894', css:{ink:'#2b333c',paper:'#f3f5f6',cap:'#ffffff'},
+  sun:'#ffdcb4', sunI:2.2, amb:'#aebbd0', ambI:1.0, clouds:0, lights:true,
+  scatter:['pine','tree','bush','rock','pine'], pal:{...BASE_PAL,leaf:'#5a9b58',leaf2:'#b98bd0',pink:'#c78ad6',stone:'#9aa3ad',roof:'#d9573f'},
+  ground(ctx,W,H,col,a){
+    ctx.fillStyle='#3a434d';ctx.fillRect(0,0,W,H);
+    const r=a.rng(9);                                   // slate cleavage streaks
+    for(let i=0;i<260;i++){const x=r()*W,y=r()*H,l=40+r()*220;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+l,y+l*.12);
+      ctx.lineWidth=1+r()*2;ctx.strokeStyle=`rgba(${r()<.5?'255,255,255':'0,0,0'},${.03+r()*.05})`;ctx.stroke()}
+    if(col){a.road((a.landW+1.6)*a.S,'rgba(150,200,230,.18)');a.road(a.landW*a.S,'#6fa860');a.road(a.landW*.62*a.S,'#84b96f');
+      a.blobs('#a981c2',34,a.S*.9);a.blobs('#5e9a55',30,a.S);a.river('#6fb8e0',a.S*1.4,false);a.road(a.S*1.3,'#d9d3c4')}
+    else{ctx.globalAlpha=.85;a.road(a.landW*a.S,'#f1f3f4');ctx.globalAlpha=1;a.road(a.landW*a.S-6,'#3a434d');
+      a.road(a.landW*.62*a.S,'rgba(241,243,244,.4)',[3,11]);a.road(a.landW*.62*a.S-3,'#3a434d');
+      a.river('rgba(241,243,244,.6)',2.5,true);a.road(3,'rgba(241,243,244,.9)',[10,10])}
+    ctx.fillStyle='rgba(241,243,244,.6)';ctx.font=`600 ${H*.024}px "Avenir Next",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    a.spaced(a.water.en.toUpperCase(),W/2,H*.95,H*.016);
+  }};
+THEMES.enamel={
+  label:'Enamel camping plate', tag:{en:'The holiday, served on a camping plate',zh:'成個假期,盛喺露營搪瓷碟上面'},
+  shape:'ellipse', fit:.74, landW:7.5, sky:'#e9ddd0', table:'gingham', tableColor:'#d9534a',
+  inkLight:'#f7f7f2', inkDark:'#22386b', css:{ink:'#22386b',paper:'#ffffff',cap:'#ffffff'},
+  sun:'#fff3df', sunI:2.3, amb:'#eaf0ff', ambI:1.15, clouds:3, lights:false,
+  scatter:['tree','pine','bush','rock','tree'], pal:{...BASE_PAL},
+  ground(ctx,W,H,col,a){
+    const cx=W/2,cy=H/2,navy='#22386b',bg=col?'#fbf8ee':'#f7f7f2',E=k=>{ctx.beginPath();ctx.ellipse(cx,cy,cx*k,cy*k,0,0,7)};
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    if(col){a.road(a.landW*a.S,'#b5d993');a.road(a.landW*.7*a.S,'#cbe7ad');a.blobs('#a3cf84',40,a.S*1.1)}
+    else{a.road(a.landW*a.S,navy);a.road(a.landW*a.S-6,bg);a.road(a.landW*.7*a.S,navy,[3,9]);a.road(a.landW*.7*a.S-3,bg)}
+    a.river(col?'#8ccbe6':navy,col?a.S*1.5:3,!col);
+    if(col)a.road(a.S*1.25,'#f1dcab');else a.road(3,navy,[10,10]);
+    E(.965);ctx.lineWidth=H*.05;ctx.strokeStyle=navy;ctx.stroke();           // the navy enamel rim
+    E(.9);ctx.lineWidth=2;ctx.strokeStyle='rgba(34,56,107,.35)';ctx.stroke();
+    const r=a.rng(4);ctx.fillStyle='rgba(30,30,40,.5)';                       // a few chips in the enamel
+    for(let i=0;i<7;i++){const t=r()*7;ctx.beginPath();ctx.ellipse(cx+Math.cos(t)*cx*.97,cy+Math.sin(t)*cy*.97,H*.012,H*.007,t,0,7);ctx.fill()}
+    ctx.fillStyle=navy;ctx.globalAlpha=.75;ctx.font=`700 ${H*.026}px Georgia,serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    a.spaced('NORTH WALES  ·  北 威 爾 斯',cx,cy+cy*.8,H*.012);ctx.globalAlpha=1;
+  }};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   3. TUNING
+   ═══════════════════════════════════════════════════════════════════════ */
+const SPEED=4.6, DWELL=2.8, INTRO=2.6, REVEAL_R=5, LEAD_UNITS=2.5;
+const GW=52, GH=32, S=30;                      // ground size (world units) and px per unit
+
+/* ═══════════════════════════════════════════════════════════════════════
+   4. PRIMITIVES + PROP LIBRARY
+   Every helper takes the y of the BOTTOM of the piece (ball: its centre).
+   A prop is p => THREE.Group, built around the origin, roughly 2–3.5 wide.
+   Set g.userData.tick = t => {...} for idle motion.
+   ═══════════════════════════════════════════════════════════════════════ */
+const M=(c,o={})=>{const m=new THREE.MeshStandardMaterial({color:c,roughness:o.rough??.82,metalness:0});
+  if(o.glow){m.emissive=new THREE.Color(c);m.emissiveIntensity=o.glow;m.userData.glow=o.glow}
+  if(o.opacity){m.transparent=true;m.opacity=o.opacity}return m};
+const mat=c=>c&&c.isMaterial?c:M(c);
+const sh=m=>{m.castShadow=true;m.receiveShadow=true;return m};
+const box=(w,h,d,c,x=0,y=0,z=0)=>{const m=sh(new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c)));m.position.set(x,y+h/2,z);return m};
+const cyl=(rt,rb,h,c,x=0,y=0,z=0,seg=24)=>{const m=sh(new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat(c)));m.position.set(x,y+h/2,z);return m};
+const cone=(r,h,c,x=0,y=0,z=0,seg=24)=>cyl(0,r,h,c,x,y,z,seg);
+const pyr=(r,h,c,x=0,y=0,z=0)=>{const m=cone(r,h,c,x,y,z,4);m.rotation.y=Math.PI/4;return m};
+const ball=(r,c,x=0,y=0,z=0)=>{const m=sh(new THREE.Mesh(new THREE.SphereGeometry(r,24,16),mat(c)));m.position.set(x,y,z);return m};
+const dome=(r,c,x=0,y=0,z=0)=>{const m=sh(new THREE.Mesh(new THREE.SphereGeometry(r,28,14,0,Math.PI*2,0,Math.PI/2),mat(c)));m.position.set(x,y,z);return m};
+const ring=(r,t,c,x=0,y=0,z=0)=>{const m=sh(new THREE.Mesh(new THREE.TorusGeometry(r,t,10,40),mat(c)));m.position.set(x,y,z);return m};
+const G=(...k)=>{const g=new THREE.Group();k.flat(4).forEach(c=>c&&g.add(c));return g};
+const flag=(c,x,y,z)=>G(cyl(.04,.04,1,'#6b5a4a',x,y,z,8),box(.55,.32,.04,c,x+.3,y+.66,z));
+const lit=(p,i=.9)=>M(p.gold,{glow:i});
+
+const PROPS={
+  tree:p=>G(cyl(.16,.22,.9,p.trunk),ball(.78,p.leaf,0,1.45,0),ball(.56,p.leaf2,.5,1.1,.12),ball(.5,p.leaf,-.46,1.16,-.1)),
+  pine:p=>G(cyl(.14,.18,.5,p.trunk),cone(.82,1.1,p.leaf,0,.4,0),cone(.62,1,p.leaf2,0,1.05,0),cone(.42,.9,p.leaf,0,1.65,0)),
+  bush:p=>G(ball(.5,p.leaf2,0,.35,0),ball(.38,p.leaf,.42,.28,.1),ball(.3,p.pink,-.3,.5,.2)),
+  rock:p=>G(ball(.45,p.stone,0,.2,0),ball(.3,p.stone,.4,.12,.15)),
+  parking:p=>G(cyl(.06,.06,1.5,p.dark,0,0,0,8),box(.9,.9,.1,'#2f6fd6',0,1.3,0),box(.13,.6,.04,p.white,-.14,1.45,.06),box(.3,.12,.04,p.white,.03,1.93,.06),box(.3,.12,.04,p.white,.03,1.7,.06),box(.12,.35,.04,p.white,.16,1.7,.06),
+    box(1.3,.4,.7,p.roof,1.4,.15,.3),box(.7,.35,.66,p.water,1.35,.55,.3),[[.95,.66],[1.85,.66],[.95,-.06],[1.85,-.06]].map(([x,z])=>cyl(.17,.17,.1,p.dark,x,.12,z,10).rotateX(Math.PI/2))),
+  kiosk:p=>G(box(1.3,1.2,1.1,p.wall),pyr(1.15,.6,p.pink,0,1.3,0),box(1.5,.1,1.3,p.white,0,1.2,0),box(.8,.45,.06,lit(p,.7),0,.55,.56),ball(.22,p.pink,0,2.05,0)),
+  pin:p=>G(cyl(.07,.07,1.6,p.trunk),box(1.3,.55,.1,p.accent,0,1.2,0)),
+  house:p=>G(box(1.9,1.25,1.6,p.wall),pyr(1.55,.95,p.roof,0,1.25,0),box(.42,.75,.06,p.trunk,-.35,0,.81),
+    box(.4,.4,.06,lit(p),.45,.5,.81),box(.3,.7,.3,p.stone,.55,1.5,-.3)),
+  shop:p=>G(box(2.3,1.3,1.5,p.wall),box(2.5,.14,1.7,p.stone,0,1.3,0),
+    [...Array(6)].map((_,i)=>{const m=box(.4,.08,.7,i%2?p.white:p.roof,-1+i*.4,1.02,1.05);m.rotation.x=.45;return m}),
+    box(1.5,.45,.1,p.accent,0,1.5,.5),box(.5,.7,.06,p.trunk,-.55,0,.76),box(.7,.5,.06,lit(p),.45,.35,.76)),
+  tower:p=>G(cyl(.6,.72,2.6,p.stone),cone(.85,1.1,p.roof,0,2.6,0),box(.3,.45,.06,lit(p),0,1.6,.66),flag(p.accent,0,3.6,0)),
+  castle:p=>G(box(3,1.9,2.2,p.wall),box(.7,1,.1,p.trunk,0,0,1.1),
+    [[-1.5,-1.1],[1.5,-1.1],[-1.5,1.1],[1.5,1.1]].map(([x,z])=>G(cyl(.5,.55,2.7,p.stone,x,0,z),cone(.68,.9,p.roof,x,2.7,z))),
+    cyl(.6,.65,3.6,p.wall,0,0,-.2),cone(.8,1.1,p.roof,0,3.6,-.2),flag(p.gold,0,4.6,-.2),
+    box(.35,.45,.06,lit(p),-.8,.9,1.11),box(.35,.45,.06,lit(p),.8,.9,1.11)),
+  dome:p=>G(cyl(1.6,1.7,.5,p.stone),dome(1.5,M(p.water,{opacity:.88,rough:.3}),0,.5,0),ball(.16,p.gold,0,2.05,0),box(.5,.45,.1,p.dark,0,0,1.62)),
+  ferris:p=>{const w=G(ring(2,.09,p.roof),[...Array(8)].map((_,i)=>{const s=box(.06,4,.06,p.white,0,-2,0);s.rotation.z=i*Math.PI/8;return s}),
+      [...Array(8)].map((_,i)=>ball(.3,[p.accent,p.water,p.pink,p.leaf2][i%4],Math.cos(i*Math.PI/4)*2,Math.sin(i*Math.PI/4)*2,0)));
+    w.position.y=2.7;const l1=box(.16,3,.16,p.stone,-.75,0,0),l2=box(.16,3,.16,p.stone,.75,0,0);l1.rotation.z=-.5;l2.rotation.z=.5;
+    const g=G(w,l1,l2,cyl(.2,.2,.3,p.gold,0,2.55,0),box(2.6,.2,1,p.stone));g.userData.tick=t=>w.rotation.z=t*.35;return g},
+  bridge:p=>G([...Array(9)].map((_,i)=>{const a=(i-4)/4;return box(.5,.16,1.3,p.roof,a*1.9,.15+Math.cos(a*1.4)*.7-.12,0)}),
+    [...Array(5)].map((_,i)=>{const a=(i-2)/2;return [box(.1,.5,.1,p.roof,a*1.9,.15+Math.cos(a*1.4)*.7,.6),box(.1,.5,.1,p.roof,a*1.9,.15+Math.cos(a*1.4)*.7,-.6)]})),
+  lighthouse:p=>G(cyl(1.1,1.2,.3,p.stone),cyl(.52,.72,1,p.white,0,.3,0),cyl(.42,.52,.9,p.roof,0,1.3,0),cyl(.34,.42,.9,p.white,0,2.2,0),
+    cyl(.5,.5,.1,p.dark,0,3.1,0),cyl(.26,.26,.45,lit(p,1.4),0,3.2,0),cone(.42,.45,p.roof,0,3.65,0)),
+  torii:p=>G(cyl(.14,.17,2.2,p.roof,-.95,0,0),cyl(.14,.17,2.2,p.roof,.95,0,0),box(2.8,.2,.32,p.roof,0,2.15,0),box(3,.12,.4,p.dark,0,2.35,0),box(2.2,.15,.2,p.roof,0,1.6,0)),
+  temple:p=>G(box(3,.3,2.4,p.stone),box(2.3,1.1,1.7,p.roof,0,.3,0),pyr(2.2,.6,p.dark,0,1.4,0),box(1.3,.7,1,p.roof,0,1.85,0),pyr(1.35,.7,p.dark,0,2.55,0),
+    ball(.12,p.gold,0,3.3,0),box(.5,.8,.06,lit(p,.6),0,.3,.86)),
+  cafe:p=>{const st=[ball(.2,p.white,-.15,1.7,0),ball(.26,p.white,.1,2.15,0),ball(.18,p.white,-.05,2.6,0)];
+    const h=ring(.34,.09,p.accent,.95,.72,0);
+    const g=G(cyl(1.25,1,.14,p.white),cyl(.82,.6,1,p.accent,0,.14,0),cyl(.72,.72,.04,p.trunk,0,1.12,0),h,st);
+    g.userData.tick=t=>st.forEach((s,i)=>{s.position.y=1.6+((t*.5+i*.4)%1.3);s.scale.setScalar(1-((t*.5+i*.4)%1.3)/1.6)});return g},
+  restaurant:p=>G(cyl(1.6,1.25,.16,p.white),ring(1.25,.05,p.gold,0,.17,0).rotateX(Math.PI/2),dome(1,M(p.stone,{rough:.35}),0,.16,0),ball(.14,p.gold,0,1.22,0),
+    box(.12,2.4,.08,p.stone,1.95,0,0),[-.16,0,.16].map(d=>box(.06,.6,.06,p.stone,1.95+d,2.3,0)),box(.44,.12,.08,p.stone,1.95,2.25,0)),
+  station:p=>G(box(3.4,1.1,1.4,p.wall),box(3.8,.2,1.9,p.roof,0,1.1,0),box(.75,2.3,.75,p.stone,-1.25,0,-.1),pyr(.7,.5,p.roof,-1.25,2.3,-.1),
+    cyl(.24,.24,.06,p.gold,-1.25,1.7,.3).rotateX(Math.PI/2),[...Array(3)].map((_,i)=>box(.5,.5,.06,lit(p,.6),-.1+i*.75,.35,.71))),
+  airport:p=>{const pl=G(cyl(.26,.26,2.2,p.white).rotateZ(Math.PI/2),box(.5,.08,2.2,p.water,.1,1.06,0),box(.3,.5,.06,p.roof,-.95,1.2,0));
+    pl.position.set(.8,1.4,.3);pl.rotation.z=.25;const g=G(cyl(.3,.4,2.2,p.stone,-1,0,0),cyl(.7,.5,.5,M(p.water,{rough:.3}),-1,2.2,0),cone(.75,.3,p.roof,-1,2.7,0),box(3.2,.08,1.2,p.dark,.4,0,.5),pl);
+    g.userData.tick=t=>pl.position.y=1.4+Math.sin(t*1.2)*.15;return g},
+  museum:p=>G(box(3.6,.3,2.5,p.stone),box(3,1.4,1.5,p.wall,0,.3,-.3),[...Array(5)].map((_,i)=>cyl(.16,.16,1.4,p.white,-1.3+i*.65,.3,.85,12)),
+    box(3.6,.24,2.4,p.stone,0,1.7,0),(()=>{const r=pyr(2.3,.75,p.roof,0,1.94,0);r.scale.z=.65;return r})()),
+  tent:p=>G(cone(1.35,1.6,p.accent,0,0,0,8),cone(1.36,.5,p.roof,0,1.12,0,8),flag(p.roof,0,1.5,0)),
+  market:p=>G([[-1.1,.2,'roof'],[0,-.4,'accent'],[1.1,.2,'water']].map(([x,z,c])=>G(box(.9,.6,.7,p.wall,x,0,z),pyr(.85,.5,p[c],x,.75,z),
+    [-.4,.4].map(d=>cyl(.03,.03,.75,p.trunk,x+d,0,z+.4,6)),ball(.09,lit(p,1.3),x,.68,z+.42)))),
+  mountain:p=>G(cone(2.3,3.1,p.stone,0,0,0,7),cone(.84,1.14,p.white,0,1.97,0,7),cone(1.3,1.7,p.leaf,-1.5,0,.6,7),cone(1,1.3,p.leaf2,1.5,0,.7,7)),
+  beach:p=>G(cyl(1.6,1.6,.06,'#f3dfae'),cyl(.05,.05,1.5,p.white,0,0,0,8),cone(1.15,.5,p.roof,0,1.3,0,10),box(.7,.06,1.3,p.water,.9,.06,.3),ball(.25,p.accent,-.8,.3,.5)),
+  hotel:p=>G(box(2.1,3.4,1.6,p.wall),box(2.3,.2,1.8,p.roof,0,3.4,0),
+    [...Array(4)].flatMap((_,r)=>[...Array(3)].map((_,c)=>box(.34,.4,.06,(r+c)%3?lit(p,.7):p.water,-.6+c*.6,.6+r*.68,.81))),box(.6,.5,.06,p.trunk,0,0,.81)),
+  office:p=>G(box(1.6,4.2,1.5,M(p.water,{rough:.3})),box(1.3,2.8,1.3,p.stone,1.3,0,.1),box(1.7,.15,1.6,p.dark,0,4.2,0),cyl(.03,.03,1,p.dark,0,4.35,0,6)),
+  fountain:p=>G(cyl(1.4,1.5,.35,p.stone),cyl(1.2,1.2,.06,p.water,0,.32,0),cyl(.2,.3,1,p.stone),cyl(.6,.3,.2,p.stone,0,1,0),ball(.3,p.water,0,1.4,0)),
+};
+
+/* ── landmarks written for this trip ── */
+Object.assign(PROPS,{
+  caravan:p=>G(box(3,1.3,1.5,p.white,0,.4,0),box(3.04,.18,1.54,p.water,0,.75,0),box(2.7,.12,1.3,p.stone,0,1.7,0),
+    box(.8,.45,.06,lit(p,.7),-.7,1.05,.76),box(.6,.45,.06,lit(p,.7),.35,1.05,.76),box(.42,.85,.06,p.roof,1.1,.5,.76),
+    cyl(.3,.3,.2,p.dark,-.6,.2,.7,16).rotateX(Math.PI/2),cyl(.3,.3,.2,p.dark,-.6,.2,-.7,16).rotateX(Math.PI/2),
+    box(.9,.08,.08,p.dark,-1.9,.5,0),box(1.2,.06,.9,p.trunk,1.1,.3,1.3)),
+  train:p=>{const sm=[0,1,2].map(()=>ball(.24,p.white,-1.5,2,0));
+    const g=G(box(4.8,.12,1.2,p.trunk),cyl(.5,.5,1.6,p.roof,-1,.1,0).rotateZ(Math.PI/2),box(.9,1.3,1.05,p.leaf,.1,.35,0),box(1.1,.1,1.2,p.dark,.1,1.65,0),
+      cyl(.14,.2,.6,p.dark,-1.5,1.35,0),box(.4,.4,.06,lit(p,.7),.1,1.1,.54),box(1.7,1,1,p.accent,1.6,.4,0),box(1.8,.1,1.1,p.dark,1.6,1.4,0),
+      [-1.5,-.7,.1,1.1,2.1].map(x=>cyl(.26,.26,.12,p.dark,x,.2,.5,14).rotateX(Math.PI/2)),sm);
+    g.userData.tick=t=>sm.forEach((s,i)=>{const k=(t*.5+i*.4)%1.2;s.position.set(-1.5+k*.7,1.95+k*1.3,0);s.scale.setScalar(.5+k*.8)});return g},
+  pool:p=>{const f=ring(.3,.11,p.pink,.5,.42,.3).rotateX(Math.PI/2),sl=box(1.8,.1,.5,p.roof,-.25,1.15,-.6);sl.rotation.z=-.6;
+    const g=G(box(3.2,.3,2.3,p.white),box(2.8,.06,1.9,M(p.water,{rough:.25}),0,.28,0),box(.45,1.75,.45,p.accent,-1.1,.3,-.6),sl,f,ball(.22,p.accent,-.5,.5,.5));
+    g.userData.tick=t=>{f.position.x=.5+Math.sin(t*.8)*.5;f.position.z=.3+Math.cos(t*.6)*.2};return g},
+  icecream:p=>{const c=cone(.62,1.5,p.accent,0,.15,0,16);c.rotation.x=Math.PI;
+    return G(cyl(.7,.8,.15,p.stone),c,ball(.72,p.pink,0,2,0),ball(.56,p.white,0,2.85,0),ball(.16,p.roof,0,3.45,0),box(.12,.9,.12,p.trunk,.35,2.6,0))},
+  mine:p=>G(dome(2,p.stone),cone(.8,1.2,p.leaf,-1.2,1.2,-.4,7),box(1,1.1,.5,p.dark,0,0,1.6),box(.14,1.25,.6,p.trunk,-.55,0,1.62),box(.14,1.25,.6,p.trunk,.55,0,1.62),
+    box(1.4,.16,.6,p.trunk,0,1.2,1.62),ball(.12,lit(p,1.6),0,1.05,1.95),box(.7,.4,.5,'#c9713a',1.3,.2,2.3),ball(.22,'#e89a52',1.3,.68,2.3),box(1.7,.04,.5,p.dark,1,0,2.3)),
+  waterfall:p=>{const fm=[ball(.2,p.white,-.2,.25,1.05),ball(.25,p.white,.15,.25,1.1),ball(.16,p.white,0,.3,1.25)];
+    const g=G(box(2.6,1.4,1.4,p.stone),box(1.9,1.2,1.2,p.stone,0,1.4,-.1),box(1.2,.7,1,p.stone,0,2.6,-.2),
+      box(.6,.75,.1,p.water,0,2.55,.32),box(.6,1.25,.1,p.water,0,1.38,.52),box(.6,1.4,.1,p.water,0,0,.72),cyl(1.1,1.1,.08,p.water,0,0,1.2),fm,
+      cone(.5,1,p.leaf,-1,1.4,-.2,7),cone(.45,.9,p.leaf2,.9,1.4,-.3,7));
+    g.userData.tick=t=>fm.forEach((s,i)=>s.scale.setScalar(.8+.35*Math.sin(t*5+i*2)));return g},
+  dam:p=>G(box(4.2,1.7,.6,p.stone),[...Array(6)].map((_,i)=>box(.3,.6,.05,p.dark,-1.6+i*.64,.25,.31)),box(4.2,.1,1.8,M(p.water,{rough:.25}),0,1.3,-1.2),
+    [-1,1].map(x=>G(cyl(.3,.34,.9,p.stone,x,1.7,0,12),cone(.42,.6,p.dark,x,2.6,0,12))),box(4.4,.12,.8,p.wall,0,1.7,0),box(4.2,.12,.9,p.water,0,0,.75)),
+  bag:p=>G(box(1.5,1.8,.8,p.roof),ring(.35,.05,p.dark,0,1.85,.25),ring(.35,.05,p.dark,0,1.85,-.25),box(.7,.7,.04,p.white,0,.7,.41),
+    box(1,1.2,.6,p.accent,1.25,0,.4),ring(.25,.04,p.dark,1.25,1.25,.4),box(.9,1,.5,p.water,-1.2,0,.5),ring(.22,.04,p.dark,-1.2,1.05,.5)),
+  boat:p=>{const h=cyl(.55,.35,2.4,p.roof,0,-.75,0,8).rotateZ(Math.PI/2);h.scale.x=.7;
+    const sail=cone(.9,1.9,p.white,.45,.95,0,3);sail.scale.z=.12;
+    const b=G(h,box(1.6,.1,.7,p.trunk,0,.68,0),cyl(.05,.05,2.4,p.trunk,0,.7,0,8),sail,flag(p.accent,0,2.7,0));
+    const g=G(cyl(1.9,1.9,.06,M(p.water,{rough:.25})),b);g.userData.tick=t=>{b.rotation.z=Math.sin(t*1.4)*.06;b.position.y=Math.sin(t*1.9)*.04};return g},
+  book:p=>G([[p.roof,0,0],[p.water,.36,.3],[p.accent,.72,-.25],[p.leaf,1.08,.15]].map(([c,y,r])=>{const b=G(box(1.9,.34,1.35,c),box(1.82,.22,1.3,p.white,.07,.06,.05));
+    b.position.y=y;b.rotation.y=r;return b}),box(.32,1.3,1,p.pink,1.5,0,0)),
+  timber:p=>G(box(1.8,1.2,1.5,p.white),box(2.1,1,1.7,p.white,0,1.2,0),[-.95,-.32,.32,.95].map(x=>box(.1,1,.05,p.dark,x,1.2,.86)),
+    box(2.1,.1,.05,p.dark,0,1.2,.86),box(2.1,.1,.05,p.dark,0,2.1,.86),[-.63,.63].map(x=>{const d=box(.08,1.1,.05,p.dark,x,1.15,.87);d.rotation.z=x>0?.55:-.55;return d}),
+    pyr(1.75,1.1,p.roof,0,2.2,0),box(.4,.7,.05,p.trunk,0,0,.76),box(.35,.35,.05,lit(p,.6),.55,.5,.76)),
+  mound:p=>{const d=dome(2,p.leaf);d.scale.y=.75;return G(cyl(2.2,2.3,.1,p.stone),d,cyl(.12,.16,.7,p.trunk,0,1.45,0),ball(.6,p.leaf2,0,2.5,0),flag(p.roof,.7,1.3,.2),ball(.3,p.stone,-1.3,.3,1.4))},
+  fish:p=>{const b=ball(.6,p.water,0,.52,0);b.scale.set(1.6,.6,.8);const t=cone(.45,.6,p.water,1.2,0,0,4);t.rotation.z=Math.PI/2;t.position.y=.52;
+    return G(cyl(1.6,1.25,.16,p.white),b,t,ball(.07,p.dark,-.65,.66,.3),[...Array(5)].map((_,i)=>box(.12,.12,.7,p.accent,-.4+i*.2,.16+(i%2)*.1,.95)),ball(.25,'#f3e36b',-1,.3,-.5))},
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   5. ENGINE — you should rarely need to edit below this line.
+   ═══════════════════════════════════════════════════════════════════════ */
+const $=s=>document.querySelector(s);
+const rngOf=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const names=Object.keys(THEMES);
+const qs=new URLSearchParams(location.search);
+/* multi-day: JOURNEY.days=[{label,title,intro,outro,stops},...] → one map per day, picked with ?day=N */
+const DAYS=JOURNEY.days||null, dayIdx=DAYS?Math.max(0,Math.min(DAYS.length-1,(+qs.get('day')||1)-1)):0;
+if(DAYS)Object.assign(JOURNEY,DAYS[dayIdx]);
+const goDay=i=>{qs.set('day',i+1);location.search=qs.toString()};
+const themeName=names.includes(qs.get('theme'))?qs.get('theme'):names[0];
+const TH=THEMES[themeName], PAL=TH.pal;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+for(const k in TH.css)document.documentElement.style.setProperty('--'+k,TH.css[k]);
+document.documentElement.style.setProperty('--gold',PAL.gold);
+document.body.style.background=TH.sky;
+$('#title .en').textContent=JOURNEY.title.en;$('#title .zh').textContent=JOURNEY.title.zh;document.title=JOURNEY.title.en;
+if(DAYS){const nav=document.createElement('div');nav.id='days';DAYS.forEach((d,i)=>{const b=document.createElement('button');b.textContent=d.label;
+  if(i===dayIdx)b.className='on';b.onclick=()=>goDay(i);nav.appendChild(b)});$('#title').appendChild(nav)}
+$('#bTheme').textContent=`Design ${names.indexOf(themeName)+1}/${names.length} · ${TH.label}`;
+$('#bTheme').onclick=()=>{qs.set('theme',names[(names.indexOf(themeName)+1)%names.length]);location.search=qs.toString()};
+
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas:$('#c'),antialias:true})}catch(e){$('#err').textContent='WebGL is not available in this browser.';throw e}
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.NoToneMapping;   // ACES washes the toy colours out
+const scene=new THREE.Scene();scene.background=new THREE.Color(TH.sky);scene.fog=new THREE.Fog(TH.sky,75,170);
+const camera=new THREE.PerspectiveCamera(30,1,1,400);
+scene.add(new THREE.HemisphereLight(TH.amb,'#8a7f70',TH.ambI*.8));
+const sun=new THREE.DirectionalLight(TH.sun,TH.sunI*.8);sun.position.set(-20,32,16);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-36,right:36,top:30,bottom:-30,near:1,far:120});
+sun.shadow.bias=-.0004;sun.shadow.normalBias=.04;scene.add(sun);
+
+/* ---- path ---- */
+const fit=TH.fit||1;
+/* stops without x/z are laid out automatically: a zig-zag for up to 7, a two-row U (far row left→right, near row back) for more */
+function autoLayout(st){if(st.every(s=>s.x!=null&&s.z!=null))return st;const n=st.length;
+  if(n<=7){st.forEach((s,i)=>{s.x=n>1?-16+32*i/(n-1):0;s.z=i%2?-3.8:3.2});return st}
+  const a=Math.ceil(n/2),b=n-a;
+  st.slice(0,a).forEach((s,i)=>{s.x=-15+30*i/(a-1);s.z=-3.6+(i%2?.9:-.5)});
+  st.slice(a).forEach((s,i)=>{s.x=b>1?15-30*i/(b-1):0;s.z=5+(i%2?-.8:.5)});
+  return[...st.slice(0,a),{via:true,x:18,z:.8},...st.slice(a)]}
+const ALL=autoLayout(JOURNEY.stops.map(s=>({...s}))).map(s=>({...s,pos:new THREE.Vector3(s.x*fit,0,s.z*fit)}));
+const curve=new THREE.CatmullRomCurve3(ALL.map(s=>s.pos),false,'centripetal');
+const N=800, SAMPLES=curve.getSpacedPoints(N), LEN=curve.getLength(), LEAD=LEAD_UNITS/LEN;
+const P=u=>{const f=Math.min(Math.max(u,0),1)*N,i=Math.min(N-1,Math.floor(f));return SAMPLES[i].clone().lerp(SAMPLES[i+1],f-i)};
+const nearestU=p=>{let b=0,d=1e9;for(let i=0;i<=N;i++){const q=SAMPLES[i].distanceToSquared(p);if(q<d){d=q;b=i}}return{u:b/N,d:Math.sqrt(d)}};
+ALL.forEach(s=>s.u=nearestU(s.pos).u);
+const STOPS=ALL.filter(s=>!s.via);
+const goal=STOPS.find(s=>s.goal)||STOPS[STOPS.length-1];
+
+/* ---- ground: blank canvas + coloured canvas + reveal mask ---- */
+const CW=GW*S,CH=GH*S,mk=()=>{const c=document.createElement('canvas');c.width=CW;c.height=CH;return c};
+const cBlank=mk(),cColor=mk(),cMask=mk(),cTmp=mk(),cOut=mk();
+const mctx=cMask.getContext('2d'),tctx=cTmp.getContext('2d'),octx=cOut.getContext('2d');
+const px=p=>({x:(p.x+GW/2)*S,y:(p.z+GH/2)*S});
+const PP=SAMPLES.filter((_,i)=>i%4===0).map(px);
+function groundApi(ctx){return{S,GW,GH,landW:TH.landW,rng:rngOf,title:JOURNEY.title,water:JOURNEY.water||{en:'',zh:''},
+  road(w,color,dash){ctx.beginPath();PP.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineWidth=w;ctx.strokeStyle=color;
+    ctx.lineCap=ctx.lineJoin='round';ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])},
+  blobs(color,n,r){const g=rngOf(11);ctx.fillStyle=color;for(let i=0;i<n;i++){const p=PP[Math.floor(g()*PP.length)],a=g()*7,d=g()*TH.landW*.36*S;
+    ctx.beginPath();ctx.ellipse(p.x+Math.cos(a)*d,p.y+Math.sin(a)*d,r*(.6+g()),r*(.4+g()*.5),g()*3,0,7);ctx.fill()}},
+  river(color,w,doubled){const y0=CH*.2,y1=CH*.82;const draw=(off)=>{ctx.beginPath();for(let i=0;i<=60;i++){const t=i/60,x=t*CW,y=y0+(y1-y0)*t+Math.sin(t*9)*CH*.07+off;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}
+      ctx.lineWidth=w;ctx.strokeStyle=color;ctx.lineCap='round';ctx.stroke()};
+    if(doubled){ctx.globalAlpha=.55;draw(-S*.6);draw(S*.6);ctx.globalAlpha=1}else draw(0)},
+  spaced(text,x,y,gap){const ch=[...text],ws=ch.map(c=>ctx.measureText(c).width+gap),tot=ws.reduce((a,b)=>a+b,0);let cx=x-tot/2;
+    ch.forEach((c,i)=>{ctx.fillText(c,cx+ws[i]/2,y);cx+=ws[i]})}}}
+{const a=cBlank.getContext('2d'),b=cColor.getContext('2d');TH.ground(a,CW,CH,false,groundApi(a));TH.ground(b,CW,CH,true,groundApi(b))}
+const gTex=new THREE.CanvasTexture(cOut);gTex.colorSpace=THREE.SRGBColorSpace;gTex.anisotropy=8;
+function compose(){tctx.globalCompositeOperation='source-over';tctx.clearRect(0,0,CW,CH);tctx.drawImage(cColor,0,0);
+  tctx.globalCompositeOperation='destination-in';tctx.drawImage(cMask,0,0);
+  octx.drawImage(cBlank,0,0);octx.drawImage(cTmp,0,0);gTex.needsUpdate=true}
+const sr=rngOf(3);
+function stamp(p,r){const c=px(p);for(let k=0;k<3;k++){const x=c.x+(sr()-.5)*r*S*.5,y=c.y+(sr()-.5)*r*S*.5,R=r*S*(.7+sr()*.5);
+  const g=mctx.createRadialGradient(x,y,R*.45,x,y,R);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');
+  mctx.fillStyle=g;mctx.beginPath();mctx.arc(x,y,R,0,7);mctx.fill()}}
+const gMat=new THREE.MeshStandardMaterial({map:gTex,roughness:.92});
+if(TH.shape==='ellipse'){
+  const top=new THREE.Mesh(new THREE.CircleGeometry(1,96).rotateX(-Math.PI/2),gMat);top.scale.set(GW/2,1,GH/2);top.receiveShadow=true;scene.add(top);
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(1,.78,1,96),M('#f4f6fa',{rough:.4}));body.scale.set(GW/2,1,GH/2);body.position.y=-.51;body.receiveShadow=true;scene.add(body);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(1,.012,10,120).rotateX(Math.PI/2),M('#ffffff',{rough:.3}));rim.scale.set(GW/2,22,GH/2);rim.position.y=.02;scene.add(rim);
+}else{
+  const top=new THREE.Mesh(new THREE.PlaneGeometry(GW,GH).rotateX(-Math.PI/2),gMat);top.receiveShadow=true;scene.add(top);
+  const slab=box(GW,.9,GH,M(TH.inkLight,{rough:.9}),0,-.92,0);slab.castShadow=false;scene.add(slab);
+}
+{ // table under the board
+  let m;if(TH.table==='gingham'){const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');
+    x.fillStyle='#fbfbf8';x.fillRect(0,0,64,64);x.fillStyle=TH.tableColor;x.globalAlpha=.6;x.fillRect(0,0,32,64);x.fillRect(0,0,64,32);
+    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(70,70);t.colorSpace=THREE.SRGBColorSpace;
+    m=new THREE.MeshStandardMaterial({map:t,roughness:1})}else m=M(TH.tableColor,{rough:1});
+  const tb=new THREE.Mesh(new THREE.PlaneGeometry(400,400).rotateX(-Math.PI/2),m);tb.position.y=-1.03;tb.receiveShadow=true;scene.add(tb)}
+
+/* ---- reveal objects: wear ink until the travellers reach them ---- */
+const inkL=new THREE.Color(TH.inkLight),inkD=new THREE.Color(TH.inkDark),objs=[],tickers=[];
+function reveal(g,u,scale=1){const ms=[];g.traverse(o=>{if(!o.isMesh)return;const t=o.material.color.clone(),l=.2126*t.r+.7152*t.g+.0722*t.b;
+    ms.push({m:o.material,target:t,blank:inkD.clone().lerp(inkL,Math.pow(Math.min(1,l*1.05),1.5)),glow:o.material.userData.glow||0})});
+  g.scale.setScalar(scale);const o={g,u,ms,t:0,on:false,base:scale,pos:g.position};objs.push(o);paint(o);
+  if(g.userData.tick)tickers.push(g.userData.tick);scene.add(g);return o}
+function paint(o){const k=ease(o.t);for(const e of o.ms){e.m.color.copy(e.blank).lerp(e.target,k);if(e.glow)e.m.emissiveIntensity=e.glow*k}
+  o.g.scale.setScalar(o.base*(1+.22*Math.sin(Math.PI*o.t)))}
+
+/* landmarks: set back from the road so the travellers walk in front of them */
+STOPS.forEach((s,i)=>{const a=P(s.u-.004),b=P(s.u+.004),t=b.sub(a).normalize();let n=new THREE.Vector3(-t.z,0,t.x);if(n.z>0)n.negate();
+  if(Math.abs(n.z)<.35)n.set(0,0,-1);
+  const g=(PROPS[s.kind]||PROPS.pin)(PAL);g.position.copy(s.pos).addScaledVector(n,s.minor?2.2:2.9);s.land=g.position.clone();
+  reveal(g,s.u-.002,s.goal?1.3:s.minor?.8:1.08);
+  s.top=new THREE.Box3().setFromObject(g).max.y+.5;
+  const plate=G(cyl(.95,.95,.07,PAL.white),cyl(.6,.6,.03,s.goal?PAL.gold:PAL.accent,0,.07,0));plate.position.copy(s.pos);reveal(plate,s.u-.002)});
+/* stepping stones along the road */
+for(let i=6;i<N;i+=9){const p=SAMPLES[i];if(STOPS.some(s=>s.pos.distanceTo(p)<1.3))continue;
+  const d=cyl(.17,.17,.05,PAL.white,0,0,0,12);d.castShadow=false;const g=G(d);g.position.copy(p);reveal(g,i/N)}
+/* string lights (themes with lights:true) */
+if(TH.lights)for(let i=20;i<N;i+=26){const p=SAMPLES[i],q=SAMPLES[Math.min(N,i+3)],t=q.clone().sub(p).normalize(),side=(i/26)%2?1:-1;
+  const g=G(cyl(.03,.03,1.1,PAL.dark,0,0,0,6),ball(.13,M('#ffe9a8',{glow:2.2}),0,1.15,0));
+  g.position.set(p.x-t.z*1.25*side,0,p.z+t.x*1.25*side);if(STOPS.some(s=>s.land.distanceTo(g.position)<2))continue;reveal(g,i/N)}
+/* scatter: trees and rocks on the land, clear of road and landmarks */
+{const r=rngOf(21),placed=[];let tries=0;
+  while(placed.length<70&&tries++<900){const p=new THREE.Vector3((r()-.5)*GW*.92,0,(r()-.5)*GH*.9),n=nearestU(p);
+    if(n.d<1.7||n.d>TH.landW/2-.6)continue;if(STOPS.some(s=>s.land.distanceTo(p)<3.1||s.pos.distanceTo(p)<2))continue;
+    if(placed.some(q=>q.distanceTo(p)<1.5))continue;placed.push(p);
+    const g=PROPS[TH.scatter[Math.floor(r()*TH.scatter.length)]](PAL);g.position.copy(p);g.rotation.y=r()*6;reveal(g,n.u,.7+r()*.5)}}
+/* clouds */
+const clouds=[];{const r=rngOf(5);for(let i=0;i<(TH.clouds||0);i++){const c=G(ball(1.2,'#fff'),ball(.9,'#fff',1.1,-.1,.1),ball(.8,'#fff',-1.1,-.15,0),ball(.7,'#fff',.3,.2,.6));
+  c.position.set((r()-.5)*44,8.5+r()*2.5,(r()-.5)*22);c.scale.setScalar(.8+r()*.6);c.userData.v=.25+r()*.35;scene.add(c);clouds.push(c)}}
+
+/* travellers — always in colour: they are the ones carrying it */
+function person(t){const hats={chef:()=>G(cyl(.2,.18,.26,'#fff',0,1.32,0),ball(.25,'#fff',0,1.66,0)),
+    sun:()=>G(cyl(.46,.5,.05,'#f3dfae',0,1.28,0),cyl(.24,.27,.2,'#f3dfae',0,1.3,0)),
+    cap:()=>G(dome(.31,t.color,0,1.2,0),box(.3,.05,.3,t.color,0,1.26,.3)),none:()=>null};
+  const g=G(cyl(.2,.36,.8,t.color),ball(.3,'#f4cfae',0,1.08,0),ball(.045,'#333',-.1,1.12,.27),ball(.045,'#333',.1,1.12,.27),(hats[t.hat]||hats.none)());
+  g.scale.setScalar(1.15*(t.size||1));scene.add(g);return g}
+const people=(JOURNEY.travellers||[{color:'#e2543f',hat:'cap'}]).map(person);
+
+/* ---- schedule → keyframes ---- */
+const K=[];{let t=INTRO;STOPS.forEach((s,i)=>{if(i){const p=STOPS[i-1],d=Math.max(1.8,(s.u-p.u)*LEN/SPEED);K.push({t0:t,t1:t+d,u0:p.u,u1:s.u,idx:i-1,moving:true});t+=d}
+  const dw=(s.minor?.6:1)*DWELL+(s.info?s.info.length*.7:0);s.tArrive=t;K.push({t0:t,t1:t+dw,u0:s.u,u1:s.u,idx:i,moving:false});t+=dw})}
+const T_END=K[K.length-1].t1;
+function stateAt(t){if(t<K[0].t0)return{u:STOPS[0].u,idx:-1,moving:false,done:false};
+  if(t>=T_END)return{u:STOPS[STOPS.length-1].u,idx:STOPS.length-1,moving:false,done:true};
+  const k=K.find(k=>t<k.t1);return{u:k.u0+(k.u1-k.u0)*ease((t-k.t0)/(k.t1-k.t0)),idx:k.idx,moving:k.moving,done:false}}
+
+/* ---- labels + timeline ---- */
+const flags=STOPS.map(s=>{const d=document.createElement('div');d.className='flag upcoming'+(s.goal?' goal':'')+(s.minor?' minor':'');
+  d.innerHTML=`<div class="en"></div><div class="zh"></div><div class="st"></div>`;d.children[0].textContent=s.name.en;d.children[1].textContent=s.name.zh;
+  $('#labels').appendChild(d);return d});
+const tbtns=STOPS.map((s,i)=>{const b=document.createElement('button');b.innerHTML='<b></b><span></span>';b.children[0].textContent=s.time||String(i+1);
+  b.children[1].textContent=s.name.zh===s.name.en||s.name.zh.includes(s.name.en.split(' ')[0])?s.name.zh:s.name.zh+' '+s.name.en;b.onclick=()=>seek(s.tArrive+.01);$('#timeline').appendChild(b);return b});
+let capKey='';function caption(key,c,info){if(key===capKey)return;capKey=key;const el=$('#caption');el.classList.add('out');
+  setTimeout(()=>{el.querySelector('.en').textContent=c.en;el.querySelector('.zh').textContent=c.zh;el.querySelector('.info').textContent=(info||[]).join('\n');el.classList.remove('out')},capKey===key?380:0)}
+
+/* ---- playback ---- */
+let time=0,playing=!reduced,stampI=0,finale=0,dirty=true,clock=0;
+function resetReveal(){mctx.clearRect(0,0,CW,CH);stampI=0;finale=0;dirty=true;for(const o of objs){o.on=false;o.t=0;paint(o)}}
+function seek(t){time=t;resetReveal();const s=stateAt(t);for(const o of objs)if(o.u<=s.u+LEAD){o.on=true;o.t=1;paint(o)}}
+function setPlaying(v){playing=v;$('#bPlay').textContent=v?'❚❚':'▶'}
+$('#bPlay').onclick=()=>{if(time>=T_END+4&&!playing)seek(0);setPlaying(!playing)};
+$('#bReplay').onclick=()=>{seek(0);setPlaying(true)};
+addEventListener('keydown',e=>{const s=stateAt(time);
+  if(e.code==='Space'){e.preventDefault();$('#bPlay').click()}
+  if(e.code==='ArrowRight')seek(STOPS[Math.min(STOPS.length-1,s.idx+1)].tArrive+.01);
+  if(e.code==='ArrowLeft')seek(STOPS[Math.max(0,s.idx-(s.moving?0:1))].tArrive+.01)});
+if(reduced){seek(T_END+.1);finale=79}
+
+/* ---- camera: fixed tilt (that is the 2.5D), follows the travellers ---- */
+const camDir=new THREE.Vector3(0,.74,.67).normalize(),focus=new THREE.Vector3(0,0,1),pan=new THREE.Vector3();
+let zoom=1.3,userZoom=1,W=1,H=1,fitZ=1;
+function resize(){W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();fitZ=Math.min(2.1,Math.max(1,1.5/camera.aspect))}   /* portrait: crop the overview rather than shrink it to a dot */
+addEventListener('resize',resize);resize();
+{const c=$('#c');let drag=null;
+  c.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};c.setPointerCapture(e.pointerId);c.style.cursor='grabbing'});
+  c.addEventListener('pointermove',e=>{if(!drag)return;const k=.05*zoom*userZoom*fitZ*(900/H);pan.x-=(e.clientX-drag.x)*k;pan.z-=(e.clientY-drag.y)*k*1.4;
+    pan.x=Math.max(-22,Math.min(22,pan.x));pan.z=Math.max(-14,Math.min(14,pan.z));drag={x:e.clientX,y:e.clientY}});
+  c.addEventListener('pointerup',()=>{drag=null;c.style.cursor='grab'});
+  c.addEventListener('dblclick',()=>{pan.set(0,0,0);userZoom=1});
+  c.addEventListener('wheel',e=>{e.preventDefault();userZoom=Math.max(.45,Math.min(1.6,userZoom*Math.exp(e.deltaY*.0012)))},{passive:false})}
+
+/* ---- frame ---- */
+const v3=new THREE.Vector3();let last=performance.now();
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;if(playing)time+=dt;
+  const s=stateAt(time);
+  // ground colour follows the road
+  const lim=Math.min(N,Math.floor((s.u+LEAD)*N));while(stampI<=lim){stamp(SAMPLES[stampI],REVEAL_R);stampI+=5;dirty=true}
+  if(s.done&&finale<80){finale=Math.min(80,finale+dt*20);stamp(goal.pos,finale);dirty=true}
+  if(dirty){compose();dirty=false}
+  // objects
+  for(const o of objs){if(!o.on&&(o.u<=s.u+LEAD||(s.done&&o.pos.distanceTo(goal.pos)<finale)))o.on=true;
+    if(o.on&&o.t<1){o.t=Math.min(1,o.t+dt*1.5);paint(o)}}
+  for(const f of tickers)f(clock);
+  for(const c of clouds){c.position.x+=c.userData.v*dt;if(c.position.x>28)c.position.x=-28}
+  // travellers
+  people.forEach((g,i)=>{const u=Math.max(0,s.u-i*.9/LEN),p=P(u),q=P(u+.004),dx=q.x-p.x,dz=q.z-p.z;
+    const side=s.moving?0:(i-(people.length-1)/2)*.9;
+    g.position.set(p.x+side,s.moving?Math.abs(Math.sin(clock*9+i))*.16:Math.sin(clock*2+i)*.02+.02,p.z+(s.moving?0:.5));
+    const want=s.moving&&(dx||dz)?Math.atan2(dx,dz):0;let d=want-g.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));g.rotation.y+=d*Math.min(1,dt*8)});
+  // camera
+  const overview=s.idx<0||s.done,wp=people[0].position;
+  v3.set(overview?0:wp.x*.8,0,overview?1:wp.z*.6+1).add(pan);focus.lerp(v3,Math.min(1,dt*1.6));
+  zoom+=((overview?1.3:STOPS.length>7?.98:.78)-zoom)*Math.min(1,dt*1.2);
+  const dist=48*zoom*userZoom*fitZ;scene.fog.near=dist*1.5;scene.fog.far=dist*3.6;   // fog only eats the far table, never the board
+  camera.position.copy(focus).addScaledVector(camDir,dist);camera.lookAt(focus);
+  renderer.render(scene,camera);
+  // labels
+  STOPS.forEach((st,i)=>{const el=flags[i],done=s.done||i<s.idx||(i===s.idx),here=!s.done&&i===s.idx&&!s.moving;
+    v3.set(st.land.x,st.top,st.land.z).project(camera);
+    el.style.transform=`translate(${(v3.x*.5+.5)*W}px,${(-v3.y*.5+.5)*H-22}px) translate(-50%,-100%) scale(${here?1.12:1})`;
+    el.style.zIndex=Math.round((1-v3.z)*1e5);
+    const cls='flag'+(st.goal?' goal':'')+(st.minor?' minor':'')+(done?'':' upcoming')+(here?' here':'');if(el.className!==cls)el.className=cls;
+    const stx=(st.time?st.time+' · ':'')+(done?(st.goal?'終點 arrived':'已到 visited'):(st.goal?'終點 the goal':'未到 upcoming'));
+    if(el.children[2].textContent!==stx)el.children[2].textContent=stx;
+    const bc=(done&&!here?'done':'')+(here?'here':'');if(tbtns[i].className!==bc)tbtns[i].className=bc});
+  if(s.done)caption('outro',JOURNEY.outro);else if(s.idx<0)caption('intro',JOURNEY.intro||TH.tag);
+  else if(!s.moving)caption('s'+s.idx,STOPS[s.idx].cap||STOPS[s.idx].name,STOPS[s.idx].info);
+  else if(s.idx===0&&time<K[1].t0+1.2)caption('tag',TH.tag);
+  if(s.done&&DAYS&&dayIdx<DAYS.length-1&&!$('#bNext')){const b=document.createElement('button');b.id='bNext';
+    b.textContent='Next day 下一日 ▶';b.onclick=()=>goDay(dayIdx+1);$('#controls').prepend(b)}
+  if(playing&&time>T_END+6)setPlaying(false);
+  requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+window.__diorama={seek,stateAt,T_END,STOPS,setPlaying,get time(){return time}};   // for testing from the console
+</script>
+</body>
+</html>
