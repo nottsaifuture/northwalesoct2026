@@ -60,6 +60,7 @@
   #controls button{border:0;border-radius:999px;padding:8px 14px;font:600 12px/1 inherit;cursor:pointer;
     background:rgba(255,255,255,.88);color:#1b2440;box-shadow:0 2px 8px rgba(0,0,30,.25)}
   #err{position:fixed;inset:auto 0 50% 0;text-align:center;color:#fff;z-index:9;font-size:14px}
+  @media (max-width:1150px){#title{top:58px}}
   @media (max-width:600px){.flag{padding:3px 7px}.flag .en{font-size:10px}.flag .zh{font-size:9px;letter-spacing:.08em}.flag .st{display:none}#title{top:58px;left:16px}#title .en{font-size:16px}#controls button{padding:7px 10px}#caption{left:16px;bottom:86px}}
   #controls button.on{background:var(--gold);color:#3a2a00}
   html.shell,html.shell body{background:#0e1a3a}
@@ -151,7 +152,7 @@
 <div id="err"></div>
 
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
 </script>
 <script type="module">
 import * as THREE from 'three';
@@ -176,7 +177,7 @@ const SWIM={time:'09:30',kind:'pool',name:{en:'Splashaway Bay',zh:'度假村泳�
 const JOURNEY = {
   title:{en:'North Wales', zh:'北威爾斯之旅'},
   water:{en:'Snowdonia & the Llŷn  ·  19–23 October', zh:'北威爾斯'},
-  travellers:[{color:'#3f7fd9',hat:'cap'},{color:'#e2543f',hat:'sun'},{color:'#f2b632',hat:'none',size:.68},{color:'#3fae6a',hat:'cap',size:.62}],
+  travellers:[{color:'#3f7fd9',hat:'cap'},{color:'#e2543f',hat:'sun',long:true},{color:'#ffcf3f',girl:'pigtails',size:.68},{color:'#ff8fb8',girl:'pony',size:.6}],
   days:[
   { label:'Mon 19', title:{en:'Mon 19 Oct · Arrival, check-in and Porthmadog', zh:'10月19日(一)· 抵達、Check-in、Porthmadog'},
     intro:{en:'Five days in North Wales start here', zh:'北威爾斯五日,由呢度開始'},
@@ -371,6 +372,34 @@ THEMES.enamel={
     a.spaced('NORTH WALES  ·  北 威 爾 斯',cx,cy+cy*.8,H*.012);ctx.globalAlpha=1;
   }};
 
+THEMES.dusk={
+  label:'Snowdonia sunset', tag:{en:'A sea chart at sunset, coloured in by the road',zh:'夕陽下嘅航海圖,行到邊度靚到邊度'},
+  shape:'rect', fit:1, landW:9, sky:'#f7a877', skyGrad:['#232a78','#6d4aa3','#e9737f','#ffb56b','#ffe2a0'], sunDisc:'#fff6cf',
+  table:'plain', tableColor:'#232c74', cloud:'#ffd9d2',
+  inkLight:'#eef1ff', inkDark:'#5b69b4', css:{ink:'#1f2a70',paper:'#ffffff',cap:'#ffffff'},
+  sun:'#ffc58a', sunI:3.1, sunPos:[-24,17,-13], fov:40, followElev:.36, lookUp:.123, fill:'#9fb6ff', fillI:.9, amb:'#ffd6e4', ambGround:'#5a4a8c', ambI:1.35, clouds:6, lights:true, bloom:.5,
+  scatter:['tree','pine','tree','bush','rock','pine','tree'],
+  pal:{...BASE_PAL,leaf:'#58b356',leaf2:'#8fd96b',roof:'#e2513f',wall:'#fff3df',water:'#59b7ee',pink:'#ff8fb5',accent:'#ffb92e'},
+  ground(ctx,W,H,col,a){
+    const sea=col?'#2f55c4':'#27307c';ctx.fillStyle=sea;ctx.fillRect(0,0,W,H);
+    const r=a.rng(13);
+    /* chart grid + little wave marks on the sea */
+    ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1.5;
+    for(let x=0;x<W;x+=a.S*2){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(let y=0;y<H;y+=a.S*2){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    ctx.strokeStyle=col?'rgba(190,225,255,.5)':'rgba(255,255,255,.28)';ctx.lineWidth=2.5;ctx.lineCap='round';
+    for(let i=0;i<150;i++){const x=r()*W,y=r()*H,w=10+r()*16;ctx.beginPath();ctx.moveTo(x-w,y);ctx.quadraticCurveTo(x-w/2,y-7,x,y);ctx.quadraticCurveTo(x+w/2,y-7,x+w,y);ctx.stroke()}
+    if(col){a.road((a.landW+2.6)*a.S,'rgba(110,200,255,.28)');a.road((a.landW+1.3)*a.S,'rgba(140,225,255,.45)');
+      a.road((a.landW+.45)*a.S,'#f6e3b0');a.road(a.landW*a.S,'#6cc25e');a.road(a.landW*.66*a.S,'#86d571');
+      a.blobs('#55ad54',42,a.S);a.blobs('#a6e27f',26,a.S*.7);a.blobs('#ff9fc0',14,a.S*.28);a.blobs('#ffe07a',14,a.S*.24);
+      a.river('#5fc0f2',a.S*1.3,false);a.road(a.S*1.75,'#d9b582');a.road(a.S*1.35,'#fbeccb')}
+    else{ctx.globalAlpha=.9;a.road(a.landW*a.S,'#eef1ff');ctx.globalAlpha=1;a.road(a.landW*a.S-6,sea);
+      a.road(a.landW*.66*a.S,'rgba(238,241,255,.4)',[3,11]);a.road(a.landW*.66*a.S-3,sea);
+      a.river('rgba(238,241,255,.55)',2.5,true);a.road(3,'rgba(238,241,255,.9)',[10,10])}
+    ctx.fillStyle='rgba(238,241,255,.7)';ctx.font=`600 ${H*.024}px "Avenir Next",sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    a.spaced(a.water.en.toUpperCase(),W/2,H*.95,H*.016);
+  }};
+
 /* ═══════════════════════════════════════════════════════════════════════
    3. TUNING
    ═══════════════════════════════════════════════════════════════════════ */
@@ -501,7 +530,7 @@ Object.assign(PROPS,{
 const $=s=>document.querySelector(s);
 const rngOf=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-const names=Object.keys(THEMES);
+const names=Object.keys(THEMES).sort((a,b)=>(b==='dusk')-(a==='dusk'));   /* sunset first = the default design */
 const qs=new URLSearchParams(location.search);
 /* multi-day: JOURNEY.days=[{label,title,intro,outro,stops},...] → one map per day, picked with ?day=N */
 const DAYS=JOURNEY.days||null, dayIdx=DAYS?Math.max(0,Math.min(DAYS.length-1,(+qs.get('day')||1)-1)):0;
@@ -526,11 +555,25 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.toneMapping=THREE.NoToneMapping;   // ACES washes the toy colours out
 const scene=new THREE.Scene();scene.background=new THREE.Color(TH.sky);scene.fog=new THREE.Fog(TH.sky,75,170);
-const camera=new THREE.PerspectiveCamera(30,1,1,400);
-scene.add(new THREE.HemisphereLight(TH.amb,'#8a7f70',TH.ambI*.8));
-const sun=new THREE.DirectionalLight(TH.sun,TH.sunI*.8);sun.position.set(-20,32,16);sun.castShadow=true;
+const camera=new THREE.PerspectiveCamera(TH.fov||30,1,1,400),fovK=Math.tan(Math.PI/12)/Math.tan((TH.fov||30)*Math.PI/360);
+scene.add(new THREE.HemisphereLight(TH.amb,TH.ambGround||'#8a7f70',TH.ambI*.8));
+const sun=new THREE.DirectionalLight(TH.sun,TH.sunI*.8);sun.position.set(...(TH.sunPos||[-20,32,16]));sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-36,right:36,top:30,bottom:-30,near:1,far:120});
 sun.shadow.bias=-.0004;sun.shadow.normalBias=.04;scene.add(sun);
+if(TH.fill){const fl=new THREE.DirectionalLight(TH.fill,TH.fillI||.8);fl.position.set(14,20,30);scene.add(fl)}
+/* sunset sky: a gradient dome that follows the camera, with a sun low on the horizon */
+let skyDome=null;
+if(TH.skyGrad){const c=document.createElement('canvas');c.width=4;c.height=512;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,512),n=TH.skyGrad.length;
+  /* top of the canvas = zenith, the middle = horizon; below the horizon stays the horizon colour (the fog colour) */
+  TH.skyGrad.forEach((col,i)=>g.addColorStop(Math.pow(i/(n-1),.55)*.5,col));g.addColorStop(1,TH.skyGrad[n-1]);x.fillStyle=g;x.fillRect(0,0,4,512);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;
+  skyDome=new THREE.Group();skyDome.add(new THREE.Mesh(new THREE.SphereGeometry(330,32,24),new THREE.MeshBasicMaterial({map:t,side:THREE.BackSide,fog:false,depthWrite:false})));
+  const sc=document.createElement('canvas');sc.width=sc.height=256;const y=sc.getContext('2d'),rg=y.createRadialGradient(128,128,0,128,128,128);
+  rg.addColorStop(0,'rgba(255,250,225,1)');rg.addColorStop(.16,'rgba(255,244,200,1)');rg.addColorStop(.2,'rgba(255,214,140,.55)');rg.addColorStop(.5,'rgba(255,170,110,.18)');rg.addColorStop(1,'rgba(255,150,100,0)');
+  y.fillStyle=rg;y.fillRect(0,0,256,256);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(sc),fog:false,depthWrite:false,transparent:true}));
+  sp.scale.setScalar(150);sp.position.set(-80,20,-305);skyDome.add(sp);skyDome.renderOrder=-1;scene.add(skyDome);
+  scene.fog.color.set(TH.skyGrad[n-1]);scene.background=new THREE.Color(TH.skyGrad[n-1])}
 
 /* ---- path ---- */
 const fit=TH.fit||1;
@@ -621,15 +664,23 @@ if(TH.lights)for(let i=20;i<N;i+=26){const p=SAMPLES[i],q=SAMPLES[Math.min(N,i+3
     if(placed.some(q=>q.distanceTo(p)<1.5))continue;placed.push(p);
     const g=PROPS[TH.scatter[Math.floor(r()*TH.scatter.length)]](PAL);g.position.copy(p);g.rotation.y=r()*6;reveal(g,n.u,.7+r()*.5)}}
 /* clouds */
-const clouds=[];{const r=rngOf(5);for(let i=0;i<(TH.clouds||0);i++){const c=G(ball(1.2,'#fff'),ball(.9,'#fff',1.1,-.1,.1),ball(.8,'#fff',-1.1,-.15,0),ball(.7,'#fff',.3,.2,.6));
+const clouds=[];{const r=rngOf(5);for(let i=0;i<(TH.clouds||0);i++){const c=G(ball(1.2,TH.cloud||'#fff'),ball(.9,TH.cloud||'#fff',1.1,-.1,.1),ball(.8,TH.cloud||'#fff',-1.1,-.15,0),ball(.7,TH.cloud||'#fff',.3,.2,.6));
   c.position.set((r()-.5)*44,8.5+r()*2.5,(r()-.5)*22);c.scale.setScalar(.8+r()*.6);c.userData.v=.25+r()*.35;scene.add(c);clouds.push(c)}}
 
 /* travellers — always in colour: they are the ones carrying it */
-function person(t){const hats={chef:()=>G(cyl(.2,.18,.26,'#fff',0,1.32,0),ball(.25,'#fff',0,1.66,0)),
-    sun:()=>G(cyl(.46,.5,.05,'#f3dfae',0,1.28,0),cyl(.24,.27,.2,'#f3dfae',0,1.3,0)),
+function person(t){const skin='#f6d2b3',hair=t.hair||'#4a3324',bow='#ff5f9a';
+  const hats={chef:()=>G(cyl(.2,.18,.26,'#fff',0,1.32,0),ball(.25,'#fff',0,1.66,0)),
+    sun:()=>G(cyl(.46,.5,.05,'#f3dfae',0,1.28,0),cyl(.24,.27,.2,'#f3dfae',0,1.3,0),cyl(.275,.275,.06,'#e2543f',0,1.31,0)),
     cap:()=>G(dome(.31,t.color,0,1.2,0),box(.3,.05,.3,t.color,0,1.26,.3)),none:()=>null};
-  const g=G(cyl(.2,.36,.8,t.color),ball(.3,'#f4cfae',0,1.08,0),ball(.045,'#333',-.1,1.12,.27),ball(.045,'#333',.1,1.12,.27),(hats[t.hat]||hats.none)());
-  g.scale.setScalar(1.15*(t.size||1));scene.add(g);return g}
+  const top=dome(.315,hair,0,1.09,0);top.rotation.x=-.55;
+  /* girls wear a dress and a hair style; grown-ups keep the peg body */
+  const body=t.girl?G(cyl(.2,.5,.46,t.color),cyl(.16,.21,.4,'#ffffff',0,.42,0),cyl(.215,.215,.07,t.color,0,.4,0)):G(cyl(.2,.36,.8,t.color));
+  const style=t.girl==='pigtails'?G(ball(.15,hair,-.36,1.0,-.04),ball(.15,hair,.36,1.0,-.04),ball(.07,bow,-.27,1.2,.02),ball(.07,bow,.27,1.2,.02))
+    :t.girl==='pony'?G(ball(.17,hair,0,1.3,-.26),ball(.12,hair,0,1.12,-.38),ball(.075,bow,0,1.38,-.12)):null;
+  const g=G(body,ball(.3,skin,0,1.08,0),top,ball(.045,'#333',-.1,1.12,.27),ball(.045,'#333',.1,1.12,.27),
+    ball(.05,'#f59a9a',-.2,1.01,.21),ball(.05,'#f59a9a',.2,1.01,.21),ball(.085,skin,-.3,.5,.06),ball(.085,skin,.3,.5,.06),
+    t.long?cyl(.3,.25,.5,hair,0,.72,-.1):null,style,(hats[t.hat]||hats.none)());
+  g.scale.setScalar(1.3*(t.size||1));scene.add(g);return g}
 const people=(JOURNEY.travellers||[{color:'#e2543f',hat:'cap'}]).map(person);
 
 /* ---- schedule → keyframes ---- */
@@ -664,13 +715,19 @@ if(reduced){seek(T_END+.1);finale=79}
 
 /* ---- camera: fixed tilt (that is the 2.5D), follows the travellers ---- */
 const camDir=new THREE.Vector3(0,.74,.67).normalize(),focus=new THREE.Vector3(0,0,1),pan=new THREE.Vector3(),camD=new THREE.Vector3();
-let yaw=0,tilt=0,spinWait=0;
+let yaw=0,tilt=0,spinWait=0,elev=.83,lift=0;
 function setSpin(v){spin=v;$('#bSpin').classList.toggle('on',v);$('#bSpin').textContent=v?'⟳ 360° on':'⟳ 360°'}setSpin(spin&&!reduced);$('#bSpin').onclick=()=>setSpin(!spin);
 const BGM=(()=>{try{if(window!==top&&top.__SHELL&&top.__BGM)return top.__BGM}catch(e){}return window.__BGM})();
 const musicLabel=()=>{const v=BGM&&BGM.on;$('#bMusic').classList.toggle('on',!!v);$('#bMusic').textContent=v?'♪ BGM on':'♪ BGM off'};
 $('#bMusic').onclick=()=>{if(BGM)BGM.toggle();musicLabel()};musicLabel();setInterval(musicLabel,1000);
 let zoom=1.3,userZoom=1,W=1,H=1,fitZ=1;
-function resize(){W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();fitZ=Math.min(2.1,Math.max(1,1.5/camera.aspect))}   /* portrait: crop the overview rather than shrink it to a dot */
+function resize(){W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);camera.aspect=W/H;camera.updateProjectionMatrix();fitZ=Math.min(2.1,Math.max(1,1.5/camera.aspect));if(composer){composer.setPixelRatio(Math.min(devicePixelRatio,2));composer.setSize(W,H)}}   /* portrait: crop the overview rather than shrink it to a dot */
+/* soft glow on lit windows and the sun (themes with bloom). Falls back to a plain render if the add-ons cannot load. */
+let composer=null;
+if(TH.bloom&&!qs.has('nobloom'))try{const [EC,RP,UB,OP]=await Promise.all(['EffectComposer','RenderPass','UnrealBloomPass','OutputPass'].map(n=>import(`three/addons/postprocessing/${n}.js`)));
+  const rt=new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType,samples:4});
+  composer=new EC.EffectComposer(renderer,rt);composer.addPass(new RP.RenderPass(scene,camera));
+  composer.addPass(new UB.UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),TH.bloom,.7,.9));composer.addPass(new OP.OutputPass())}catch(e){composer=null;console.warn('bloom off',e)}
 addEventListener('resize',resize);resize();
 let drag0=()=>false;{const c=$('#c');let drag=null;drag0=()=>!!drag;
   c.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};c.setPointerCapture(e.pointerId);c.style.cursor='grabbing'});
@@ -701,12 +758,13 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;clock+=dt;if
   // camera
   const overview=s.idx<0||s.done,wp=people[0].position;
   v3.set(overview?0:wp.x*.8,0,overview?1:wp.z*.6+1).add(pan);focus.lerp(v3,Math.min(1,dt*1.6));
-  zoom+=((overview?1.3:STOPS.length>7?.98:.78)-zoom)*Math.min(1,dt*1.2);
-  const dist=48*zoom*userZoom*fitZ;scene.fog.near=dist*1.5;scene.fog.far=dist*3.6;   // fog only eats the far table, never the board
+  zoom+=((overview?1.3:STOPS.length>7?.8:.66)-zoom)*Math.min(1,dt*1.2);
+  const dist=48*zoom*userZoom*fitZ*fovK;scene.fog.near=dist*1.5;scene.fog.far=dist*3.6;   // fog only eats the far table, never the board
   if(spin&&!drag0()){if(spinWait>0)spinWait-=dt;else yaw+=dt*2*Math.PI/50}
-  {const el=Math.atan2(camDir.y,Math.hypot(camDir.x,camDir.z))+tilt,h=Math.cos(el);camD.set(Math.sin(yaw)*h,Math.sin(el),Math.cos(yaw)*h)}
-  camera.position.copy(focus).addScaledVector(camD,dist);camera.lookAt(focus);
-  renderer.render(scene,camera);
+  {elev+=((overview?.8:TH.followElev||.5)-elev)*Math.min(1,dt*1.1);lift+=((overview?0:TH.lookUp||0)-lift)*Math.min(1,dt*1.1);const el=Math.max(.18,Math.min(1.4,elev+tilt)),h=Math.cos(el);camD.set(Math.sin(yaw)*h,Math.sin(el),Math.cos(yaw)*h)}
+  camera.position.copy(focus).addScaledVector(camD,dist);camera.lookAt(focus.x,focus.y+lift*dist,focus.z);
+  if(skyDome)skyDome.position.copy(camera.position);
+  if(composer)composer.render();else renderer.render(scene,camera);
   // labels
   STOPS.forEach((st,i)=>{const el=flags[i],done=s.done||i<s.idx||(i===s.idx),here=!s.done&&i===s.idx&&!s.moving;
     v3.set(st.land.x,st.top,st.land.z).project(camera);
