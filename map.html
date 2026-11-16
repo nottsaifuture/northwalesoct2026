@@ -112,7 +112,7 @@
   /* prefer the recorded track (bgm.mp3 next to this page); fall back to the synth above if it is missing */
   function makeFileBGM(synth){
     var el=null,ok=true,on=false;
-    function audio(){if(!el){el=new Audio('bgm.mp3?v=3');el.loop=true;el.preload='auto';el.volume=.75;el.addEventListener('error',function(){ok=false;if(on){on=false;synth.start()}})}return el}
+    function audio(){if(!el){el=new Audio('bgm.mp3?v=4');el.loop=true;el.preload='auto';el.volume=.75;el.addEventListener('error',function(){ok=false;if(on){on=false;synth.start()}})}return el}
     var api={get on(){return on||synth.on},
       start:function(){if(!ok)return synth.start();var a=audio();on=true;var p=a.play();if(p&&p.catch)p.catch(function(e){if(e&&e.name==='NotAllowedError'){on=false}else{ok=false;on=false;synth.start()}})},
       stop:function(){if(el)el.pause();on=false;synth.stop()},
